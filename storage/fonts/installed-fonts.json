@@ -1,0 +1,8 @@
+{
+    "dejavu sans": {
+        "bold": "D:\\Laravel\\darigit\\antree-apps\\vendor\\dompdf\\dompdf\/lib\/fonts\/DejaVuSans-Bold",
+        "bold_italic": "D:\\Laravel\\darigit\\antree-apps\\vendor\\dompdf\\dompdf\/lib\/fonts\/DejaVuSans-BoldOblique",
+        "italic": "D:\\Laravel\\darigit\\antree-apps\\vendor\\dompdf\\dompdf\/lib\/fonts\/DejaVuSans-Oblique",
+        "normal": "dejavu_sans_normal_be60e81179d7f0633f981a8b51850794"
+    }
+}
