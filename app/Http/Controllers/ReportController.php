@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Dompdf\Dompdf;
-use App\Models\Sales;
-
-use App\Models\Antrian;
 use PDF;
+use Dompdf\Dompdf;
+
+use App\Models\Sales;
+use App\Models\Antrian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\ReportResource;
 
 
 
@@ -18,6 +19,25 @@ class ReportController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+    }
+
+    public function index()
+    {
+        // $tanggalAwal adalah selalu tanggal 1 dari bulan yang dipilih
+        $tanggalAwal = date('Y-m-01 00:00:00');
+        // $tanggalAkhir adalah selalu tanggal sekarang dari bulan yang dipilih
+        $tanggalAkhir = date('Y-m-d 23:59:59');
+
+        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+            ->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir])
+            ->get();
+
+        $totalOmset = 0;
+        foreach ($antrians as $antrian) {
+            $totalOmset += $antrian->omset;
+        }
+
+        return new ReportResource(true, 'Data omset global sales berhasil diambil', $antrians, $totalOmset);
     }
 
     public function pilihTanggal()
@@ -224,5 +244,53 @@ class ReportController extends Controller
      // return view('page.antrian-workshop.form-order', compact('antrian'));
         $pdf = PDF::loadview('page.antrian-workshop.form-order', compact('antrian'))->setPaper('a4', 'portrait');
         return $pdf->stream($antrian->ticket_order . "_" . $antrian->order->title . '_form-order.pdf');
+    }
+
+    public function omsetGlobalSales()
+    {
+        //melakukan perulangan tanggal pada bulan ini, menyimpannya dalam array
+        $dateRange = [];
+        $dateAwal = date('Y-m-01');
+        $dateAkhir = date('Y-m-d');
+        $date = $dateAwal;
+
+        while (strtotime($date) <= strtotime($dateAkhir)) {
+            $dateRange[] = $date;
+            $date = date("Y-m-d", strtotime("+1 day", strtotime($date)));
+        }
+
+        return view('page.report.omset-global-sales', compact('dateRange'));
+    }
+
+    public function omsetPerCabang()
+    {
+        //melakukan perulangan tanggal pada bulan ini, menyimpannya dalam array
+        $dateRange = [];
+        $dateAwal = date('Y-m-01');
+        $dateAkhir = date('Y-m-d');
+        $date = $dateAwal;
+
+        while (strtotime($date) <= strtotime($dateAkhir)) {
+            $dateRange[] = $date;
+            $date = date("Y-m-d", strtotime("+1 day", strtotime($date)));
+        }
+
+        return view('page.report.omset-per-cabang', compact('dateRange'));
+    }
+
+    public function omsetPerProduk()
+    {
+        //melakukan perulangan tanggal pada bulan ini, menyimpannya dalam array
+        $dateRange = [];
+        $dateAwal = date('Y-m-01');
+        $dateAkhir = date('Y-m-d');
+        $date = $dateAwal;
+
+        while (strtotime($date) <= strtotime($dateAkhir)) {
+            $dateRange[] = $date;
+            $date = date("Y-m-d", strtotime("+1 day", strtotime($date)));
+        }
+
+        return view('page.report.omset-per-produk', compact('dateRange'));
     }
 }

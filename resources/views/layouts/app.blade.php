@@ -231,11 +231,32 @@
                 </li>
                 @endif
 
-                @if(auth()->user()->role == 'staffAdmin' || auth()->user()->role == 'staffGudang' )
+                @if(auth()->user()->role == 'staffAdmin' || auth()->user()->role == 'staffGudang' || auth()->user()->role == 'adminKeuangan')
                     <li class="nav-item">
-                        <a href="{{ route('antrian.index') }}" class="nav-link">
+                        <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('laporan.workshop') ? 'active' : '' }}">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Antrian Workshop</p>
+                        </a>
+                    </li>
+                @endif
+
+                @if(auth()->user()->role == 'adminKeuangan')
+                    <li class="nav-item">
+                        <a href="{{ route('omset.globalSales') }}" class="nav-link {{ request()->routeIs('omset.globalSales') ? 'active' : '' }}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Omset Global Sales</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('omset.perCabang') }}" class="nav-link {{ request()->routeIs('omset.perCabang') ? 'active' : '' }}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Omset Cabang</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('omset.perProduk') }}" class="nav-link {{ request()->routeIs('omset.perProduk') ? 'active' : '' }}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Omset Produk</p>
                         </a>
                     </li>
                 @endif
@@ -360,7 +381,7 @@
           window.location.href = "{{ route('auth.logout') }}";
         }
     }
-    
+
 </script>
 <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
 <script>

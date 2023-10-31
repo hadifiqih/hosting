@@ -25,12 +25,18 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
-        $customer = new Customer;
-        //Mengubah nomor telepon, menghilangkan karakter selain angka, dan mengubah angka 0 di depan menjadi 62
-        $telepon = preg_replace('/[^0-9]/', '', $request->telepon);
-        if(substr($telepon, 0, 1) == 0){
-            $customer->telepon = '62'.substr($telepon, 1);
+        //Menyimpan no.telp dalam format seperti berikut 081234567890, tanpa spasi. strip, titik, dll
+        $telp = preg_replace('/\D/', '', $request->modalTelepon);
+
+        if(substr($telp, 0, 1) == '0'){
+            $telp = '62'.substr($telp, 1);
+        }else{
+            $telp = $telp;
         }
+
+        $customer = new Customer;
+
+        $customer->telepon = $telp;
 
         if($request->modalNama){
             $customer->nama = $request->modalNama;
