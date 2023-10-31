@@ -637,7 +637,7 @@
                                             <th scope="col">Jenis Produk</th>
                                             <th scope="col">Desain</th>
                                             <th scope="col">Dokumentasi</th>
-                                            @if(auth()->user()->role == 'sales' || auth()->user()->role == 'staffAdmin')
+                                            @if(auth()->user()->role == 'sales' || auth()->user()->role == 'staffAdmin' || auth()->user()->role == 'adminKeuangan')
                                             <th scope="col">Pelunasan</th>
                                             @endif
                                         </tr>
@@ -705,7 +705,7 @@
                                                         -
                                                     @endif
                                                 </td>
-                                                @if(auth()->user()->role == 'sales' || auth()->user()->role == 'staffAdmin')
+                                                @if(auth()->user()->role == 'sales' || auth()->user()->role == 'staffAdmin' || auth()->user()->role == 'adminKeuangan')
                                                 <td>
                                                         @php
                                                             $latestPayment = App\Models\Payment::where('ticket_order', $antrian->ticket_order)->orderBy('created_at', 'desc')->first();
@@ -714,7 +714,7 @@
                                                             @if(auth()->user()->role == 'sales')
                                                                 <button id="btnModalPelunasan{{ $antrian->id }}" class="btn btn-sm btn-danger btnModalPelunasan" data-toggle="modal" data-target="#modalPelunasan{{ $antrian->id }}"><i class="fas fa-upload"></i> Pelunasan</button>
                                                                 @includeIf('page.antrian-workshop.modal-pelunasan')
-                                                            @elseif(auth()->user()->role == 'staffAdmin')
+                                                            @elseif(auth()->user()->role == 'staffAdmin' || auth()->user()->role == 'adminKeuangan')
                                                                 <button class="btn btn-sm btn-secondary disabled"> Belum Pelunasan</button>
                                                             @endif
                                                         @elseif($latestPayment->payment_status == 'Lunas')
