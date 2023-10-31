@@ -366,6 +366,10 @@
                                         </div>
                                         <div class="modal-body">
                                             <div class="form-group">
+                                                <label for="tanggalOrder">Tanggal Order</label>
+                                                <input id="tanggalOrder{{ $antrian->id }}" name="tanggalOrder" type="text" class="form-control" value="{{ $antrian->created_at->format('d F Y') }}" readonly>
+                                            </div>
+                                            <div class="form-group">
                                                 <label class="form-label" for="nama-project{{ $antrian->id }}">Nama Project</label>
                                                 <input id="nama-project{{ $antrian->id }}" name="nama-project{{ $antrian->id }}" type="text" class="form-control" value="{{ $antrian->order->title }}" readonly>
                                             </div>
@@ -803,6 +807,10 @@
                                         </button>
                                         </div>
                                         <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="tanggalOrder">Tanggal Order</label>
+                                                <input id="tanggalOrder{{ $antrian->id }}" name="tanggalOrder" type="text" class="form-control" value="{{ $antrian->created_at->format('d F Y') }}" readonly>
+                                            </div>
                                             <div class="form-group">
                                                 <label class="form-label" for="nama-project{{ $antrian->id }}">Nama Project</label>
                                                 <input id="nama-project{{ $antrian->id }}" name="nama-project{{ $antrian->id }}" type="text" class="form-control" value="{{ $antrian->order->title }}" readonly>
