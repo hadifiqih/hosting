@@ -51,6 +51,17 @@ class AntrianController extends Controller
                             ->where('status', '2')
                             ->where('sales_id', $salesId)
                             ->get();
+        }elseif(auth()->user()->role == 'admin' || auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising' || auth()->user()->role == 'estimator'){
+            $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+            ->orderByDesc('created_at')
+            ->where('status', '1')
+            ->get();
+
+            $antrianSelesai = Antrian::with('sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
+                            ->orderByDesc('created_at')
+                            ->where('status', '2')
+                            ->take(25)
+                            ->get();
         }else{
             $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
             ->orderByDesc('created_at')
@@ -109,57 +120,62 @@ class AntrianController extends Controller
     //Estimator
     //--------------------------------------------------------------------------
 
-    public function estimatorIndex()
+    public function estimatorIndex(Request $request)
     {
-        $fileBaruMasuk = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
-        ->where('status', '1')
-        ->where('is_aman', '0')
-        ->orderByDesc('created_at')
-        ->get();
+        if($request->input('kategori')){
+            $jobType = $request->input('kategori');
+            $filtered = $jobType;
 
-        $progressProduksi = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
-        ->where('status', '1')
-        ->orderByDesc('created_at')
-        ->get();
+            $fileBaruMasuk = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+            ->whereHas('job', function ($query) use ($jobType) {
+                $query->where('job_type', $jobType);
+            })
+            ->where('status', '1')
+            ->orderByDesc('created_at')
+            ->get();
 
-        $selesaiProduksi = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
-        ->where('status', '2')
-        ->orderByDesc('created_at')
-        ->get();
+            $progressProduksi = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
+            ->whereHas('job', function ($query) use ($jobType) {
+                $query->where('job_type', $jobType);
+            })
+            ->where('status', '1')
+            ->orderByDesc('created_at')
+            ->get();
 
-        return view('page.antrian-workshop.estimator-index', compact('fileBaruMasuk', 'progressProduksi', 'selesaiProduksi'));
-    }
+            $selesaiProduksi = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
+            ->whereHas('job', function ($query) use ($jobType) {
+                $query->where('job_type', $jobType);
+            })
+            ->where('status', '2')
+            ->orderByDesc('created_at')
+            ->take(75)
+            ->get();
 
-    public function estimatorFilter(Request $request)
-    {
-        $jobType = $request->input('kategori');
-        $filtered = $jobType;
+            return view('page.antrian-workshop.estimator-index', compact('fileBaruMasuk', 'progressProduksi', 'selesaiProduksi', 'filtered'));
 
-        $fileBaruMasuk = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
-        ->whereHas('job', function ($query) use ($jobType) {
-            $query->where('job_type', $jobType);
-        })
-        ->where('status', '1')
-        ->orderByDesc('created_at')
-        ->get();
+        }else{
 
-        $progressProduksi = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
-        ->whereHas('job', function ($query) use ($jobType) {
-            $query->where('job_type', $jobType);
-        })
-        ->where('status', '1')
-        ->orderByDesc('created_at')
-        ->get();
+            $filtered = null;
 
-        $selesaiProduksi = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
-        ->whereHas('job', function ($query) use ($jobType) {
-            $query->where('job_type', $jobType);
-        })
-        ->where('status', '2')
-        ->orderByDesc('created_at')
-        ->get();
+            $fileBaruMasuk = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+            ->where('status', '1')
+            ->where('is_aman', '0')
+            ->orderByDesc('created_at')
+            ->get();
 
-        return view('page.antrian-workshop.estimator-index', compact('fileBaruMasuk', 'progressProduksi', 'selesaiProduksi', 'filtered'));
+            $progressProduksi = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
+            ->where('status', '1')
+            ->orderByDesc('created_at')
+            ->get();
+
+            $selesaiProduksi = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
+            ->where('status', '2')
+            ->orderByDesc('created_at')
+            ->take(75)
+            ->get();
+
+            return view('page.antrian-workshop.estimator-index', compact('fileBaruMasuk', 'progressProduksi', 'selesaiProduksi'));
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -287,7 +303,7 @@ class AntrianController extends Controller
             $payment->payment_status = $request->input('statusPembayaran');
             $payment->payment_proof = $namaBuktiPembayaran;
             $payment->save();
-        
+
 
         $accDesain = $request->file('accDesain');
         $namaAccDesain = $accDesain->getClientOriginalName();

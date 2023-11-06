@@ -11,7 +11,7 @@ class Sales extends Model
     use HasFactory;
 
     protected $table = 'sales';
-    
+
     public function antrian()
     {
         return $this->hasMany(Antrian::class);
@@ -37,4 +37,8 @@ class Sales extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function customer()
+    {
+        return $this->hasMany(Customer::class);
+    }
 }

@@ -30,11 +30,11 @@
         .info p {
             margin: 5px 0;
         }
-        
+
         .spesifikasi {
             white-space: pre-line;
         }
-        
+
         .job-details {
             margin-top: 20px;
             border: 1px solid #ccc;
@@ -207,7 +207,7 @@
                 </tr>
                 <tr>
                     <th class="table-header">Omset</th>
-                    <td>: {{ $antrian->omset }}</td>
+                    <td>: Rp{{ number_format($antrian->omset,0,',','.') }}</td>
                 </tr>
                 <tr>
                     <th class="table-header">Desainer</th>

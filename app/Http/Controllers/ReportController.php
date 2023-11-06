@@ -293,4 +293,43 @@ class ReportController extends Controller
 
         return view('page.report.omset-per-produk', compact('dateRange'));
     }
+
+    public function ringkasanOmsetSales()
+    {
+        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+            ->where('created_at', 'like', '%2023-10-21%')
+            ->get();
+
+        $listSales = Sales::all();
+
+        $isFilter = false;
+
+        return view('page.report.ringkasan-omset-sales', compact('antrians', 'listSales', 'isFilter'));
+    }
+
+    public function ringkasanOmsetSalesFilter(Request $request)
+    {
+        if(request()->has('tanggal')) {
+            $date = request('tanggal');
+        } else {
+            $date = date('Y-m-d');
+        }
+
+        if(request()->has('sales')) {
+            $sales = request('sales');
+        } else {
+            $sales = null;
+        }
+
+        $salesName = Sales::where('id', $sales)->first();
+
+        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+            ->whereDate('created_at', $date)
+            ->where('sales_id', $sales)
+            ->get();
+
+        $isFilter = true;
+
+        return view('page.report.ringkasan-omset-sales', compact('antrians', 'date', 'salesName' , 'isFilter'));
+    }
 }

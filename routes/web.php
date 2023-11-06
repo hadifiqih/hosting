@@ -152,6 +152,8 @@ Route::controller(ReportController::class)->group(function(){
     Route::get('/antrian/omset-global-sales', 'omsetGlobalSales')->name('omset.globalSales');
     Route::get('/antrian/omset-percabang', 'omsetPerCabang')->name('omset.perCabang');
     Route::get('/antrian/omset-perproduk', 'omsetPerProduk')->name('omset.perProduk');
+    Route::get('/antrian/ringkasan-omset-sales', 'ringkasanOmsetSales')->name('ringkasan.omsetSales');
+    Route::post('/antrian/ringkasan-omset-sales', 'ringkasanOmsetSalesFilter')->name('ringkasan.omsetSalesFilter');
 });
 
 Route::controller(DesignController::class)->group(function(){
@@ -206,8 +208,9 @@ Route::controller(AntrianController::class)->group(function(){
     Route::post('/antrian/storeDokumentasi', 'storeDokumentasi')->middleware('auth')->name('antrian.storeDokumentasi');
     Route::get('/design/download/{id}', 'downloadPrintFile')->name('design.download');
     Route::post('/list-machines', 'getMachine')->name('antrian.getMachine');
+
     Route::get('/estimator/index', 'estimatorIndex')->middleware('auth')->name('estimator.index');
-    Route::post('/estimator/filterByCategory', 'estimatorFilter')->middleware('auth')->name('estimator.filter');
+
     Route::get('/antrian/showProgress/{id}', 'showProgress')->middleware('auth')->name('antrian.showProgress');
     Route::post('/antrian/storeProgress', 'storeProgressProduksi')->middleware('auth')->name('store.progressProduksi');
     Route::get('/antrian/mark-aman/{id}', 'markAman')->middleware('auth')->name('antrian.markAman');
@@ -232,8 +235,12 @@ Route::controller(ProductController::class)->group(function(){
 
 Route::controller(CustomerController::class)->group(function(){
     Route::get('/customer', 'index')->name('customer.index');
+    Route::get('/customer/json', 'indexJson')->name('customer.indexJson');
     Route::get('/customer/create', 'create')->name('customer.create');
+    Route::get('/customer/{id}/edit', 'edit')->name('customer.edit');
     Route::post('/customer', 'store')->name('customer.store');
+    Route::put('/customer/{id}', 'update')->name('customer.update');
+    Route::delete('/customer/{id}', 'destroy')->name('customer.destroy');
     Route::get('/customer/search', 'search')->name('pelanggan.search');
     Route::get('/customer/searchByNama', 'searchById')->name('pelanggan.searchById');
     Route::post('/customer/store', 'store')->name('pelanggan.store');

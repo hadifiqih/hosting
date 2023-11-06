@@ -712,7 +712,7 @@
                                                 @if(auth()->user()->role == 'sales' || auth()->user()->role == 'staffAdmin' || auth()->user()->role == 'adminKeuangan')
                                                 <td>
                                                         @php
-                                                            $latestPayment = App\Models\Payment::where('ticket_order', $antrian->ticket_order)->orderBy('created_at', 'desc')->first();
+                                                            $latestPayment = App\Models\Payment::where('ticket_order', $antrian->ticket_order)->latest()->first();
                                                         @endphp
                                                         @if($latestPayment->payment_status == 'Belum Bayar' || $latestPayment->payment_status == 'DP')
                                                             @if(auth()->user()->role == 'sales')
@@ -1196,13 +1196,12 @@
                 "responsive": true,
                 "autoWidth": false,
                 "order": [[ 0, "desc" ]],
-                "pageLength": 50,
             });
             $("#dataAntrianSelesai").DataTable({
                 "responsive": true,
                 "autoWidth": false,
                 "order": [[ 0, "desc" ]],
-                "pageLength": 100,
+                "pageLength": 25,
             });
 
             //Menutup modal saat modal lainnya dibuka

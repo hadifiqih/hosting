@@ -16,10 +16,12 @@
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('adminlte') }}/dist/css/adminlte.min.css">
-  <!-- DataTables -->
+  {{-- <!-- DataTables -->
   <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/datatables-select/css/select.bootstrap4.min.css"> --}}
+  <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
   <!-- Select2 -->
@@ -242,6 +244,12 @@
 
                 @if(auth()->user()->role == 'adminKeuangan')
                     <li class="nav-item">
+                        <a href="{{ route('ringkasan.omsetSales') }}" class="nav-link {{ request()->routeIs('ringkasan.omsetSales') ? 'active' : '' }}">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Ringkasan Penjualan</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ route('omset.globalSales') }}" class="nav-link {{ request()->routeIs('omset.globalSales') ? 'active' : '' }}">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Omset Global Sales</p>
@@ -257,6 +265,12 @@
                         <a href="{{ route('omset.perProduk') }}" class="nav-link {{ request()->routeIs('omset.perProduk') ? 'active' : '' }}">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Omset Produk</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('customer.index') }}" class="nav-link {{ request()->routeIs('customer.index') ? 'active' : '' }}">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Data Pelanggan</p>
                         </a>
                     </li>
                 @endif
@@ -322,18 +336,20 @@
 <script src="{{ asset('adminlte') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
 
 <!-- DataTables  & Plugins -->
-<script src="{{ asset('adminlte') }}/plugins/datatables/jquery.dataTables.min.js"></script>
+{{-- <script src="{{ asset('adminlte') }}/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="{{ asset('adminlte') }}/plugins/datatables-select/js/dataTables.select.min.js"></script>
 <script src="{{ asset('adminlte') }}/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="{{ asset('adminlte') }}/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="{{ asset('adminlte') }}/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script> --}}
 <script src="{{ asset('adminlte') }}/plugins/jszip/jszip.min.js"></script>
 <script src="{{ asset('adminlte') }}/plugins/pdfmake/pdfmake.min.js"></script>
 <script src="{{ asset('adminlte') }}/plugins/pdfmake/vfs_fonts.js"></script>
-<script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+{{-- <script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
 <script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-<script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/buttons.colVis.min.js"></script> --}}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 @yield('script')
 {{-- Select2 --}}
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>

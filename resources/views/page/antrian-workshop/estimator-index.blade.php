@@ -23,8 +23,7 @@
     <div class="container-fluid">
         <div class="row mb-3">
             <div class="col-md-4">
-            <form id="filterByCategory" action="{{ route('estimator.filter') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+            <form id="filterByCategory" action="{{ route('estimator.index') }}" method="GET" enctype="multipart/form-data">
                 <label for="kategori">Kategori Pekerjaan</label>
                     @if(isset($filtered))
                     <select id="kategori" name="kategori" class="custom-select rounded-1" disabled>
@@ -669,7 +668,7 @@
                                             <div class="mb-3">
                                             <p><strong>Gambar</strong></p>
                                                 @if($antrian->design_id != null && $dokumproses)
-                                                <img src="{{ asset('storage/dokum-proses/'.$dokumproses->file_gambar) }}" alt="" class="img-fluid">
+                                                <img src="{{ asset('/storage/dokum-proses/'.$dokumproses->file_gambar) }}" alt="" class="img-fluid">
                                                 @else
                                                 <p class="text-danger">Tidak ada gambar</p>
                                                 @endif
@@ -677,7 +676,7 @@
                                             <div class="mb-3">
                                                 <p><strong>Video</strong></p>
                                                 @if($antrian->design_id != null && $dokumproses)
-                                                <video src="{{ asset('storage/dokum-proses/'.$dokumproses->file_video) }}" controls class="img-fluid"></video>
+                                                <video src="{{ asset('/storage/dokum-proses/'.$dokumproses->file_video) }}" controls class="img-fluid"></video>
                                                 @else
                                                 <p class="text-danger">Tidak ada video</p>
                                                 @endif
@@ -992,7 +991,7 @@
                                                     $dokumentasi = App\Models\Documentation::where('antrian_id', $antrian->id)->orderBy('created_at', 'desc')->get();
                                                 @endphp
                                                 @foreach ($dokumentasi as $gambar)
-                                                    <img src="{{ asset('storage/dokumentasi/'.$gambar->filename) }}" alt="" class="img-fluid p-3">
+                                                    <img src="{{ asset('/storage/dokumentasi/'.$gambar->filename) }}" alt="" class="img-fluid p-3">
                                                 @endforeach
                                                 @else
                                                 <p class="text-danger">Tidak ada gambar</p>
@@ -1023,7 +1022,7 @@
                             </button>
                             </div>
                             <div class="modal-body">
-                                <img class="img-fluid" src="{{ asset('storage/acc-desain/'.$antrian->order->acc_desain) }}">
+                                <img class="img-fluid" src="{{ asset('/storage/acc-desain/'.$antrian->order->acc_desain) }}">
                             </div>
                             <div class="modal-footer justify-content-between">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
@@ -1048,7 +1047,7 @@
                             </button>
                             </div>
                             <div class="modal-body">
-                                <img class="img-fluid" src="{{ asset('storage/acc-desain/'.$antrian->order->acc_desain) }}">
+                                <img class="img-fluid" src="{{ asset('/storage/acc-desain/'.$antrian->order->acc_desain) }}">
                             </div>
                             <div class="modal-footer justify-content-between">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
@@ -1082,7 +1081,7 @@
                                     @if($item->payment_proof == null)
                                         <p class="text-danger">Tidak ada file</p>
                                     @else
-                                    <img class="img-fluid" src="{{ asset('storage/bukti-pembayaran/'.$item->payment_proof) }}">
+                                    <img class="img-fluid" src="{{ asset('/storage/bukti-pembayaran/'.$item->payment_proof) }}">
                                     @endif
                                 @endforeach
                             </div>
@@ -1116,7 +1115,7 @@
                                     @if($item->payment_proof == null)
                                         <p class="text-danger">Tidak ada file</p>
                                     @else
-                                    <img class="img-fluid" src="{{ asset('storage/bukti-pembayaran/'.$item->payment_proof) }}">
+                                    <img class="img-fluid" src="{{ asset('/storage/bukti-pembayaran/'.$item->payment_proof) }}">
                                     @endif
                                 @endforeach
                             </div>
