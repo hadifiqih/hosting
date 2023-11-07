@@ -237,7 +237,7 @@ Route::controller(CustomerController::class)->group(function(){
     Route::get('/customer', 'index')->name('customer.index');
     Route::get('/customer/json', 'indexJson')->name('customer.indexJson');
     Route::get('/customer/create', 'create')->name('customer.create');
-    Route::get('/customer/{id}/edit', 'edit')->name('customer.edit');
+    Route::get('/customer/{id}', 'edit')->name('customer.edit');
     Route::post('/customer', 'store')->name('customer.store');
     Route::put('/customer/{id}', 'update')->name('customer.update');
     Route::delete('/customer/{id}', 'destroy')->name('customer.destroy');

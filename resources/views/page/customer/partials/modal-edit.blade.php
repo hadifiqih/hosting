@@ -1,5 +1,8 @@
 <div class="modal fade" id="modal-form">
     <div class="modal-dialog">
+      <form action="" method="POST">
+        @csrf
+        @method('PUT')
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title"></h4>
@@ -8,9 +11,15 @@
           </button>
         </div>
         <div class="modal-body">
-            <form action="" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
+                <div class="form-group">
+                  <label for="sales">Sales</label>
+                  <select class="form-control" id="sales" name="sales">
+                    <option value="">-- Pilih Sales --</option>
+                    @foreach($salesAll as $key => $sales)
+                        <option value="{{ $key }}">{{ $sales }}</option>
+                    @endforeach
+                  </select>
+                </div>
                 <div class="form-group">
                     <label for="namaPelanggan">Nama Pelanggan</label>
                     <input type="text" class="form-control" id="namaPelanggan" placeholder="Masukkan Nama Pelanggan" name="namaPelanggan">
@@ -35,15 +44,17 @@
                     <label for="wilayah">Wilayah</label>
                     <input type="text" class="form-control" id="wilayah" placeholder="Masukkan Wilayah" name="wilayah">
                 </div>
-            </form>
+            
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-          <button type="button" class="btn btn-primary">Simpan</button>
+          <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Tutup</button>
+          <button type="submit" class="btn btn-primary btn-sm submit"><i class="fa fa-save"></i> Simpan</button>
         </div>
       </div>
       <!-- /.modal-content -->
+    </form>
     </div>
+    </
     <!-- /.modal-dialog -->
   </div>
   <!-- /.modal -->

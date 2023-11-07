@@ -258,16 +258,17 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="alamat">Alamat</label>
-                        <input type="text" class="form-control" id="modalAlamat" placeholder="Alamat Pelanggan" name="modalAlamat">
+                        <label for="alamat">Alamat <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="modalAlamat" placeholder="Alamat Pelanggan" name="modalAlamat" required>
                     </div>
                     <div class="form-group">
-                        <label for="instansi">Instansi</label>
-                        <input type="text" class="form-control" id="modalInstansi" placeholder="Instansi Pelanggan" name="modalInstansi">
+                        <label for="instansi">Instansi <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="modalInstansi" placeholder="Instansi Pelanggan" name="modalInstansi" required>
+                        <p class="text-muted mt-2">*Jika tidak tau, beri tanda "-"</p>
                     </div>
                     <div class="form-group">
-                        <label for="infoPelanggan">Sumber Pelanggan</label>
-                        <select class="custom-select rounded-0" id="infoPelanggan" name="modalInfoPelanggan">
+                        <label for="infoPelanggan">Sumber Pelanggan <span class="text-danger">*</span></label>
+                        <select class="custom-select rounded-0" id="infoPelanggan" name="modalInfoPelanggan" required>
                             <option value="default" selected>Pilih Sumber Pelanggan</option>
                             <option value="Google">Google</option>
                             <option value="G-Maps">G-Maps</option>
@@ -295,13 +296,12 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                <input type="submit" class="btn btn-primary" id="submitPelanggan"><span id="loader" class="loader" style="display: none;"></span>
+                <input type="submit" class="btn btn-primary" id="submitPelanggan" value="Tambah"><span id="loader" class="loader" style="display: none;"></span>
                 </div>
             </form>
             </div>
             </div>
         </div>
-
 </div>
 
 @endsection

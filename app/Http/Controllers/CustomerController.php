@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sales;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -16,8 +17,9 @@ class CustomerController extends Controller
     public function index()
     {
         $customers = Customer::with('sales')->get();
+        $salesAll = Sales::all()->pluck('sales_name', 'id');
 
-        return view('page.customer.index', compact('customers'));
+        return view('page.customer.index', compact('customers', 'salesAll'));
     }
 
     public function indexJson()
@@ -49,8 +51,8 @@ class CustomerController extends Controller
         ->addColumn('action', function ($customers) {
             return '
             <div class="btn-group">
-                <button class="btn btn-sm btn-primary edit" data-id="'.$customers->id.'" data-toggle="modal" data-target="#modal-form" onclick=("{{ route("customer.update",'. $customers->id .' ) }}")><i class="fa fa-edit"></i></button>
-                <button class="btn btn-sm btn-danger delete" data-id="'.$customers->id.'" data-toggle="modal" data-target="#modal-form" onclick=("{{ route("customer.des",'. $customers->id .' ) }}"><i class="fa fa-trash"></i></button>
+                <button class="btn btn-sm btn-primary" onclick="editForm(`'. route('customer.update',$customers->id) .'`)" ><i class="fa fa-edit"></i></button>
+                <button class="btn btn-sm btn-danger" ><i class="fa fa-trash"></i></button> 
             </div>
             ';
         })
@@ -115,4 +117,18 @@ class CustomerController extends Controller
         return response()->json(['success' => 'true', 'message' => 'Data berhasil ditambahkan']);
     }
 
+    public function update(Request $request, $id)
+    {
+        $customer = Customer::find($id);
+        $customer->nama = $request->namaPelanggan;
+        $customer->telepon = $request->telepon;
+        $customer->alamat = $request->alamat;
+        $customer->instansi = $request->instansi;
+        $customer->infoPelanggan = $request->infoPelanggan;
+        $customer->wilayah = $request->wilayah;
+        $customer->sales_id = $request->sales;
+        $customer->save();
+
+        return response()->json(['success' => 'true', 'message' => 'Data berhasil diubah']);
+    }
 }
