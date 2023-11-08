@@ -51,8 +51,8 @@ class CustomerController extends Controller
         ->addColumn('action', function ($customers) {
             return '
             <div class="btn-group">
-                <button class="btn btn-sm btn-primary" onclick="editForm(`'. route('customer.update',$customers->id) .'`)" ><i class="fa fa-edit"></i></button>
-                <button class="btn btn-sm btn-danger" ><i class="fa fa-trash"></i></button> 
+                <button class="btn btn-sm btn-primary" onclick="editForm(`'. route('customer.update', $customers->id) .'`)" ><i class="fa fa-edit"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteForm(`'. route('customer.destroy', $customers->id) .'`)"><i class="fa fa-trash"></i></button> 
             </div>
             ';
         })
@@ -130,5 +130,13 @@ class CustomerController extends Controller
         $customer->save();
 
         return response()->json(['success' => 'true', 'message' => 'Data berhasil diubah']);
+    }
+
+    public function destroy($id)
+    {
+        $customer = Customer::find($id);
+        $customer->delete();
+
+        return response()->json(['success' => 'true', 'message' => 'Data berhasil dihapus']);
     }
 }

@@ -59,7 +59,7 @@
                         <h3 class="card-title font-weight-bold">Ringkasan Penjualan</h3>
                     </div>
                     <div class="card-body">
-                        <table id="tableRingkasan" class="table table-borderless table-hover table-responsive" style="width: 100%">
+                        <table id="tableRingkasan" class="table table-borderless table-hover" style="width: 100%">
                             <thead class="thead-dark">
                                 <tr>
                                     <th>Tanggal Order</th>
@@ -74,6 +74,31 @@
                                     <th>Pelunasan</th>
                                 </tr>
                             </thead>
+                            <tbody>
+                                @foreach ($antrians as $antrian)
+                                <tr>
+                                    <td>{{ $antrian->created_at }}</td>
+                                    <td>{{ $antrian->ticket_order }} <button class="btn btn-primary btn-sm" data-target="#modalDetail{{ $antrian->id }}" data-toggle="modal" data-ticket="{{ $antrian->ticket_order }}">Detail</button></td>
+                                    <td>{{ $antrian->sales->sales_name }}</td>
+                                    <td>{{ $antrian->customer->nama }}</td>
+                                    <td>{{ $antrian->job->job_name }}</td>
+                                    <td>{{ $antrian->qty }}</td>
+                                    <td>Rp{{ number_format($antrian->harga_produk, 0, ',', '.') }}</td>
+                                    <td>{{ $antrian->end_job }}</td>
+                                    <td>{{ $antrian->order->file_cetak }}</td>
+                                    <td>
+                                        @php
+                                            $pelunasan = \App\Models\Payment::where('ticket_order', $antrian->ticket_order)->latest()->first();
+                                        @endphp
+                                        @if ($pelunasan->payment_status == 'Lunas')
+                                            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#modalTampilBP{{ $antrian->id }}"><i class="fas fa-check-circle"></i> Lihat</button>
+                                        @else
+                                            <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#modalTampilBP{{ $antrian->id }}"> Belum Lunas</button>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
                         </table>
                         @includeIf('page.report.modal-detail-antrian')
                     </div>
@@ -86,43 +111,6 @@
 @section('script')
     <script>
         let table;
-
-        function lihatAntrian(ticket){
-            $('#modalDetail').modal('show');
-            $('#modalDetail .modal-title').text('Detail Antrian #' + ticket);
-
-            $.get('/antrian/' + ticket + '/show')
-                .done((response) => {
-                    let tanggalOrder = response.created_at;
-                    // Set the value of tanggalOrder to the formatted date
-                    $('#modalDetail [name=tanggalOrder]').val(tanggalOrder.split('T')[0] + ' ' + tanggalOrder.split('T')[1].split('.')[0]);
-                    $('#modalDetail [name=nama-project]').val(response.order.title);
-                    $('#modalDetail [name=sales]').val(response.sales.sales_name);
-                    $('#modalDetail [name=nama-pelanggan]').val(response.customer.nama);
-                    $('#modalDetail [name=telepon]').val(response.customer.telepon);
-                    $('#modalDetail [name=alamat]').val(response.customer.alamat);
-                    $('#modalDetail [name=sumber-pelanggan]').val(response.customer.infoPelanggan);
-                    $('#modalDetail [name=nama-produk]').val(response.job.job_name);
-                    $('#modalDetail [name=jumlah-produk]').val(response.qty);
-                    $('#modalDetail [name=keterangan]').val(response.note);
-                    $('#modalDetail [name=mulai]').val(response.start_job);
-                    $('#modalDetail [name=deadline]').val(response.end_job);
-                    $('#modalDetail [name=desainer]').val(response.designer.designer_name);
-                    $('#modalDetail [name=link]').val(response.link);
-
-
-                })
-                .fail((errors) => {
-                    alert('Tidak dapat menampilkan data');
-                    return;
-                });
-        }
-
-
-        function lihatPelunasan(ticket){
-            $('#modalPelunasan').modal('show');
-            $('#modalPelunasan .modal-title').text('Detail Pelunasan #' + ticket);
-        }
 
         $(function() {
             $('#tableRingkasan').DataTable({
@@ -142,7 +130,7 @@
                     {data : 'harga_produk', name: 'Harga Produk'},
                     {data : 'end_job', name: 'Deadline'},
                     {data : 'file_cetak', name: 'File Desain'},
-                    {data : 'action', name: 'Pelunasan'},
+                    {data : 'pelunasan', name: 'Pelunasan'},
                 ]
             });
         });
@@ -153,6 +141,5 @@
                     $(this).modal('hide');
                 });
             });
-
     </script>
 @endsection

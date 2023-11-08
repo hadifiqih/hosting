@@ -60,6 +60,49 @@
                 });
         }
 
+    function deleteForm(url){
+        Swal.fire({
+            title: 'Apakah anda yakin?',
+            text: "Data yang dihapus tidak dapat dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#007bff',
+            cancelButtonColor: '#dc3545',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        // Memberi notifikasi sukses dengan toastr
+                        toastr.fire({
+                            icon: 'success',
+                            title: 'Berhasil dihapus !'
+                        })
+
+                        // Menghapus data pada datatable
+                        table.ajax.reload();
+                    },
+                    error: function (xhr) {
+                        // Memberi notifikasi error dengan toastr
+                        toastr.fire({
+                            icon: 'error',
+                            title: 'Terjadi kesalahan !'
+                        })
+
+                        // Menghapus data pada datatable
+                        table.ajax.reload();
+                    }
+                });
+            }
+        })
+    }
+
     $(function () {
 
         table = $('#customer-table').DataTable({
