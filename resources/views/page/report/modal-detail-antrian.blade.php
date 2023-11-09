@@ -63,7 +63,7 @@
             </div>
             <hr>
             <div class="form-group">
-                <span class="form-label font-weight-bold"> Tempat : </span>
+                <span class="form-label font-weight-bold tempat"> Tempat : </span>
             </div>
             <hr>
             <div class="form-group">
@@ -90,7 +90,7 @@
             </div>
             <hr>
             <div class="form-group">
-                <span class="form-label font-weight-bold">Mesin : </span>
+                <span class="form-label font-weight-bold mesin">Mesin : </span>
                 
             </div>
             <hr>

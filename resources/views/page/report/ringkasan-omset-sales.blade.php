@@ -86,6 +86,16 @@
 @section('script')
     <script>
         let table;
+        let rupiah = Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' });
+
+        function rupiahFormat(value) {
+            //format in rupiah
+            let result = rupiah.format(value);
+            //remove decimal
+            result = result.replace(/\,00$/, '');
+            
+            return result;
+        }
 
         function lihatAntrian(ticket){
             $('#modalDetail').modal('show');
@@ -94,6 +104,11 @@
             $.get('/antrian/' + ticket + '/show')
                 .done((response) => {
                     let tanggalOrder = response.created_at;
+
+                    //reset clone a pada tempat
+                    $("#modalDetail").find(".tempata").remove();
+                    $("#modalDetail").find(".mesina").remove();
+
                     // Set the value of tanggalOrder to the formatted date
                     $('#modalDetail [name=tanggalOrder]').val(tanggalOrder.split('T')[0] + ' ' + tanggalOrder.split('T')[1].split('.')[0]);
                     $('#modalDetail [name=nama-project]').val(response.order.title);
@@ -107,8 +122,38 @@
                     $('#modalDetail [name=keterangan]').val(response.note);
                     $('#modalDetail [name=mulai]').val(response.start_job);
                     $('#modalDetail [name=deadline]').val(response.end_job);
-                    $('#modalDetail [name=desainer]').val(response.designer.designer_name);
-                    $('#modalDetail [name=link]').val(response.link);
+                    $('#modalDetail [name=nominal-omset]').val(rupiahFormat(response.omset));
+                    $('#modalDetail [name=harga-produk]').val(rupiahFormat(response.harga_produk));
+                    $('#modalDetail [name=status-pembayaran]').val(response.payment.payment_status);
+                    $('#modalDetail [name=metode]').val(response.payment.payment_method);
+                    $('#modalDetail [name=bayar]').val(rupiahFormat(response.payment.payment_amount));
+                    $('#modalDetail [name=sisa]').val(rupiahFormat(response.payment.remaining_payment));
+                    $('#modalDetail [name=pasang]').val(rupiahFormat(response.payment.installation_cost));
+                    $('#modalDetail [name=pengiriman]').val(rupiahFormat(response.payment.shipping_cost));
+                    $('#modalDetail [name=alamat-kirim]').val(response.alamat_pengiriman);
+
+                    var spans = $("#modalDetail").find(".tempat");
+                    var listTempat = response.working_at;
+                    var a = $("<a class='btn btn-sm btn-danger ml-2 mr-2 tempata'></a>");
+                    //Jika listTempat tidak kosong ada tanda koma, lakukan split, jika tidak ada koma langsung tambahkan a setelah spans
+                    if(listTempat.includes(',')){
+                        var tempat = listTempat.split(',');
+                        for(var i = 0; i < tempat.length; i++){
+                            a.clone().text(tempat[i]).appendTo(spans);
+                        }
+                    }else{
+                        a.clone().text(listTempat).appendTo(spans);
+                    }
+
+                    var spans2 = $("#modalDetail").find(".mesin");
+                    var listMesin = response.machine_code;
+                    var b = $("<a class='btn btn-sm btn-danger ml-2 mr-2 mesina'></a>");
+                    if(listMesin.includes(',')){
+                        var mesin = listMesin.split(',');
+                        for(var i = 0; i < mesin.length; i++){
+                            b.clone().text(mesin[i]).appendTo(spans2);
+                        }
+                    }
 
 
                 })
@@ -116,6 +161,11 @@
                     alert('Tidak dapat menampilkan data');
                     return;
                 });
+
+            $.get('/antrian/' + ticket + '/order')
+                .done((response) => {
+                    $('#modalDetail [name=desainer]').val(response.employee.name);
+                })
         }
 
 

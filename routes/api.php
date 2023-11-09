@@ -17,4 +17,4 @@ use App\Http\Controllers\ReportController;
 
 Route::apiResource('omset', ReportController::class);
 
-Route::get('omset', [ReportController::class, 'omsetGlobalSales'])->name('omset.globalSales');
+Route::get('/omset', [ReportController::class, 'omsetGlobalSales'])->name('omset.globalSales');

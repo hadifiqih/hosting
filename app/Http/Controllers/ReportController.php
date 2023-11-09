@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use PDF;
 use Dompdf\Dompdf;
 
+use App\Models\Order;
 use App\Models\Sales;
 use App\Models\Antrian;
 use Illuminate\Http\Request;
@@ -43,11 +44,20 @@ class ReportController extends Controller
 
     public function showJsonByTicket($id)
     {
-        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing', 'machine')
                     ->where('ticket_order', $id)
                     ->first();
 
         return response()->json($antrians);
+    }
+
+    public function showOrderByTicket($id)
+    {
+        $orders = Order::with('antrian', 'sales', 'job', 'employee')
+                    ->where('ticket_order', $id)
+                    ->first();
+
+        return response()->json($orders);
     }
 
     public function pilihTanggal()
@@ -399,5 +409,14 @@ class ReportController extends Controller
         $isFilter = true;
 
         return view('page.report.ringkasan-omset-sales', compact('antrians', 'date', 'salesName' , 'isFilter'));
+    }
+
+    public function mesin()
+    {
+        $machine = Machine::all();
+
+        dd($machine);
+
+        return response()->json($machine);
     }
 }

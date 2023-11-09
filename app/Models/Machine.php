@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Antrian;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Machine extends Model
 {
@@ -15,4 +16,5 @@ class Machine extends Model
     {
         return $this->hasMany(Antrian::class, 'machine_code', 'machine_code');
     }
+
 }
