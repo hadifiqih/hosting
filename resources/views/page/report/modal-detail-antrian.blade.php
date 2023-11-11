@@ -70,19 +70,19 @@
                 <div class="row">
                     <div class="col-md-4 rounded-2">
                 <span class="form-label font-weight-bold">Operator</span>
-                <p>
+                <p class="operator">
 
                 </p>
             </div>
             <div class="col-md-4 rounded-2">
                 <span class="form-label font-weight-bold">Finishing</span>
-                <p>
+                <p class="finishing">
                 
                 </p>
             </div>
             <div class="col-md-4 rounded-2">
                 <span class="form-label font-weight-bold">Pengawas / QC</span>
-                <p>
+                <p class="pengawas">
                 
                 </p>
             </div>
@@ -134,7 +134,9 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label>Preview ACC Desain</label>
-                        <div class="text-muted font-italic"><button type="button" class="btn btn-sm btn-primary ml-3" data-toggle="modal" data-target="#modal-accdesain">Lihat</button></div>
+                        <div class="text-muted font-italic file-cetak">
+                            <button type="button" class="btn btn-sm btn-primary ml-3" data-toggle="modal" data-target="#modal-accdesain">Lihat</button>
+                        </div>
                     </div>
                 </div>
             </div>

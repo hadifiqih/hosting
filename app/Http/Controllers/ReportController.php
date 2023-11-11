@@ -8,6 +8,7 @@ use Dompdf\Dompdf;
 use App\Models\Order;
 use App\Models\Sales;
 use App\Models\Antrian;
+use App\Models\Machine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -377,7 +378,7 @@ class ReportController extends Controller
         ->addColumn('action', function ($antrians) {
             return '
             <div class="btn-group">
-                <button class="btn btn-sm btn-warning" type="button" onclick="lihatPelunasan(`'. $antrians->ticket_order .'`)"><i class="fas fa-eye"></i> Lihat</button>
+                <button class="btn btn-sm btn-warning" type="button" onclick="lihatPelunasan(`'. $antrians->ticket_order .'`)"><i class="fas fa-eye"></i> Pelunasan</button>
                 <button class="btn btn-sm btn-primary" type="button" onclick="lihatAntrian(`'. $antrians->ticket_order .'`)"><i class="fas fa-list"></i> Detail</button>
             </div>
             ';
@@ -414,8 +415,6 @@ class ReportController extends Controller
     public function mesin()
     {
         $machine = Machine::all();
-
-        dd($machine);
 
         return response()->json($machine);
     }

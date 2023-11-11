@@ -71,11 +71,13 @@
                                     <th>Harga Produk</th>
                                     <th>Deadline</th>
                                     <th>File Desain</th>
-                                    <th>Pelunasan</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                         </table>
                         @includeIf('page.report.modal-detail-antrian')
+                        @includeIf('page.report.modal-pelunasan')
+                        @includeIf('page.report.modal-desain')
                     </div>
                 </div>
             </div>
@@ -97,6 +99,53 @@
             return result;
         }
 
+        function lihatPelunasan(ticket){
+            $('#modalDesain .modal-body').empty();
+
+            $.get('/payment/' + ticket)
+                .done((response) => {
+                    $('#modalPelunasan').modal('show');
+                    $('#modalPelunasan .modal-title').text('Pembayaran #' + ticket);
+
+                    
+
+
+                    for(var i = 0; i < response.length; i++){
+                        judul = $('#modalPelunasan').find('.total-omset');
+                        judul.empty();
+                        $('#modalPelunasan [class=tanggal-pembayaran]').text(response[i].created_at.split('T')[0] + ' ' + response[i].created_at.split('T')[1].split('.')[0]);
+                        $('#modalPelunasan [class=status-pembayaran]').val(response[i].payment_status);
+                        $('#modalPelunasan [class=metode-pembayaran]').val(response[i].payment_method);
+                        $('#modalPelunasan [class=jumlah-pembayaran]').val(rupiahFormat(response[i].payment_amount));
+                        $('#modalPelunasan [class=sisa-pembayaran]').val(rupiahFormat(response[i].remaining_payment));
+                        $('#modalPelunasan [class=biaya-pemasangan]').val(rupiahFormat(response[i].installation_cost));
+                        $('#modalPelunasan [class=biaya-pengiriman]').val(rupiahFormat(response[i].shipping_cost));
+                        $('#modalPelunasan [class=alamat-kirim]').val(response[i].alamat_pengiriman);
+                        $('#modalPelunasan [class=bukti-pembayaran]').empty();
+                        $('#modalPelunasan [class=bukti-pembayaran]').append("<img src='/storage/payment/" + response[i].payment_proof + "' class='img-fluid'>");
+                    }
+
+                    if(response.payment_status == 'Lunas'){
+                        judul.append('Total Omset : ' + rupiahFormat(response.total_payment));
+                    }else{
+                        judul.append('Kekurangan : ' + rupiahFormat(response.remaining_payment));
+                    }
+                })
+
+        }
+
+        function lihatDesain(ticket){
+            $('#modalDesain .modal-body').empty();
+
+            $.get('/antrian/' + ticket + '/order')
+                .done((response) => {
+                    $('#modalDetail').modal('hide');
+                    $('#modalDesain').modal('show');
+                    $('#modalDesain .modal-title').text('Desain #' + ticket);
+                    $('#modalDesain .modal-body').html("<img src='/storage/acc-desain/" + response.acc_desain + "' class='img-fluid'>");
+                })
+        }
+
         function lihatAntrian(ticket){
             $('#modalDetail').modal('show');
             $('#modalDetail .modal-title').text('Detail Antrian #' + ticket);
@@ -104,10 +153,15 @@
             $.get('/antrian/' + ticket + '/show')
                 .done((response) => {
                     let tanggalOrder = response.created_at;
+                    let fileCetak = $('#modalDetail').find('.file-cetak');
 
                     //reset clone a pada tempat
                     $("#modalDetail").find(".tempata").remove();
                     $("#modalDetail").find(".mesina").remove();
+                    $("#modalDetail").find(".operator").empty();
+                    $("#modalDetail").find(".finishing").empty();
+                    $("#modalDetail").find(".pengawas").empty();
+                    fileCetak.empty();
 
                     // Set the value of tanggalOrder to the formatted date
                     $('#modalDetail [name=tanggalOrder]').val(tanggalOrder.split('T')[0] + ' ' + tanggalOrder.split('T')[1].split('.')[0]);
@@ -131,7 +185,15 @@
                     $('#modalDetail [name=pasang]').val(rupiahFormat(response.payment.installation_cost));
                     $('#modalDetail [name=pengiriman]').val(rupiahFormat(response.payment.shipping_cost));
                     $('#modalDetail [name=alamat-kirim]').val(response.alamat_pengiriman);
+                    
+                    //Menampilkan file cetak
+                    if(response.order.acc_desain == null || response.order.acc_desain == '' || response.order.acc_desain == undefined){
+                        fileCetak.append("<p>Tidak ada file</p>")
+                    }else{
+                        fileCetak.append("<button class='btn btn-sm btn-primary' onclick='lihatDesain(`"+ ticket +"`)'>Lihat</button>")
+                    }
 
+                    //Menampilkan tempat
                     var spans = $("#modalDetail").find(".tempat");
                     var listTempat = response.working_at;
                     var a = $("<a class='btn btn-sm btn-danger ml-2 mr-2 tempata'></a>");
@@ -145,17 +207,74 @@
                         a.clone().text(listTempat).appendTo(spans);
                     }
 
+                    //Menampilkan mesin
                     var spans2 = $("#modalDetail").find(".mesin");
                     var listMesin = response.machine_code;
+                    mesin = listMesin.split(',');
                     var b = $("<a class='btn btn-sm btn-danger ml-2 mr-2 mesina'></a>");
-                    if(listMesin.includes(',')){
-                        var mesin = listMesin.split(',');
-                        for(var i = 0; i < mesin.length; i++){
-                            b.clone().text(mesin[i]).appendTo(spans2);
-                        }
-                    }
-
-
+                    $.get('/mesin')
+                        .done((response) => {
+                            for(var i = 0; i < mesin.length; i++){
+                                for(var j = 0; j < response.length; j++){
+                                    if(mesin[i] == response[j].machine_code){
+                                        b.clone().text(response[j].machine_name).appendTo(spans2);
+                                    }
+                                }
+                            }
+                        })
+                        .fail((errors) => {
+                            alert('Tidak dapat menampilkan data mesin');
+                            return;
+                        });
+                    
+                    //Menampilkan operator
+                    var pOperator = $("#modalDetail").find(".operator");
+                    var listOperator = response.operator_id;
+                    operator = listOperator.split(',');
+                    $.get('/employee')
+                        .done((response) => {
+                            for(var i = 0; i < operator.length; i++){
+                                for(var j = 0; j < response.length; j++){
+                                    if(operator[i] == response[j].id){
+                                        pOperator.append("<i class='fas fa-user-circle'></i>  ");
+                                        pOperator.append(response[j].name + '<br>');
+                                    }
+                                }
+                            }
+                        })
+                    
+                    //Menampilkan finishing
+                    var pFinishing = $("#modalDetail").find(".finishing");
+                    var listFinishing = response.finisher_id;
+                    finishing = listFinishing.split(',');
+                    $.get('/employee')
+                        .done((response) => {
+                            for(var i = 0; i < finishing.length; i++){
+                                for(var j = 0; j < response.length; j++){
+                                    if(finishing[i] == response[j].id){
+                                        pFinishing.append("<i class='fas fa-user-circle'></i>  ");
+                                        pFinishing.append(response[j].name + '<br>');
+                                    }
+                                }
+                            }
+                        })
+                    
+                    //Menampilkan pengawas/qc
+                    var pPengawas = $("#modalDetail").find(".pengawas");
+                    var listPengawas = response.qc_id;
+                    pengawas = listPengawas.split(',');
+                    $.get('/employee')
+                        .done((response) => {
+                            for(var i = 0; i < pengawas.length; i++){
+                                for(var j = 0; j < response.length; j++){
+                                    if(pengawas[i] == response[j].id){
+                                        pPengawas.append("<i class='fas fa-user-circle'></i>  ");
+                                        pPengawas.append(response[j].name + '<br>');
+                                    }
+                                }
+                            }
+                        })
+                        
                 })
                 .fail((errors) => {
                     alert('Tidak dapat menampilkan data');
@@ -166,12 +285,6 @@
                 .done((response) => {
                     $('#modalDetail [name=desainer]').val(response.employee.name);
                 })
-        }
-
-
-        function lihatPelunasan(ticket){
-            $('#modalPelunasan').modal('show');
-            $('#modalPelunasan .modal-title').text('Detail Pelunasan #' + ticket);
         }
 
         $(function() {

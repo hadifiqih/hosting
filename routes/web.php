@@ -166,6 +166,7 @@ Route::controller(DesignController::class)->group(function(){
 });
 
 Route::controller(EmployeeController::class)->group(function(){
+    Route::get('/employee', 'index')->middleware('auth')->name('employee.index');
     Route::get('/profile/{id}', 'show')->middleware('auth')->name('employee.show');
     Route::put('/profile/{id}', 'update')->middleware(['auth'])->name('employee.update');
     Route::post('/profile/upload-foto', 'uploadFoto')->middleware(['auth'])->name('employee.uploadFoto');
@@ -225,6 +226,7 @@ Route::controller(AntrianController::class)->group(function(){
 });
 
 Route::controller(PaymentController::class)->group(function(){
+    Route::get('/payment/{id}', 'show')->name('payment.show');
     Route::post('/payment/pelunasan', 'updatePelunasan')->name('payment.pelunasan');
 });
 

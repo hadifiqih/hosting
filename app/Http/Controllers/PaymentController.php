@@ -79,9 +79,11 @@ class PaymentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($ticket)
+    public function show($id)
     {
-        //
+        $payments = Payment::where('ticket_order', $id)->get();
+
+        return response()->json($payments);
     }
 
     public function edit($id)
