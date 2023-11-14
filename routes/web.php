@@ -157,7 +157,8 @@ Route::controller(ReportController::class)->group(function(){
     Route::get('/antrian/{id}/order', 'showOrderByTicket')->name('antrian.OrderJson');
     Route::get('/mesin', 'mesin')->name('mesin.index');
     Route::get('/antrian/ringkasan-omset-sales/data', 'ringkasanOmsetSales')->name('ringkasan.omsetSales');
-    Route::post('/antrian/ringkasan-omset-sales', 'ringkasanOmsetSalesFilter')->name('ringkasan.omsetSalesFilter');
+    Route::post('/antrian/ringkasan-omset-sales/filter', 'ringkasanFilter')->name('ringkasan.omsetSalesFilter');
+    Route::get('/antrian/filter/{sales}/{date}', 'dataFilter')->name('ringkasan.dataFilter');
 });
 
 Route::controller(DesignController::class)->group(function(){

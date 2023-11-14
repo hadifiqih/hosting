@@ -244,7 +244,7 @@
 
                 @if(auth()->user()->role == 'adminKeuangan')
                     <li class="nav-item">
-                        <a href="{{ route('ringkasan.omsetSales') }}" class="nav-link {{ request()->routeIs('ringkasan.omsetSales') ? 'active' : '' }}">
+                        <a href="{{ route('ringkasan.salesIndex') }}" class="nav-link {{ request()->routeIs('ringkasan.salesIndex') ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
                             <p>Ringkasan Penjualan</p>
                         </a>

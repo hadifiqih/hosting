@@ -330,22 +330,34 @@ class ReportController extends Controller
 
     public function ringkasanSalesIndex()
     {
-        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
-            ->where('created_at', 'like', '%2023-10-21%')
-            ->get();
-
         $listSales = Sales::all();
 
         $isFilter = false;
 
-        return view('page.report.ringkasan-omset-sales', compact('antrians', 'listSales', 'isFilter'));
+        return view('page.report.ringkasan-omset-sales', compact('listSales', 'isFilter'));
     }
 
     public function ringkasanOmsetSales()
     {
-        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
-            ->where('created_at', 'like', '%2023-10-21%')
+        if(request()->has('tanggal')) {
+            $date = request('tanggal');
+        } else {
+            $date = date('2023-10-21');
+        }
+
+        if(request()->has('sales')) {
+            $sales = request('sales');
+
+            $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+            ->where('created_at', 'like', '%' . $date . '%')
+            ->where('sales_id', $sales)
             ->get();
+
+        } else {
+            $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+            ->where('created_at', 'like', '%' . $date . '%')
+            ->get();
+        }
 
         return Datatables::of($antrians)
         ->addColumn('created_at', function ($antrians) {
@@ -386,7 +398,7 @@ class ReportController extends Controller
         ->make(true);
     }
 
-    public function ringkasanOmsetSalesFilter(Request $request)
+    public function ringkasanFilter(Request $request)
     {
         if(request()->has('tanggal')) {
             $date = request('tanggal');
@@ -402,14 +414,55 @@ class ReportController extends Controller
 
         $salesName = Sales::where('id', $sales)->first();
 
-        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
-            ->whereDate('created_at', $date)
+        $isFilter = true;
+
+        return view('page.report.ringkasan-filter', compact('date', 'salesName' , 'isFilter', 'sales'));
+    }
+
+    public function dataFilter($sales, $date)
+    {
+            $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+            ->where('created_at', 'like', '%' . $date . '%')
             ->where('sales_id', $sales)
             ->get();
 
-        $isFilter = true;
-
-        return view('page.report.ringkasan-omset-sales', compact('antrians', 'date', 'salesName' , 'isFilter'));
+        return Datatables::of($antrians)
+        ->addColumn('created_at', function ($antrians) {
+            return $antrians->created_at->format('d-m-Y');
+        })
+        ->addColumn('ticket_order', function ($antrians) {
+            return $antrians->ticket_order;
+        })
+        ->addColumn('sales', function ($antrians) {
+            return $antrians->sales_id == 0 ? '-' : $antrians->sales->sales_name;
+        })
+        ->addColumn('customer', function ($antrians) {
+            return $antrians->customer->nama;
+        })
+        ->addColumn('job', function ($antrians) {
+            return $antrians->job->job_name;
+        })
+        ->addColumn('qty', function ($antrians) {
+            return $antrians->qty;
+        })
+        ->addColumn('harga_produk', function ($antrians) {
+            return 'Rp'. number_format($antrians->harga_produk, 0, ',', '.');
+        })
+        ->addColumn('end_job', function ($antrians) {
+            return $antrians->end_job;
+        })
+        ->addColumn('file_cetak', function ($antrians) {
+            return $antrians->order->file_cetak;
+        })
+        ->addColumn('action', function ($antrians) {
+            return '
+            <div class="btn-group">
+                <button class="btn btn-sm btn-warning" type="button" onclick="lihatPelunasan(`'. $antrians->ticket_order .'`)"><i class="fas fa-eye"></i> Pelunasan</button>
+                <button class="btn btn-sm btn-primary" type="button" onclick="lihatAntrian(`'. $antrians->ticket_order .'`)"><i class="fas fa-list"></i> Detail</button>
+            </div>
+            ';
+        })
+        ->make(true);
     }
 
     public function mesin()

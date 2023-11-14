@@ -346,7 +346,7 @@
                 autoWidth: false,
                 processing: true,
                 ajax: {
-                    url: "{{ route('ringkasan.omsetSales') }}",
+                    url: "{{ route('ringkasan.dataFilter', [$sales, $date]) }}",
                 },
                 columns: [
                     {data : 'created_at', name: 'Tanggal Order'},
