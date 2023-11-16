@@ -182,8 +182,10 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/design', 'antrianDesain')->name('design.index');
 
     Route::get('/order/{id}/toAntrian', 'toAntrian')->middleware(['auth', 'checkrole:sales'])->name('order.toAntrian');
+    Route::get('/antrian/make-antrian/', 'makeAntrian')->middleware('auth')->name('antrian.makeAntrian');
     Route::post('/order/tambahProdukByModal', 'tambahProdukByModal')->name('tambahProdukByModal');
     Route::get('/get-jobs-by-category/{category_id}', 'getJobsByCategory')->name('getJobsByCategory');
+    Route::get('/get-all-jobs', 'getAllJobs')->name('getAllJobs');
     Route::post('/order/set-desainer/', 'bagiDesain')->name('order.bagiDesain');
     //--------------------------------------------
     // Route File Desain FIX
@@ -248,8 +250,9 @@ Route::controller(CustomerController::class)->group(function(){
     Route::post('/customer', 'store')->name('customer.store');
     Route::put('/customer/{id}', 'update')->name('customer.update');
     Route::delete('/customer/{id}', 'destroy')->name('customer.destroy');
-    Route::get('/customer/search', 'search')->name('pelanggan.search');
+    Route::get('/pelanggan/search', 'cariPelanggan')->name('pelanggan.search');
     Route::get('/customer/searchByNama', 'searchById')->name('pelanggan.searchById');
+    Route::get('/pelanggan-all', 'getAllCustomers')->name('getAllCustomers');
     Route::post('/customer/store', 'store')->name('pelanggan.store');
 });
 

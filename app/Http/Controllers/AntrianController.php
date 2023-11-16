@@ -34,48 +34,76 @@ class AntrianController extends Controller
         $this->middleware('auth');
     }
 
+    //--------------------------------------------------------------------------
+    //Fungsi untuk menampilkan halaman tambah antrian workshop
+    //--------------------------------------------------------------------------
+
     public function index()
     {
-        if(auth()->user()->role == 'sales'){
-            $sales = Sales::where('user_id', auth()->user()->id)->first();
-            $salesId = $sales->id;
+
+    if(auth()->user()->role == 'sales') {
+
+        $sales = Sales::where('user_id', auth()->user()->id)->first();
+        $salesId = $sales->id;
+
+        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+        ->orderByDesc('created_at')
+        ->where('status', '1')
+        ->where('sales_id', $salesId)
+        ->get();
+
+        $antrianSelesai = Antrian::with('sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
+                        ->orderByDesc('created_at')
+                        ->where('status', '2')
+                        ->where('sales_id', $salesId)
+                        ->get();
+
+    }elseif(auth()->user()->role == 'admin' || auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising') {
+
+        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+        ->orderByDesc('created_at')
+        ->where('status', '1')
+        ->get();
+
+        $antrianSelesai = Antrian::with('sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
+                        ->orderByDesc('created_at')
+                        ->where('status', '2')
+                        ->take(25)
+                        ->get();
+
+    }elseif(auth()->user()->role == 'estimator'){
+        
+        $antrians = Antrian::with('payment','sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
+        ->where('status', '1')
+        ->orderByDesc('created_at')
+        ->get();
+
+        $antrianSelesai = Antrian::with('payment','sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
+        ->where('status', '2')
+        ->orderByDesc('created_at')
+        ->whereBetween('created_at', [now()->subMonth(1), now()])
+        ->get();
+
+    }else{
 
             $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
             ->orderByDesc('created_at')
             ->where('status', '1')
-            ->where('sales_id', $salesId)
             ->get();
 
             $antrianSelesai = Antrian::with('sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
                             ->orderByDesc('created_at')
                             ->where('status', '2')
-                            ->where('sales_id', $salesId)
                             ->get();
-        }elseif(auth()->user()->role == 'admin' || auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising' || auth()->user()->role == 'estimator'){
-            $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
-            ->orderByDesc('created_at')
-            ->where('status', '1')
-            ->get();
 
-            $antrianSelesai = Antrian::with('sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
-                            ->orderByDesc('created_at')
-                            ->where('status', '2')
-                            ->take(25)
-                            ->get();
-        }else{
-            $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
-            ->orderByDesc('created_at')
-            ->where('status', '1')
-            ->get();
-
-            $antrianSelesai = Antrian::with('sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
-                            ->orderByDesc('created_at')
-                            ->where('status', '2')
-                            ->get();
         }
 
         return view('page.antrian-workshop.index', compact('antrians', 'antrianSelesai'));
     }
+
+    //--------------------------------------------------------------------------
+    //Filter antrian berdasarkan kategori pekerjaan
+    //--------------------------------------------------------------------------
 
     public function filterProcess(Request $request)
     {

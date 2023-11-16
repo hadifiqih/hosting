@@ -59,15 +59,10 @@ class CustomerController extends Controller
         ->make(true);
     }
 
-    public function search(Request $request)
+    public function cariPelanggan(Request $request)
     {
         $data = Customer::where('nama', 'LIKE', "%".request('q')."%")->get();
-        return response()->json($data);
-    }
 
-    public function searchById(Request $request)
-    {
-        $data = Customer::where('id', 'LIKE', "%".request('id')."%")->get();
         return response()->json($data);
     }
 
@@ -138,5 +133,26 @@ class CustomerController extends Controller
         $customer->delete();
 
         return response()->json(['success' => 'true', 'message' => 'Data berhasil dihapus']);
+    }
+
+    public function getAllCustomers(Request $request)
+    {
+        $customers = Customer::where('nama', 'LIKE', "%".request('q')."%")->get();
+        return response()->json($customers);
+    }
+
+    public function tambahProduk(Request $request)
+    {
+        $customer = Customer::find($request->id);
+        $customer->nama = $request->namaPelanggan;
+        $customer->telepon = $request->telepon;
+        $customer->alamat = $request->alamat;
+        $customer->instansi = $request->instansi;
+        $customer->infoPelanggan = $request->infoPelanggan;
+        $customer->wilayah = $request->wilayah;
+        $customer->sales_id = $request->sales;
+        $customer->save();
+
+        return response()->json(['success' => 'true', 'message' => 'Data berhasil diubah']);
     }
 }

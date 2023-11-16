@@ -610,6 +610,15 @@ class OrderController extends Controller
     // Tambah Produk by Modal by Sales
     //-------------------------------------------------------------------------------------------------------------
 
+    public function makeAntrian(){
+
+        return view ('page.antrian-workshop.create');
+    }
+
+    //-------------------------------------------------------------------------------------------------------------
+    // Tambah Produk by Modal by Sales
+    //-------------------------------------------------------------------------------------------------------------
+
     public function tambahProdukByModal(Request $request){
 
         $job = new Job;
@@ -632,5 +641,12 @@ class OrderController extends Controller
 
         return response()->json($jobs);
     }
+
+    public function getAllJobs(Request $request){
+        $jobs = Job::where('job_name', 'LIKE', "%".request('q')."%")->get();
+
+        return response()->json($jobs);
+    }
+
 }
 
