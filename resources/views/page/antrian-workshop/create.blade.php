@@ -54,7 +54,7 @@
                                 <th>Qty</th>
                                 <th>Harga (satuan)</th>
                                 <th>Diskon</th>
-                                <th>Harga Total</th>
+                                <th>Harga Total</th> 
                                 <th>Keterangan Spesifikasi</th>
                                 <th>Aksi</th>
                             </thead>
@@ -64,7 +64,7 @@
                             <tfoot>
                                 <tr>
                                     <th colspan="6" class="text-right">Total</th>
-                                    <th colspan="3" id="totalHarga">Rp 90.000</th>
+                                    <th colspan="3" id="totalHarga">0</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -123,11 +123,6 @@
     $(function () {
         bsCustomFileInput.init();
 
-        $("#tableProduk").DataTable({
-            "responsive": true,
-            "autoWidth": false,
-            "order": [[ 0, "desc" ]],
-        });
     });
 
     function tambahProduk(){
@@ -183,30 +178,61 @@
             }
         });
 
-        $('.btnTambah').on('submit', function(e){
+        $('#formTambahProduk').on('submit', function(e){
             e.preventDefault();
 
-            var namaProduk = $('#namaProduk').val();
+            // Get Value
+            var namaProduk = $('#namaProduk').text();
             var qty = $('#qty').val();
             var harga = $('#harga').val();
             var diskon = $('#diskon').val();
             var keterangan = $('#keterangan').val();
 
-            var table = document.getElementById("tableProduk");
-            var row = table.insertRow(1);
-            var cell1 = row.insertCell(0);
-            cell1.innerHTML = namaProduk;
-            var cell2 = row.insertCell(1);
-            cell2.innerHTML = qty;
-            var cell3 = row.insertCell(2);
-            cell3.innerHTML = harga;
-            var cell4 = row.insertCell(3);
-            cell4.innerHTML = diskon;
-            var cell5 = row.insertCell(4);
-            cell5.innerHTML = keterangan;
-            var cell6 = row.insertCell(5);
-            cell6.innerHTML = '<button type="button" class="btn btn-sm btn-danger" onclick="hapusProduk(this)">Hapus</button>';
+            // Menghitung Harga Total
+            var hargaTotal = harga * qty;
+            var hargaDiskon = hargaTotal * diskon / 100;
+            var hargaTotalDiskon = hargaTotal - hargaDiskon;
 
+            // Menambahkan Data ke Tabel
+            $('#tableProduk tbody').append(`
+                <tr>
+                    <td></td>
+                    <td><input type="hidden" name="katergori[]" value="${kategoriProduk}">${kategoriProduk}</td>
+                    <td><input type="hidden" name="produk[]" value="${namaProduk}">${namaProduk}</td>
+                    <td><input type="hidden" name="qty[]" value="${qty}">${qty}</td>
+                    <td><input type="hidden" name="harga[]" value="${harga}">${harga}</td>
+                    <td><input type="hidden" name="diskon[]" value="${diskon}">${diskon}</td>
+                    <td><input type="hidden" name="hargaTotal[]" value="${hargaTotal}">${hargaTotal}</td>
+                    <td><input type="hidden" name="keterangan[]" value="${keterangan}">${keterangan}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger btnHapusProduk"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `);
+
+            // Menambahkan Nomor Urut
+            var i = 1;
+            $('#tableProduk tbody tr').each(function(){
+                $(this).find('td:nth-child(1)').text(i);
+                i++;
+            });
+
+            // Menambahkan Total Harga
+            var totalHarga = 0;
+            $('#tableProduk tbody tr').each(function(){
+                totalHarga += parseInt($(this).find('td:nth-child(6) input').val());
+            });
+            $('#totalHarga').text(totalHarga);
+
+            // Menutup Modal
+            $('#modalPilihProduk').modal('hide');
+
+            // Mengosongkan Form
+            $('#namaProduk').val('');
+            $('#qty').val('');
+            $('#harga').val('');
+            $('#diskon').val('');
+            $('#keterangan').val('');
         });
     });
 </script>
