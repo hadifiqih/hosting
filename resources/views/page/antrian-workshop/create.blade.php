@@ -182,7 +182,8 @@
             e.preventDefault();
 
             // Get Value
-            var namaProduk = $('#namaProduk').text();
+            var namaProduk = $('#namaProduk').val();
+            var kategoriProduk = $('#kategoriProduk').val();
             var qty = $('#qty').val();
             var harga = $('#harga').val();
             var diskon = $('#diskon').val();
@@ -190,7 +191,7 @@
 
             // Menghitung Harga Total
             var hargaTotal = harga * qty;
-            var hargaDiskon = hargaTotal * diskon / 100;
+            var hargaDiskon = hargaTotal * (diskon / 100);
             var hargaTotalDiskon = hargaTotal - hargaDiskon;
 
             // Menambahkan Data ke Tabel
@@ -202,7 +203,7 @@
                     <td><input type="hidden" name="qty[]" value="${qty}">${qty}</td>
                     <td><input type="hidden" name="harga[]" value="${harga}">${harga}</td>
                     <td><input type="hidden" name="diskon[]" value="${diskon}">${diskon}</td>
-                    <td><input type="hidden" name="hargaTotal[]" value="${hargaTotal}">${hargaTotal}</td>
+                    <td><input type="hidden" name="hargaTotal[]" value="${hargaTotalDiskon}">${hargaTotalDiskon}</td>
                     <td><input type="hidden" name="keterangan[]" value="${keterangan}">${keterangan}</td>
                     <td>
                         <button type="button" class="btn btn-sm btn-danger btnHapusProduk"><i class="fas fa-trash"></i></button>
@@ -220,7 +221,7 @@
             // Menambahkan Total Harga
             var totalHarga = 0;
             $('#tableProduk tbody tr').each(function(){
-                totalHarga += parseInt($(this).find('td:nth-child(6) input').val());
+                totalHarga += parseInt($(this).find('td:nth-child(7) input').val());
             });
             $('#totalHarga').text(totalHarga);
 
@@ -228,7 +229,7 @@
             $('#modalPilihProduk').modal('hide');
 
             // Mengosongkan Form
-            $('#namaProduk').val('');
+            $('#namaProduk').val("");
             $('#qty').val('');
             $('#harga').val('');
             $('#diskon').val('');

@@ -13,19 +13,23 @@
 
                 <input type="hidden" name="idPelanggan" id="idPelanggan" value="">
 
-                <h6 class="font-weight-bold">Kategori Produk</h6>
-                <select name="kategoriProduk" id="kategoriProduk" class="form-control" data-allow-search="true" style="width: 100%">
-                    <option value="" selected>Pilih Kategori</option>
-                    <option value="Stempel">Stempel</option>
-                    <option value="Non Stempel">Non Stempel</option>
-                    <option value="Advertising">Advertising</option>
-                    <option value="Digital Printing">Digital Printing</option>
-                </select>
+                <div class="form-group">
+                    <h6 class="font-weight-bold">Kategori Produk</h6>
+                    <select name="kategoriProduk" id="kategoriProduk" class="form-control" data-allow-search="true" style="width: 100%">
+                        <option value="" selected disabled>Pilih Kategori</option>
+                        <option value="Stempel">Stempel</option>
+                        <option value="Non Stempel">Non Stempel</option>
+                        <option value="Advertising">Advertising</option>
+                        <option value="Digital Printing">Digital Printing</option>
+                    </select>
+                </div>
 
-                <h6 class="font-weight-bold">Nama Produk</h6>
-                <select name="namaProduk" id="namaProduk" class="form-control select2" data-allow-search="true" style="width: 100%">
-                    <option value="" selected>Pilih Produk</option>
-                </select>
+                <div class="form-group mt-3">
+                    <label class="font-weight-bold">Nama Produk</label>
+                    <select name="namaProduk" id="namaProduk" class="form-control select2" data-allow-search="true" style="width: 100%">
+                        <option value="" selected disabled>Pilih Produk</option>
+                    </select>
+                </div>
 
                 <div class="form-group mt-3">
                     <label for="qty">Qty</label>

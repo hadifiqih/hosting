@@ -25,6 +25,7 @@ use App\Http\Resources\AntrianResource;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\AntrianDiantrikan;
 use Illuminate\Support\Facades\Notification;
+use Yajra\DataTables\Facades\DataTables;
 
 
 class AntrianController extends Controller
@@ -95,10 +96,62 @@ class AntrianController extends Controller
                             ->orderByDesc('created_at')
                             ->where('status', '2')
                             ->get();
-
         }
 
         return view('page.antrian-workshop.index', compact('antrians', 'antrianSelesai'));
+    }
+
+    public function indexData(Request $request)
+    {
+        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+            ->orderByDesc('created_at')
+            ->where('status', '1')
+            ->get();
+
+        return DataTables::of($antrians)
+            ->addIndexColumn()
+            ->addColumn('action', function($row){
+                $btn = '<a href="'.route('antrian.edit', $row->id).'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
+                $btn .= '<a href="'.route('antrian.show', $row->id).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
+                $btn .= '<a href="'.route('antrian.destroy', $row->id).'" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>';
+                return $btn;
+            })
+            ->addColumn('sales', function($row){
+                return $row->sales->sales_name;
+            })
+            ->addColumn('customer', function($row){
+                return $row->customer->nama;
+            })
+            ->addColumn('job', function($row){
+                return $row->job->job_name;
+            })
+            ->addColumn('file_cetak', function($row){
+                return '<a href="'.route('design.download', $row->order->id).'" class="btn btn-info btn-sm"><i class="fas fa-download"></i> Unduh</a>';
+            })
+            ->addColumn('desainer', function($row){
+                if($row->design_id != null){
+                    return 'Tidak ada file produksi';
+                }else{
+                    return '<a href="'.route('design.download', $row->order->id).'" class="btn btn-info btn-sm"><i class="fas fa-download"></i> Unduh</a>';
+                }
+            })
+            ->addColumn('operator', function($row){
+                if($row->operator_id == null){
+                    return '-';
+                }else{
+                    return $row->operator_id;
+                }
+            })
+            ->addColumn('finisher', function($row){
+                if($row->finisher_id == null){
+                    return '-';
+                }else{
+                    return $row->finisher_id;
+                }
+            })
+            ->rawColumns(['action', 'file_cetak', 'file_produksi', 'operator',])
+            ->make(true);
+
     }
 
     //--------------------------------------------------------------------------
