@@ -110,11 +110,8 @@ class AntrianController extends Controller
 
         return DataTables::of($antrians)
             ->addIndexColumn()
-            ->addColumn('action', function($row){
-                $btn = '<a href="'.route('antrian.edit', $row->id).'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
-                $btn .= '<a href="'.route('antrian.show', $row->id).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
-                $btn .= '<a href="'.route('antrian.destroy', $row->id).'" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>';
-                return $btn;
+            ->addColumn('ticket_order', function($row){
+                return $row->ticket_order;
             })
             ->addColumn('sales', function($row){
                 return $row->sales->sales_name;
@@ -125,31 +122,134 @@ class AntrianController extends Controller
             ->addColumn('job', function($row){
                 return $row->job->job_name;
             })
-            ->addColumn('file_cetak', function($row){
+            ->addColumn('qty', function($row){
+                return $row->qty;
+            })
+            ->addColumn('endJob', function($row){
+                $now = Carbon::now();
+                $deadline = Carbon::parse($row->end_job);
+                $diff = $now->diff($deadline);
+
+                $formattedDeadline = "";
+                if ($diff->invert) { // Gunakan properti invert untuk memeriksa apakah waktu mundur
+                    $formattedDeadline .= "Selesai";
+                }else{
+                    if($diff->d > 0){
+                        $formattedDeadline .= $diff->d . " hari ";
+                    }
+                    if($diff->h > 0){
+                        $formattedDeadline .= $diff->h . " jam ";
+                    }
+                    if($diff->i > 0){
+                        $formattedDeadline .= $diff->i . " menit ";
+                    }
+                    if($diff->s > 0){
+                        $formattedDeadline .= $diff->s . " detik ";
+                    }
+                    if($diff->d == 0){
+                        $formattedDeadline = "Selesai";
+                    }
+                }
+
+                return $formattedDeadline;
+
+            })
+            ->addColumn('fileDesain', function($row){
                 return '<a href="'.route('design.download', $row->order->id).'" class="btn btn-info btn-sm"><i class="fas fa-download"></i> Unduh</a>';
             })
             ->addColumn('desainer', function($row){
-                if($row->design_id != null){
-                    return 'Tidak ada file produksi';
+                //explode string menjadi array
+                $desainer = $row->order->employee_id;
+                
+                $desainerSolo = Employee::where('id', $desainer)->first();
+                if($desainerSolo){
+                    return $desainerSolo->name;
                 }else{
-                    return '<a href="'.route('design.download', $row->order->id).'" class="btn btn-info btn-sm"><i class="fas fa-download"></i> Unduh</a>';
+                    return '-';
                 }
             })
             ->addColumn('operator', function($row){
                 if($row->operator_id == null){
                     return '-';
                 }else{
-                    return $row->operator_id;
+                    //explode string menjadi array
+                    $operator = explode(',', $row->operator_id);
+                    $operatorName = [];
+
+                    foreach($operator as $op){
+                        $oper = Employee::where('id', $op)->first();
+                        if($oper){
+                            $operatorName[] = $oper->name;
+                        }else{
+                            if($oper == 'rekanan'){
+                                $operatorName[] = 'Rekanan';
+                            }else{
+                                $operatorName[] = '-';
+                            }
+                        }
+
+                        // Ubah array menjadi string, jika diperlukan
+                        $formattedOperators = implode(', ', $operatorName);
+
+                        return $formattedOperators;
+                    }
                 }
             })
             ->addColumn('finisher', function($row){
-                if($row->finisher_id == null){
-                    return '-';
+                //explode string menjadi array
+                $finisher = explode(',', $row->finisher_id);
+                $finisherName = [];
+
+                    foreach($finisher as $fin){
+                        if($fin == 'rekanan'){
+                            return 'Rekanan';
+                        }else{
+                            $finer = Employee::where('id', $fin)->first();
+                            if($finer){
+                                $finisherName[] = $finer->name;
+                            }
+                        }
+                    }
+
+                    // Ubah array menjadi string, jika diperlukan
+                    $formattedFinisher = implode(', ', $finisherName);
+
+                    return $formattedFinisher;
+                })
+            ->addColumn('quality', function($row){
+                //explode string menjadi array
+                $quality = $row->qc_id;
+                
+                $qc = Employee::where('id', $quality)->first();
+                if($qc){
+                    return $qc->name;
                 }else{
-                    return $row->finisher_id;
+                    return '-';
                 }
             })
-            ->rawColumns(['action', 'file_cetak', 'file_produksi', 'operator',])
+            ->addColumn('tempat', function($row){
+                if($row->working_at == null){
+                    return '-';
+                }else{
+                    return $row->working_at;
+                }
+            })
+            ->addColumn('admin_note', function($row){
+                if($row->admin_note == null){
+                    return '-';
+                }else{
+                    return $row->admin_note;
+                }
+            })
+            ->addColumn('action', function($row){
+                $btn = '<div class="btn-group">';
+                $btn .= '<a href="'.route('antrian.edit', $row->id).'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
+                $btn .= '<a href="'.route('antrian.show', $row->id).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
+                $btn .= '<a href="'.route('antrian.destroy', $row->id).'" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>';
+                $btn .= '</div>';
+                return $btn;
+            })
+            ->rawColumns(['action', 'fileDesain', 'endJob'])
             ->make(true);
 
     }

@@ -106,6 +106,7 @@
                                 <table id="dataAntrian" class="table table-responsive table-bordered table-hover" style="width: 100%">
                                     <thead>
                                         <tr>
+                                            <th scope="col">#</th>
                                             <th scope="col">Ticket Order</th>
                                             <th scope="col">Sales</th>
                                             <th scope="col">Nama Customer</th>
@@ -113,9 +114,6 @@
                                             <th scope="col">Qty</th>
                                             <th scope="col">Deadline</th>
                                             <th scope="col">File Desain</th>
-                                            @if(auth()->user()->role == 'admin' || auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising')
-                                            <th scope="col">File Produksi</th>
-                                            @endif
                                             <th scope="col">Desainer</th>
                                             <th scope="col">Operator</th>
                                             <th scope="col">Finishing</th>
@@ -975,25 +973,27 @@
                 responsive: true,
                 autoWidth: false,
                 processing: true,
+                serverSide: true,
                 ajax: "{{ route('antrian.indexData') }}",
                 columns: [
+                    {data: 'DT_RowIndex', name: 'id'},
                     {data: 'ticket_order', name: 'ticket_order'},
                     {data: 'sales', name: 'sales'},
                     {data: 'customer', name: 'customer'},
                     {data: 'job', name: 'job'},
                     {data: 'qty', name: 'qty'},
-                    {data: 'end_job', name: 'end_job'},
-                    {data: 'file_cetak', name: 'file_cetak'},
-                    {data: 'file_produksi', name: 'file_produksi'},
+                    {data: 'endJob', name: 'end_job'},
+                    {data: 'fileDesain', name: 'fileDesain'},
                     {data: 'desainer', name: 'desainer'},
                     {data: 'operator', name: 'operator'},
                     {data: 'finisher', name: 'finisher'},
-                    {data: 'qc', name: 'qc'},
+                    {data: 'quality', name: 'qc'},
                     {data: 'tempat', name: 'tempat'},
                     {data: 'admin_note', name: 'admin_note'},
                     {data: 'action', name: 'action'},
                 ],
             });
+
             $("#dataAntrianSelesai").DataTable({
                 "responsive": true,
                 "autoWidth": false,
@@ -1006,32 +1006,6 @@
                 $('.modal').not($(this)).each(function () {
                     $(this).modal('hide');
                 });
-            });
-
-            $('.countdown').each(function() {
-                var element = $(this);
-                var countDownDate = new Date(element.data('countdown')).getTime();
-
-                if (isNaN(countDownDate)) {
-                    element.html("<span class='text-danger'>BELUM DIANTRIKAN</span>");
-                } else {
-                    var x = setInterval(function() {
-                        var now = new Date().getTime();
-                        var distance = countDownDate - now;
-
-                        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                        element.html("<span class='text-success'>" + days + "d " + hours + "h " + minutes + "m " + seconds + "s " + "</span>");
-
-                        if (distance < 0) {
-                            clearInterval(x);
-                            element.html("<span class='text-danger'>TERLAMBAT</span>");
-                        }
-                    }, 1000);
-                }
             });
 
             $('.metodePembayaran').on('change', function(){
