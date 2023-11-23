@@ -107,6 +107,16 @@ class AntrianController extends Controller
             ->orderByDesc('created_at')
             ->where('status', '1')
             ->get();
+        
+        if(request()->has('kategori')){
+            $jobType = $request->input('kategori');
+            $antrians = Antrian::with('payment','sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
+            ->whereHas('job', function ($query) use ($jobType) {
+                $query->where('job_type', $jobType);
+            })
+            ->where('status', '1')
+            ->get();
+        }
 
         return DataTables::of($antrians)
             ->addIndexColumn()
@@ -244,7 +254,7 @@ class AntrianController extends Controller
             ->addColumn('action', function($row){
                 $btn = '<div class="btn-group">';
                 $btn .= '<a href="'.route('antrian.edit', $row->id).'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
-                $btn .= '<a href="'.route('antrian.show', $row->id).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
+                $btn .= '<a href="'.route('antrian.show', $row->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
                 $btn .= '<a href="'.route('antrian.destroy', $row->id).'" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>';
                 $btn .= '</div>';
                 return $btn;
@@ -262,23 +272,9 @@ class AntrianController extends Controller
     {
         $jobType = $request->input('kategori');
 
-        $antrians = Antrian::with('payment','sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
-            ->whereHas('job', function ($query) use ($jobType) {
-                $query->where('job_type', $jobType);
-            })
-            ->where('status', '1')
-            ->get();
-
-        $antrianSelesai = Antrian::with('payment','sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
-            ->whereHas('job', function ($query) use ($jobType) {
-                $query->where('job_type', $jobType);
-            })
-            ->where('status', '2')
-            ->get();
-
         $filtered = $jobType;
 
-        return view('page.antrian-workshop.index', compact('antrians', 'antrianSelesai', 'filtered'));
+        return view('page.antrian-workshop.index', compact('filtered'));
     }
 
     //--------------------------------------------------------------------------
@@ -663,6 +659,13 @@ class AntrianController extends Controller
         }
 
         return redirect()->route('antrian.index')->with('success-update', 'Data antrian berhasil diupdate!');
+    }
+
+    public function show($id)
+    {
+        $antrian = Antrian::where('ticket_order', $id)->with('job', 'sales', 'order', 'customer', 'payment', 'design', 'operator', 'finishing', 'dokumproses')->first();
+        
+        return view('page.antrian-workshop.show', compact('antrian'));
     }
 
     public function updateDeadline(Request $request)

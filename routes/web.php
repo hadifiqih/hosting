@@ -213,7 +213,7 @@ Route::controller(AntrianController::class)->group(function(){
     Route::get('/antrian/indexAntrian', 'indexData')->middleware('auth')->name('antrian.indexData');
 
     Route::post('/antrian/storeToAntrian', 'store')->middleware('auth')->name('antrian.store');
-    Route::get('/antrian/show', 'show')->middleware('auth')->name('antrian.show');
+    Route::get('/antrian/show/{id}', 'show')->middleware('auth')->name('antrian.show');
     Route::post('/antrian/updateDeadline', 'updateDeadline')->middleware('auth')->name('antrian.updateDeadline');
     Route::get('/antrian/dokumentasi/{id}', 'showDokumentasi')->middleware('auth')->name('antrian.showDokumentasi');
     Route::post('/antrian/storeDokumentasi', 'storeDokumentasi')->middleware('auth')->name('antrian.storeDokumentasi');
