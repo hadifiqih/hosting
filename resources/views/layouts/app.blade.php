@@ -16,11 +16,7 @@
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('adminlte') }}/dist/css/adminlte.min.css">
-  {{-- <!-- DataTables -->
-  <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-  <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-  <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/datatables-select/css/select.bootstrap4.min.css"> --}}
+  
   <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
@@ -28,6 +24,9 @@
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   {{-- Dropzone --}}
   <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+  <!-- lightGallery -->
+  <link rel="stylesheet" href="{{ asset('node_modules/lightgallery/css/lightgallery.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('node_modules/lightgallery/css/lg-transitions.min.css') }}">
 
   <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
 
@@ -335,21 +334,20 @@
 <!-- SweetAlert2 -->
 <script src="{{ asset('adminlte') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
 
-<!-- DataTables  & Plugins -->
-{{-- <script src="{{ asset('adminlte') }}/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="{{ asset('adminlte') }}/plugins/datatables-select/js/dataTables.select.min.js"></script>
-<script src="{{ asset('adminlte') }}/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="{{ asset('adminlte') }}/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="{{ asset('adminlte') }}/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script> --}}
 <script src="{{ asset('adminlte') }}/plugins/jszip/jszip.min.js"></script>
 <script src="{{ asset('adminlte') }}/plugins/pdfmake/pdfmake.min.js"></script>
 <script src="{{ asset('adminlte') }}/plugins/pdfmake/vfs_fonts.js"></script>
-{{-- <script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-<script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-<script src="{{ asset('adminlte') }}/plugins/datatables-buttons/js/buttons.colVis.min.js"></script> --}}
+
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script src="{{ asset('node_modules/lightgallery/lightgallery.min.js') }}"></script>
+<script src="{{ asset('node_modules/lightgallery/plugins/thumbnail/lg-thumbnail.min.js') }}"></script>
+<script src="{{ asset('node_modules/lightgallery/plugins/fullscreen/lg-fullscreen.min.js') }}"></script>
+<script src="{{ asset('node_modules/lightgallery/plugins/zoom/lg-zoom.min.js') }}"></script>
+<script src="{{ asset('node_modules/lightgallery/plugins/hash/lg-hash.min.js') }}"></script>
+<script src="{{ asset('node_modules/lightgallery/plugins/pager/lg-pager.min.js') }}"></script>
+<script src="{{ asset('node_modules/lightgallery/plugins/share/lg-share.min.js') }}"></script>
+
 @yield('script')
 {{-- Select2 --}}
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>

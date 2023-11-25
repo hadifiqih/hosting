@@ -2,8 +2,18 @@ import './bootstrap';
 import '../css/app.css';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import lightGallery from 'lightgallery';
+import lgThumbnail from 'lightgallery/plugins/thumbnail';
+import lgZoom from 'lightgallery/plugins/zoom';
 
 import * as PusherPushNotifications from "@pusher/push-notifications-web";
+
+//init lightgallery
+lightGallery(document.getElementById('lightgallery'), {
+    plugins: [lgThumbnail, lgZoom],
+    speed: 500,
+    thumbnail: true,
+});
 
     // const beamsClient = new PusherPushNotifications.Client({
     //   instanceId: '0958376f-0b36-4f59-adae-c1e55ff3b848',

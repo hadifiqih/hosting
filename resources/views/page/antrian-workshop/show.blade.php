@@ -211,23 +211,7 @@
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-clipboard mr-2"></i> <strong>Gambar ACC Desain</strong></h3>
-            <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                    <i class="fas fa-minus"></i>
-                </button>
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="row ml-1">
-                
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title font-weight-bold">File Desain & Pendukung</h3>
+            <h3 class="card-title"><i class="fas fa-folder-open mr-2"></i> <strong>File Cetak & Pendukung</strong></h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                     <i class="fas fa-minus"></i>
@@ -236,21 +220,27 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-2 mt-2">
-                    <div class="bg-dark text-center rounded-lg py-2 text-sm">PDF</div>
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-2 mt-2">
+                            <div class="bg-dark text-center rounded-lg py-2 text-sm">PDF</div>
+                        </div>
+                        <div class="col-8 my-auto">
+                            <a href="" class="font-weight-bold my-0">Nama File</a>
+                            <p class="text-muted">Kamis, 12 November 2023</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-8 my-auto">
-                    <a href="" class="font-weight-bold my-0">Nama File</a>
-                    <p class="text-muted">Kamis, 12 November 2023</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-2 mt-2">
-                    <div class="bg-dark text-center rounded-lg py-2 text-sm">PDF</div>
-                </div>
-                <div class="col-8 my-auto">
-                    <a href="#" class="font-weight-bold my-0">Nama File</a>
-                    <p class="text-muted">Kamis, 12 November 2023</p>
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-2 mt-2">
+                            <div class="bg-dark text-center rounded-lg py-2 text-sm">PDF</div>
+                        </div>
+                        <div class="col-8 my-auto">
+                            <a href="#" class="font-weight-bold my-0">Nama File</a>
+                            <p class="text-muted">Kamis, 12 November 2023</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -265,6 +255,7 @@
                 var text = $(this).text();
                 $(this).html(text.replace(/\n/g, '<br/>'));
             });
+
         });
     </script>
 @endsection
