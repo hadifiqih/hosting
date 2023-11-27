@@ -34,25 +34,29 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-3">
+                <div class="col-md">
                     <div class="form-group">
                         <label for="nama">Nama Pelanggan </label>
                         <p>{{ $antrian->customer->nama }} <span class="badge bg-danger">Repeat Order</span></p>
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-md">
                     <div class="form-group">
                         <label for="nama">Telepon</label>
                         <p>{{ $antrian->customer->telepon }}</p>
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-md">
                     <label for="alamat">Sumber Pelanggan</label>
                     <p>{{ $antrian->customer->infoPelanggan }}</p>
                 </div>
-                <div class="col-3">
-                    <label for="alamat">Instansi </label>
+                <div class="col-md">
+                    <label for="alamat">Instansi</label>
                     <p>{{ $antrian->customer->instansi }}</p>
+                </div>
+                <div class="col-md">
+                    <label for="iklan">Status Iklan</label>
+                    <p>Facebook / -</p>
                 </div>
             </div>
 
@@ -99,7 +103,7 @@
                             1
                         </div>
                         <div class="col-6">
-                            Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                            <p><strong>Lorem ipsum dolor sit amet consectetur, adipisicing elit.</strong></p>
                         </div>
                         <div class="col-2">
                             <p class="text-danger text-right">Rp. 100.000</p>
@@ -116,7 +120,7 @@
                             2
                         </div>
                         <div class="col-6">
-                            Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                            <p><strong>Lorem ipsum dolor sit amet consectetur, adipisicing elit.</strong></p>
                         </div>
                         <div class="col-2">
                             <p class="text-danger text-right">Rp. 100.000</p>
