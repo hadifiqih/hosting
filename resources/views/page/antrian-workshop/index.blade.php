@@ -218,10 +218,22 @@
             });
 
             $("#dataAntrianSelesai").DataTable({
-                "responsive": true,
-                "autoWidth": false,
-                "order": [[ 0, "desc" ]],
-                "pageLength": 25,
+                responsive: true,
+                autoWidth: false,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: kategori == 'Semua' ? "{{ route('antrian.indexDataSelesai') }}" : "{{ route('antrian.indexDataSelesai') }}?kategori=" + kategori,
+                },
+                columns: [
+                    {data: 'DT_RowIndex', name: 'id'},
+                    {data: 'ticket_order', name: 'ticket_order'},
+                    {data: 'sales', name: 'sales'},
+                    {data: 'customer', name: 'customer'},
+                    {data: 'job', name: 'job'},
+                    {data: 'fileDesain', name: 'fileDesain'},
+                    {data: 'action', name: 'action'},
+                ],
             });
 
             //Menutup modal saat modal lainnya dibuka
