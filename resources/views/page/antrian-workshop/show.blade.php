@@ -246,6 +246,37 @@
         </div>
     </div>
 
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-clipboard mr-2"></i> <strong>Penugasan Pekerjaan</strong></h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row ml-1">
+                <div class="col-3">
+                    <h5><strong>Operator</strong></h5>
+                    <p class="text-dark"><i class="fas fa-circle"></i> Andini Rhaman Naerman</p>
+                </div>
+                <div class="col-3">
+                    <h5><strong>Desain</strong></h5>
+                    <p class="text-dark"><i class="fas fa-circle"></i> Andini Rhaman Naerman</p>
+                </div>
+                <div class="col-3">
+                    <h5><strong>Finishing</strong></h5>
+                    <p class="text-dark"><i class="fas fa-circle"></i> Andini Rhaman Naerman</p>
+                </div>
+                <div class="col-3">
+                    <h5><strong>Quality Control</strong></h5>
+                    <p class="text-dark"><i class="fas fa-circle"></i> Andini Rhaman Naerman</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('script')
