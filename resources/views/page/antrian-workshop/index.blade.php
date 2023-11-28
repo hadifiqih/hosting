@@ -119,12 +119,7 @@
                                             <th scope="col">Finishing</th>
                                             <th scope="col">QC</th>
                                             <th scope="col">Tempat</th>
-                                            <th scope="col">Catatan Admin</th>
-                                            @if(auth()->user()->role == 'admin')
-                                                <th scope="col">Aksi</th>
-                                            @elseif(auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising')
-                                                <th scope="col">Progress</th>
-                                            @endif
+                                            <th scope="col">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -149,21 +144,21 @@
                                 <table id="dataAntrianSelesai" class="table table-responsive table-bordered table-hover" style="width: 100%">
                                     <thead>
                                         <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Tanggal Order</th>
                                             <th scope="col">Ticket Order</th>
-                                            <th scope="col">Keyword Project</th>
-                                            <th scope="col">Nama Customer</th>
                                             <th scope="col">Sales</th>
+                                            <th scope="col">Nama Customer</th>
+                                            <th scope="col">Keyword Project</th>
                                             <th scope="col">Jenis Produk</th>
                                             <th scope="col">Desain</th>
-                                            <th scope="col">Dokumentasi</th>
-                                            @if(auth()->user()->role == 'sales' || auth()->user()->role == 'staffAdmin' || auth()->user()->role == 'adminKeuangan')
-                                            <th scope="col">Pelunasan</th>
-                                            @endif
+                                            <th scope="col">Detail</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                 
                                     </tbody>
+                                    
                                 </table>
                                 <!-- /.card -->
                             </div>
@@ -184,11 +179,11 @@
 
 <script src="{{ asset('adminlte/dist/js/maskMoney.min.js') }}"></script>
     <script>
+
         $(document).ready(function() {
             var kategori = $('#kategori').val();
 
             $('.maskRupiah').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
-
             
             $("#dataAntrian").DataTable({
                 responsive: true,
@@ -212,7 +207,6 @@
                     {data: 'finisher', name: 'finisher'},
                     {data: 'quality', name: 'qc'},
                     {data: 'tempat', name: 'tempat'},
-                    {data: 'admin_note', name: 'admin_note'},
                     {data: 'action', name: 'action'},
                 ],
             });
@@ -223,18 +217,26 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: kategori == 'Semua' ? "{{ route('antrian.indexDataSelesai') }}" : "{{ route('antrian.indexDataSelesai') }}?kategori=" + kategori,
+                    url: kategori == 'Semua' ? "{{ route('antrian.indexSelesai') }}" : "{{ route('antrian.indexSelesai') }}?kategori=" + kategori,
                 },
                 columns: [
                     {data: 'DT_RowIndex', name: 'id'},
+                    {data: 'created_at', name: 'created_at'},
                     {data: 'ticket_order', name: 'ticket_order'},
                     {data: 'sales', name: 'sales'},
                     {data: 'customer', name: 'customer'},
+                    {data: 'keyword', name: 'keyword'},
                     {data: 'job', name: 'job'},
                     {data: 'fileDesain', name: 'fileDesain'},
                     {data: 'action', name: 'action'},
                 ],
             });
+
+            //reload ajax datatable setiap 10 menit
+            setInterval(function(){
+                $('#dataAntrian').DataTable().ajax.reload();
+                $('#dataAntrianSelesai').DataTable().ajax.reload();
+            }, 600000);
 
             //Menutup modal saat modal lainnya dibuka
             $('.modal').on('show.bs.modal', function (e) {

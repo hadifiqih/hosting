@@ -24,9 +24,6 @@
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   {{-- Dropzone --}}
   <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
-  <!-- lightGallery -->
-  <link rel="stylesheet" href="{{ asset('node_modules/lightgallery/css/lightgallery.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('node_modules/lightgallery/css/lg-transitions.min.css') }}">
 
   <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
 
@@ -319,7 +316,7 @@
     <strong>Copyright &copy; 2023 <a href="#">by Kassab Syariah</a>.</strong>
     All rights reserved.
     <div class="float-right d-none d-sm-inline-block">
-      <b>Tanggal : </b> {{ date('d F Y') }}
+      <b>Tanggal : </b> {{ date('d F Y - H:i') }}
     </div>
   </footer>
 </div>
@@ -339,14 +336,6 @@
 <script src="{{ asset('adminlte') }}/plugins/pdfmake/vfs_fonts.js"></script>
 
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-<script src="{{ asset('node_modules/lightgallery/lightgallery.min.js') }}"></script>
-<script src="{{ asset('node_modules/lightgallery/plugins/thumbnail/lg-thumbnail.min.js') }}"></script>
-<script src="{{ asset('node_modules/lightgallery/plugins/fullscreen/lg-fullscreen.min.js') }}"></script>
-<script src="{{ asset('node_modules/lightgallery/plugins/zoom/lg-zoom.min.js') }}"></script>
-<script src="{{ asset('node_modules/lightgallery/plugins/hash/lg-hash.min.js') }}"></script>
-<script src="{{ asset('node_modules/lightgallery/plugins/pager/lg-pager.min.js') }}"></script>
-<script src="{{ asset('node_modules/lightgallery/plugins/share/lg-share.min.js') }}"></script>
 
 @yield('script')
 {{-- Select2 --}}

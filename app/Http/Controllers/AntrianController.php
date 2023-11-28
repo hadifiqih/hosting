@@ -137,35 +137,37 @@ class AntrianController extends Controller
             })
             ->addColumn('endJob', function($row){
                 $now = Carbon::now();
+                if($row->end_job == null){
+                    return 'BELUM DIANTRIKAN';
+                }else{
                 $deadline = Carbon::parse($row->end_job);
                 $diff = $now->diff($deadline);
 
                 $formattedDeadline = "";
                 if ($diff->invert) { // Gunakan properti invert untuk memeriksa apakah waktu mundur
-                    $formattedDeadline .= "Selesai";
-                }else{
-                    if($diff->d > 0){
+                    $formattedDeadline .= "TERLAMBAT";
+                } else {
+                    if($diff->d > 0) {
                         $formattedDeadline .= $diff->d . " hari ";
                     }
-                    if($diff->h > 0){
+                    if($diff->h > 0) {
                         $formattedDeadline .= $diff->h . " jam ";
                     }
-                    if($diff->i > 0){
+                    if($diff->i > 0) {
                         $formattedDeadline .= $diff->i . " menit ";
                     }
-                    if($diff->s > 0){
+                    if($diff->s > 0) {
                         $formattedDeadline .= $diff->s . " detik ";
                     }
-                    if($diff->d == 0){
-                        $formattedDeadline = "Selesai";
+                    if($diff->d == 0 && $diff->h == 0 && $diff->i == 0 && $diff->s == 0) {
+                        $formattedDeadline = "TERLAMBAT";
                     }
                 }
-
-                return $formattedDeadline;
-
+                    return $formattedDeadline;
+            }
             })
             ->addColumn('fileDesain', function($row){
-                return '<a href="'.route('design.download', $row->order->id).'" class="btn btn-info btn-sm"><i class="fas fa-download"></i> Unduh</a>';
+                return '<a href="'.route('design.download', $row->order->id).'" class="btn btn-primary btn-sm"><i class="fas fa-download"></i> Unduh</a>';
             })
             ->addColumn('desainer', function($row){
                 //explode string menjadi array
@@ -253,15 +255,69 @@ class AntrianController extends Controller
             })
             ->addColumn('action', function($row){
                 $btn = '<div class="btn-group">';
-                $btn .= '<a href="'.route('antrian.edit', $row->id).'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
-                $btn .= '<a href="'.route('antrian.show', $row->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
-                $btn .= '<a href="'.route('antrian.destroy', $row->id).'" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>';
+                if(auth()->user()->role == 'admin') {
+                    $btn .= '<a href="' . route('antrian.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
+                    $btn .= '<a href="' . route('antrian.destroy', $row->id) . '" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>';
+                }
+                else{
+                    $btn .= '<a href="'.route('antrian.show', $row->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
+                }
                 $btn .= '</div>';
                 return $btn;
             })
             ->rawColumns(['action', 'fileDesain', 'endJob'])
             ->make(true);
 
+    }
+
+    public function indexSelesai(Request $request)
+    {
+        $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
+            ->orderByDesc('created_at')
+            ->where('status', '2')
+            ->get();
+
+        if(request()->has('kategori')){
+            $jobType = $request->input('kategori');
+            $antrians = Antrian::with('payment','sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
+            ->whereHas('job', function ($query) use ($jobType) {
+                $query->where('job_type', $jobType);
+            })
+            ->where('status', '2')
+            ->get();
+        }
+
+        return DataTables::of($antrians)
+            ->addIndexColumn()
+            ->addColumn('created_at', function($row){
+                return $row->created_at->format('d-m-Y');
+            })
+            ->addColumn('ticket_order', function($row){
+                return $row->ticket_order;
+            })
+            ->addColumn('sales', function($row){
+                return $row->sales->sales_name;
+            })
+            ->addColumn('customer', function($row){
+                return $row->customer->nama;
+            })
+            ->addColumn('keyword', function($row){
+                return $row->order->title;
+            })
+            ->addColumn('job', function($row){
+                return $row->job->job_name;
+            })
+            ->addColumn('fileDesain', function($row){
+                return '<a href="'.route('design.download', $row->order->id).'" class="btn btn-info btn-sm"><i class="fas fa-download"></i> Unduh</a>';
+            })
+            ->addColumn('action', function($row){
+                $btn = '<div class="btn-group">';
+                $btn .= '<a href="'.route('antrian.show', $row->id).'" class="btn btn-dark btn-sm btnDetail"><i class="fas fa-eye"></i> Detail</a>';
+                $btn .= '</div>';
+                return $btn;
+            })
+            ->rawColumns(['action', 'fileDesain'])
+            ->make(true);
     }
 
     //--------------------------------------------------------------------------
