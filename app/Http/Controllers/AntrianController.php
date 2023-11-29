@@ -485,7 +485,6 @@ class AntrianController extends Controller
         }else{
             $namaBuktiPembayaran = null;
         }
-
             //Membuat payment baru dan menyimpan data pembayaran
             $payment = new Payment();
             $payment->ticket_order = $ticketOrder;
