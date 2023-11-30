@@ -86,49 +86,25 @@
             </div>
         </div>
         <div class="card-body">
-            <h6><strong><i class="fas fa-circle"></i> <span class="ml-2">Ticket Order - </span></strong>{{ $antrian->ticket_order }}</h6>
-            <table id="tableItems" class="table table-bordered mt-3">
+            <h6 class="mb-3"><strong><i class="fas fa-circle"></i> <span class="ml-2">Ticket Order - </span></strong>{{ $antrian->ticket_order }}</h6>
+            <table id="tableItems" class="table table-bordered table-responsive">
                 <thead class="thead-dark text-light">
                     <tr>
-                        <th class="text-left">No</th>
+                        <th>No</th>
                         <th>Nama Produk</th>
-                        <th class="text-right">Harga</th>
-                        <th class="text-right">Qty</th>
-                        <th class="text-right">Total</th>
+                        <th>Note</th>
+                        <th>Harga</th>
+                        <th>Qty</th>
+                        <th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td><strong>Lorem ipsum dolor sit amet consectetur, adipisicing elit.</strong></td>
-                        <td class="text-danger text-right">Rp. 100.000</td>
-                        <td class="text-success text-right">1</td>
-                        <td class="text-success text-right">Rp. 100.000</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td><strong>Lorem ipsum dolor sit amet consectetur, adipisicing elit.</strong></td>
-                        <td class="text-danger text-right">Rp. 100.000</td>
-                        <td class="text-success text-right">1</td>
-                        <td class="text-success text-right">Rp. 100.000</td>
-                    </tr>
+                    
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="4" class="text-right">Ongkos Kirim</td>
-                        <td colspan="2" class="text-success text-right">Rp. 10.000</td>
-                    </tr>
-                    <tr>
-                        <td colspan="4" class="text-right">Biaya Pasang</td>
-                        <td colspan="2" class="text-success text-right">Rp. 400.000</td>
-                    </tr>
-                    <tr>
-                        <td colspan="4" class="text-right">Biaya Packing</td>
-                        <td colspan="2" class="text-success text-right">Rp. 400.000</td>
-                    </tr>
-                    <tr>
-                        <td colspan="4" class="text-right"><strong>Total Penghasilan</strong></td>
-                        <td colspan="2" class="text-success text-right font-weight-bold">Rp. 400.000</td>
+                        <th colspan="5" class="text-center">Total</th>
+                        <th>{{ 'Rp '.number_format($total, 0, ',', '.') }}</th>
                     </tr>
                 </tfoot>
             </table>            
@@ -162,25 +138,14 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-6">
+                <div class="col-md">
                     <div class="row">
                         <div class="col-2 mt-2">
-                            <div class="bg-dark text-center rounded-lg py-2 text-sm">PDF</div>
+                            <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->order->file_cetak, -3)) }}</div>
                         </div>
                         <div class="col-8 my-auto">
-                            <a href="" class="font-weight-bold my-0">Nama File</a>
-                            <p class="text-muted">Kamis, 12 November 2023</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="row">
-                        <div class="col-2 mt-2">
-                            <div class="bg-dark text-center rounded-lg py-2 text-sm">PDF</div>
-                        </div>
-                        <div class="col-8 my-auto">
-                            <a href="#" class="font-weight-bold my-0">Nama File</a>
-                            <p class="text-muted">Kamis, 12 November 2023</p>
+                            <a href="{{ route('design.download', $antrian->id) }}" class="font-weight-bold my-0">File Cetak</a>
+                            <p class="text-muted">{{ date_format($antrian->order->updated_at, 'd F Y - H:i') }}</p>
                         </div>
                     </div>
                 </div>
@@ -199,21 +164,79 @@
         </div>
         <div class="card-body">
             <div class="row ml-1">
-                <div class="col-3">
-                    <h5><strong>Operator</strong></h5>
-                    <p class="text-dark"><i class="fas fa-circle"></i> Andini Rhaman Naerman</p>
-                </div>
-                <div class="col-3">
+                <div class="col">
                     <h5><strong>Desain</strong></h5>
-                    <p class="text-dark"><i class="fas fa-circle"></i> Andini Rhaman Naerman</p>
+                    <p class="text-dark"><i class="fas fa-circle"></i> {{ $antrian->order->employee->name }}</p>
                 </div>
-                <div class="col-3">
+                <div class="col">
+                    <h5><strong>Operator</strong></h5>
+                    @if($antrian->operator_id != null)
+                        @php
+                            $operatorId = explode(',', $antrian->operator_id);
+                            foreach ($operatorId as $item) {
+                                if($item == 'rekanan'){
+                                    echo '- Rekanan';
+                                }
+                                else{
+                                    $antriann = App\Models\Employee::find($item);
+                                    //tampilkan name dari tabel employees, jika nama terakhir tidak perlu koma
+                                    if($antriann->id == end($operatorId)){
+                                        echo '<p class="text-dark mb-0"><i class="fas fa-circle"></i> '.$antriann->name.'</p>';
+                                    }
+                                    else{
+                                        echo '<p class="text-dark mb-0"><i class="fas fa-circle"></i> '.$antriann->name.'</p>';
+                                    }
+                                }
+                            }
+                        @endphp
+                    @else
+                    -
+                    @endif
+                </div>
+                <div class="col">
                     <h5><strong>Finishing</strong></h5>
-                    <p class="text-dark"><i class="fas fa-circle"></i> Andini Rhaman Naerman</p>
+                    @if($antrian->finisher_id != null)
+                        @php
+                            $finisherId = explode(',', $antrian->finisher_id);
+                            foreach ($finisherId as $item) {
+                                if($item == 'rekanan'){
+                                    echo '- Rekanan';
+                                }
+                                else{
+                                    $antriann = App\Models\Employee::find($item);
+                                    //tampilkan name dari tabel employees, jika nama terakhir tidak perlu koma
+                                    if($antriann->id == end($finisherId)){
+                                        echo '<p class="text-dark mb-0"><i class="fas fa-circle"></i> '.$antriann->name.'</p>';
+                                    }
+                                    else{
+                                        echo '<p class="text-dark mb-0"><i class="fas fa-circle"></i> '.$antriann->name.'</p>';
+                                    }
+                                }
+                            }
+                        @endphp
+                    @else
+                    -
+                    @endif
                 </div>
-                <div class="col-3">
+                <div class="col">
                     <h5><strong>Quality Control</strong></h5>
-                    <p class="text-dark"><i class="fas fa-circle"></i> Andini Rhaman Naerman</p>
+                    @if($antrian->qc_id)
+                        @php
+                            $qcId = explode(',', $antrian->qc_id);
+                            foreach ($qcId as $item) {
+                                    $antriann = App\Models\Employee::find($item);
+                                    //tampilkan name dari tabel employees, jika nama terakhir tidak perlu koma
+                                    if($antriann->id == end($qcId)){
+                                        echo '<p class="text-dark mb-0"><i class="fas fa-circle"></i> '.$antriann->name.'</p>';
+                                    }
+                                    else{
+                                        echo '<p class="text-dark mb-0"><i class="fas fa-circle"></i> '.$antriann->name.'</p>';
+                                    }
+                                }
+                        @endphp
+                    @else
+                        -
+                    @endif
                 </div>
             </div>
         </div>
@@ -233,7 +256,7 @@
                 <div class="col-md table-responsive">
                     <h5><strong>Biaya Bahan</strong></h5>
                 <button class="btn btn-primary btn-sm m-0"><i class="fas fa-plus-circle"></i> Tambah</button>
-                <table class="table table-responsive table-bordered mt-3">
+                <table id="tabelBahan" class="table table-responsive table-bordered mt-3">
                     <thead>
                         <tr>
                             <th scope="col">No</th>
@@ -288,12 +311,18 @@
             </div>
         </div>
     </div>
+
+    @includeIf('page.antrian-workshop.modal.modal-ref-acc')
 </div>
 
 @endsection
 
 @section('script')
     <script>
+        function modalRefACC() {
+            $('#modalRefACC').modal('show');
+        }
+
         $(document).ready(function() {
             $('.keterangan').each(function() {
                 var text = $(this).text();
@@ -305,17 +334,23 @@
                 autoWidth: false,
                 processing: true,
                 serverSide: true,
+                paging: false,
+                searching: false,
+                info: false,
                 ajax: {
-                    url: kategori == 'Semua' ? "{{ route('antrian.indexSelesai') }}" : "{{ route('antrian.indexSelesai') }}?kategori=" + kategori,
+                    url: "{{ route('barang.show', $antrian->ticket_order) }}",
                 },
                 columns: [
                     {data: 'DT_RowIndex', name: 'id'},
                     {data: 'nama_produk', name: 'nama_produk'},
+                    {data: 'note', name: 'note'},
                     {data: 'harga', name: 'harga'},
                     {data: 'qty', name: 'qty'},
-                    {data: 'total', name: 'total'},
+                    {data: 'subtotal', name: 'subtotal'},
                 ],
             });
+
+            
         });
     </script>
 @endsection

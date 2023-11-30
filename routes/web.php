@@ -10,12 +10,12 @@ use App\Notifications\AntrianWorkshop;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Password;
 use App\Http\Controllers\OrderController;
 use Illuminate\Auth\Events\PasswordReset;
+use App\Http\Controllers\BarangController;
 use App\Http\Controllers\DesignController;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Notification;
 
 use App\Http\Controllers\ReportController;
 
@@ -24,6 +24,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmployeeController;
+use Illuminate\Support\Facades\Notification;
 use App\Http\Controllers\DocumentationController;
 
 /*
@@ -276,6 +277,9 @@ Route::controller(UserController::class)->group(function(){
     Route::put('/user/update/{id}', 'update')->middleware(['auth', 'checkrole:superadmin'])->name('user.update');
     Route::delete('/user/{id}', 'destroy')->middleware(['auth', 'checkrole:superadmin'])->name('user.destroy');
 });
+
+//Route Resource BarangController
+Route::resource('barang', BarangController::class);
 
 Route::get('/error', function () {
     //menampilkan halaman error dan error message

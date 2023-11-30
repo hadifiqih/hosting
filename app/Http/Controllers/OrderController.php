@@ -155,7 +155,7 @@ class OrderController extends Controller
             }
 
             $file = $request->file('refdesain');
-            $fileName = time() . '.' . $file->getClientOriginalName();
+            $fileName = time() . '.' . $orderLama->title . $file->getClientOriginalExtension();
             $path = 'ref-desain/' . $fileName;
             Storage::disk('public')->put($path, file_get_contents($file));
         }
@@ -212,7 +212,7 @@ class OrderController extends Controller
         //ubah nama file
         if($request->file('refdesain')){
             $file = $request->file('refdesain');
-            $fileName = time() . '.' . $file->getClientOriginalName();
+            $fileName = time() . '_' . $request->title . $file->getClientOriginalExtension();
             $path = 'ref-desain/' . $fileName;
             Storage::disk('public')->put($path, file_get_contents($file));
         }else{
@@ -251,7 +251,7 @@ class OrderController extends Controller
         try{
             //Menyimpan file cetak dari form dropzone
             $file = $request->file('fileCetak');
-            $fileName = time() . '.' . $file->getClientOriginalName();
+            $fileName = time() . '_' . $orderLama->title . $file->getClientOriginalExtension();
             $path = 'file-cetak/' . $fileName;
             Storage::disk('public')->put($path, file_get_contents($file));
 
@@ -361,7 +361,7 @@ class OrderController extends Controller
         }
         //Menyimpan file cetak dari form dropzone
         $file = $request->file('fileReupload');
-        $fileName = time() . '.' . $file->getClientOriginalName();
+        $fileName = time() . '_' . $orderLama->title . $file->getClientOriginalExtension();
         $path = 'file-cetak/' . $fileName;
         Storage::disk('public')->put($path, file_get_contents($file));
 
@@ -460,7 +460,7 @@ class OrderController extends Controller
             }
 
             $file = $request->file('accdesain');
-            $fileName = time() . '.' . $file->getClientOriginalName();
+            $fileName = time() . '_' . $orderLama->title . $file->getClientOriginalExtension();
             $path = 'acc-desain/' . $fileName;
             Storage::disk('public')->put($path, file_get_contents($file));
         }
@@ -511,7 +511,7 @@ class OrderController extends Controller
         }
         //Menyimpan file cetak dari form dropzone
         $file = $request->file('fileRevisi');
-        $fileName = time() . '.' . $file->getClientOriginalName();
+        $fileName = time() . '.' . $orderLama->title . $file->getClientOriginalExtension();
         $path = 'file-cetak/' . $fileName;
         Storage::disk('public')->put($path, file_get_contents($file));
 

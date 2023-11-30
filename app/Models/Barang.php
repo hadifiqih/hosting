@@ -9,6 +9,8 @@ class Barang extends Model
 {
     use HasFactory;
 
+    protected $table = 'barang';
+
     public function job()
     {
         return $this->belongsTo(Job::class);

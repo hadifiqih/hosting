@@ -7,6 +7,7 @@ use App\Models\Job;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Sales;
+use App\Models\Barang;
 use App\Models\Design;
 use App\Models\Antrian;
 use App\Models\Machine;
@@ -14,8 +15,8 @@ use App\Models\Payment;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Anservice;
-use App\Models\Dokumproses;
 
+use App\Models\Dokumproses;
 use Illuminate\Http\Request;
 use App\Models\Documentation;
 use Illuminate\Support\Facades\DB;
@@ -24,8 +25,8 @@ use App\Notifications\AntrianWorkshop;
 use App\Http\Resources\AntrianResource;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\AntrianDiantrikan;
-use Illuminate\Support\Facades\Notification;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Notification;
 
 
 class AntrianController extends Controller
@@ -257,6 +258,7 @@ class AntrianController extends Controller
                 $btn = '<div class="btn-group">';
                 if(auth()->user()->role == 'admin') {
                     $btn .= '<a href="' . route('antrian.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
+                    $btn .= '<a href="'.route('antrian.show', $row->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
                     $btn .= '<a href="' . route('antrian.destroy', $row->id) . '" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>';
                 }
                 else{
@@ -719,8 +721,17 @@ class AntrianController extends Controller
     public function show($id)
     {
         $antrian = Antrian::where('ticket_order', $id)->with('job', 'sales', 'order', 'customer', 'payment', 'design', 'operator', 'finishing', 'dokumproses')->first();
+
+        $items = Barang::where('ticket_order', $id)->get();
+
+        $total = 0;
+
+        foreach($items as $item){
+            $subtotal = $item->price * $item->qty;
+            $total += $subtotal;
+        }
         
-        return view('page.antrian-workshop.show', compact('antrian'));
+        return view('page.antrian-workshop.show', compact('antrian', 'total'));
     }
 
     public function updateDeadline(Request $request)
