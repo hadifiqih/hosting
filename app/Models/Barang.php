@@ -18,7 +18,7 @@ class Barang extends Model
 
     public function antrian()
     {
-        return $this->belongsTo(Antrian::class, 'ticket_order', 'ticket_order');
+        return $this->hasMany(Antrian::class, 'ticket_order', 'ticket_order');
     }
 
     public function user()

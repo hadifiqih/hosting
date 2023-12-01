@@ -12,7 +12,7 @@
             <img src="{{ asset('storage/ref-desain/'. $antrian->order->desain) }}" id="ref-acc" class="img-fluid" alt="Gambar Referensi / ACC Desain">
             <br>
             <h5>ACC Desain</h5>
-            <img src="{{ asset('storage/acc-desain/'. $antrian->order->acc_desain) }}" id="acc" class="img-fluid" alt="Gambar Referensi / ACC Desain">
+            <img src="{{ asset('storage/acc-desain/'. $antrian->barang->acc_desain) }}" id="acc" class="img-fluid" alt="Gambar Referensi / ACC Desain">
         </div>
         <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>

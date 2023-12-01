@@ -25,6 +25,11 @@ class Antrian extends Model
         return $this->belongsTo(Sales::class);
     }
 
+    public function barang()
+    {
+        return $this->belongsTo(Barang::class, 'ticket_order', 'ticket_order');
+    }
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);

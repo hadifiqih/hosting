@@ -720,7 +720,7 @@ class AntrianController extends Controller
 
     public function show($id)
     {
-        $antrian = Antrian::where('ticket_order', $id)->with('job', 'sales', 'order', 'customer', 'payment', 'design', 'operator', 'finishing', 'dokumproses')->first();
+        $antrian = Antrian::where('ticket_order', $id)->with('job', 'barang', 'sales', 'order', 'customer', 'payment', 'design', 'operator', 'finishing', 'dokumproses')->first();
 
         $items = Barang::where('ticket_order', $id)->get();
 
