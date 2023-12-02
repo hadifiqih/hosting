@@ -103,8 +103,30 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="5" class="text-center">Total</th>
+                        <th colspan="5" class="text-right">Total</th>
                         <th>{{ 'Rp '.number_format($total, 0, ',', '.') }}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="5" class="text-right">Diskon</th>
+                        <th>{{ 'Rp '.number_format($payment->diskon, 0, ',', '.') }}</th>
+                    </tr>
+                    <tr>
+                        @php
+                            $subtotal = $total - $payment->diskon;
+                        @endphp
+                        <th colspan="5" class="text-right">Subtotal</th>
+                        <th>{{ 'Rp '.number_format($subtotal, 0, ',', '.') }}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="5" class="text-right">Dibayarkan</th>
+                        <th>{{ 'Rp '.number_format($payment->payment_amount, 0, ',', '.') }}</th>
+                    </tr>
+                    <tr>
+                        @php
+                            $sisa = $total - $payment->diskon - $payment->payment_amount;
+                        @endphp
+                        <th colspan="5" class="text-right">Sisa Pembayaran</th>
+                        <th>{{ 'Rp '.number_format($sisa, 0, ',', '.') }}</th>
                     </tr>
                 </tfoot>
             </table>            
@@ -262,6 +284,7 @@
                             <th scope="col">No</th>
                             <th scope="col">Nama Bahan</th>
                             <th scope="col">Harga</th>
+                            <th scope="col">Note</th>
                             <th scope="col">Aksi</th>
                         </tr>
                     </thead>
@@ -270,6 +293,7 @@
                             <td>1</td>
                             <td>Sticker Ritrama</td>
                             <td>100.000</td>
+                            <td>Lorem ipsum dolor</td>
                             <td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-trash"></i></button></td>
                         </tr>
                         <tr>

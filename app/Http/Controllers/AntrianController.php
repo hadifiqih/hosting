@@ -724,6 +724,8 @@ class AntrianController extends Controller
 
         $items = Barang::where('ticket_order', $id)->get();
 
+        $payment = Payment::where('ticket_order', $id)->first();
+
         $total = 0;
 
         foreach($items as $item){
@@ -731,7 +733,7 @@ class AntrianController extends Controller
             $total += $subtotal;
         }
         
-        return view('page.antrian-workshop.show', compact('antrian', 'total'));
+        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'payment'));
     }
 
     public function updateDeadline(Request $request)
@@ -745,6 +747,7 @@ class AntrianController extends Controller
 
         return response()->json(['message' => 'Success'], 200);
     }
+    
     public function destroy($id)
     {
         // Melakukan pengecekan otorisasi sebelum menghapus antrian

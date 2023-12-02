@@ -8,11 +8,10 @@
         </button>
         </div>
         <div class="modal-body">
-            <h5>Referensi Desain</h5>
-            <img src="{{ asset('storage/ref-desain/'. $antrian->order->desain) }}" id="ref-acc" class="img-fluid" alt="Gambar Referensi / ACC Desain">
-            <br>
             <h5>ACC Desain</h5>
-            <img src="{{ asset('storage/acc-desain/'. $antrian->barang->acc_desain) }}" id="acc" class="img-fluid" alt="Gambar Referensi / ACC Desain">
+            @foreach($items as $item)
+                <img src="{{ asset('storage/acc-desain/'. $item->acc_desain) }}" id="acc{{ $item->id }}" class="img-fluid m-2" alt="Gambar Referensi / ACC Desain">
+            @endforeach
         </div>
         <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
