@@ -16,6 +16,7 @@ use App\Http\Controllers\OrderController;
 use Illuminate\Auth\Events\PasswordReset;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\DesignController;
+use App\Http\Controllers\BahanController;
 
 use App\Http\Controllers\ReportController;
 
@@ -280,6 +281,9 @@ Route::controller(UserController::class)->group(function(){
 
 //Route Resource BarangController
 Route::resource('barang', BarangController::class);
+
+//Route Resource BahanController
+Route::resource('bahan', BahanController::class);
 
 Route::get('/error', function () {
     //menampilkan halaman error dan error message

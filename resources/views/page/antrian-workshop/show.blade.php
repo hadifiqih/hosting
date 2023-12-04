@@ -7,6 +7,7 @@
 @section('page', 'Antrian')
 
 @section('content')
+<input type="hidden" id="ticket_order" value="{{ $antrian->ticket_order }}">
     <div class="card">
         <div class="card-header">
             <h3 class="card-title"><i class="fas fa-clipboard mr-2"></i> <strong>Status Pesanan </strong></h3>
@@ -86,9 +87,13 @@
             </div>
         </div>
         <div class="card-body">
-            <h6 class="mb-3"><strong><i class="fas fa-circle"></i> <span class="ml-2">Ticket Order - </span></strong>{{ $antrian->ticket_order }}</h6>
+            <div class="row">
+                <h6 class="mb-3 mr-2"><strong><i class="fas fa-circle"></i> <span class="ml-2">Ticket Order - </span></strong>{{ $antrian->ticket_order }}</h6>
+                <h6 class="mb-3 ml-2"><strong><i class="fas fa-circle"></i> <span class="ml-2">Sales : {{ $antrian->sales->sales_name }}</span></strong></h6>
+            </div>
+            <div class="row">
             <table id="tableItems" class="table table-bordered table-responsive">
-                <thead class="thead-dark text-light">
+                <thead>
                     <tr>
                         <th>No</th>
                         <th>Nama Produk</th>
@@ -132,6 +137,7 @@
             </table>            
         </div>
     </div>
+    </div>
 
     <div class="card">
         <div class="card-header">
@@ -165,9 +171,16 @@
                         <div class="col-2 mt-2">
                             <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->order->file_cetak, -3)) }}</div>
                         </div>
-                        <div class="col-8 my-auto">
+                        <div class="col-4 my-auto">
                             <a href="{{ route('design.download', $antrian->id) }}" class="font-weight-bold my-0">File Cetak</a>
                             <p class="text-muted">{{ date_format($antrian->order->updated_at, 'd F Y - H:i') }}</p>
+                        </div>
+                        <div class="col-2 mt-2">
+                            <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->payment->payment_proof, -3)) }}</div>
+                        </div>
+                        <div class="col-4 my-auto">
+                            <a class="font-weight-bold my-0" onclick="modalBuktiPembayaran()">Bukti Pembayaran</a>
+                            <p class="text-muted">{{ date_format($antrian->payment->updated_at, 'd F Y - H:i') }}</p>
                         </div>
                     </div>
                 </div>
@@ -275,9 +288,18 @@
         </div>
         <div class="card-body">
             <div class="row">
+                <div class="col">
+                    @php
+                        $omset = $antrian->omset;
+                    @endphp
+                    <h5 class="font-weight-bold">Nominal Omset : <span class="text-danger">Rp{{ number_format($antrian->omset, 0, ',', '.') }}</span></h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
                 <div class="col-md table-responsive">
                     <h5><strong>Biaya Bahan</strong></h5>
-                <button class="btn btn-primary btn-sm m-0"><i class="fas fa-plus-circle"></i> Tambah</button>
+                <button class="btn btn-primary btn-sm m-0" onclick="modalBahan()"><i class="fas fa-plus-circle"></i> Tambah</button>
                 <table id="tabelBahan" class="table table-responsive table-bordered mt-3">
                     <thead>
                         <tr>
@@ -289,24 +311,29 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach($bahan as $item)
                         <tr>
-                            <td>1</td>
-                            <td>Sticker Ritrama</td>
-                            <td>100.000</td>
-                            <td>Lorem ipsum dolor</td>
-                            <td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-trash"></i></button></td>
+                            <th scope="row">{{ $loop->iteration }}</th>
+                            <td>{{ $item->nama_bahan }}</td>
+                            <td>{{ 'Rp '.number_format($item->harga, 0, ',', '.') }}</td>
+                            <td>{{ $item->note }}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                            </td>
                         </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Sticker Ritrama</td>
-                            <td>100.000</td>
-                            <td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-trash"></i></button></td>
-                        </tr>
+                        @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="2" class="text-right">Total Biaya Bahan : </th>
+                            <th id="totalBahan" class="text-danger" colspan="3"></th>
+                        </tr>
+                    </tfoot>
                 </table>
-
+                
+                <hr>
                 <h5><strong>Biaya Lainnya</strong></h5>
-                <table class="table table-responsive table-bordered table-hover mt-3" style="width: 100%">
+                <table id="tableBahan" class="table table-responsive table-bordered table-hover mt-3" style="width: 100%">
                     <thead>
                         <tr>
                             <th>Biaya Sales (3%)</th>
@@ -316,42 +343,152 @@
                             <th>BPJS (2,5%)</th>
                             <th>Biaya Transportasi (1%)</th>
                             <th>Biaya Overhead / Lainnya (2,5%)</th>
-                            <th>Biaya Alat & Listrik (3%)</th>
+                            <th>Biaya Alat & Listrik (2%)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <th>10.000</th>
-                            <th>120.000</th>
-                            <th>123</th>
-                            <th>10.000</th>
-                            <th>10.000</th>
-                            <th>10.000</th>
-                            <th>10.000</th>
-                            <th>10.000</th>
+                            <th>Rp{{ number_format($omset * 0.03, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($omset * 0.02, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($omset * 0.03, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($omset * 0.05, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($omset * 0.025, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($omset * 0.01, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($omset * 0.025, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($omset * 0.02, 0, ',', '.') }}</th>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="8" class="text-center">Total Biaya Lainnya : <span class="text-danger">Rp{{ number_format($omset * 0.03 + $omset * 0.02 + $omset * 0.03 + $omset * 0.05 + $omset * 0.025 + $omset * 0.01 + $omset * 0.025 + $omset * 0.02, 0, ',', '.') }}</span></th>
+                        </tr>
+                    </tfoot>
                 </table>
+                <hr>
+                <div class="row">
+                    <div class="col">
+                        @php
+                            $totalBiaya = ($omset * 0.03 + $omset * 0.02 + $omset * 0.03 + $omset * 0.05 + $omset * 0.025 + $omset * 0.01 + $omset * 0.025 + $omset * 0.02) + $totalBahan;
+                            $profit = $omset - $totalBiaya;
+                        @endphp
+                        <h5 class="font-weight-bold">Profit Perusahaan : <span class="text-danger">Rp{{ number_format($profit, 0, ',', '.') }}</span></h5>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     @includeIf('page.antrian-workshop.modal.modal-ref-acc')
+    @includeIf('page.antrian-workshop.modal.modal-tambah-bahan')
 </div>
 
 @endsection
 
 @section('script')
+<script src="{{ asset('adminlte/dist/js/maskMoney.min.js') }}"></script>
+
     <script>
         function modalRefACC() {
             $('#modalRefACC').modal('show');
         }
 
+        function modalBahan() {
+            $('#modalBahan').modal('show');
+        }
+
+        function deleteBahan(id) {
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: "Bahan akan dihapus dari daftar biaya produksi!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Batal'
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ url('bahan') }}/"+id,
+                        type: "POST",
+                        data: {
+                            "_method": "DELETE",
+                            "_token": "{{ csrf_token() }}",
+                        },
+                        success: function(response) {
+                            //muncul toast success
+                            var Toast = Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Bahan berhasil dihapus'
+                            });
+            
+                            //ajax reload table
+                            $('#tabelBahan').DataTable().ajax.reload();
+
+                        },
+                        error: function(xhr) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                }
+            })
+        }
+
         $(document).ready(function() {
+            //format rupiah menggunakan maskMoney
+            $('#harga_bahan').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
+
             $('.keterangan').each(function() {
                 var text = $(this).text();
                 $(this).html(text.replace(/\n/g, '<br/>'));
             });
+
+            $('#formBahan').on('submit', function(e){
+                e.preventDefault();
+                var nama_bahan = $('#nama_bahan').val();
+                var harga_bahan = $('#harga_bahan').val();
+                var note = $('#note').val();
+                var ticket_order = $('#ticket_order').val();
+
+                $.ajax({
+                    url: "{{ route('bahan.store') }}",
+                    type: "POST",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        nama_bahan: nama_bahan,
+                        harga_bahan: harga_bahan,
+                        note: note,
+                        ticket_order: ticket_order
+                    },
+                    success: function(response) {
+                        $('#modalBahan').modal('hide');
+                        //muncul toast success
+                        var Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Bahan berhasil ditambahkan'
+                        });
+        
+                        //ajax reload table
+                        $('#tabelBahan').DataTable().ajax.reload();
+
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            })
 
             $('#tableItems').DataTable({
                 responsive: true,
@@ -371,6 +508,26 @@
                     {data: 'harga', name: 'harga'},
                     {data: 'qty', name: 'qty'},
                     {data: 'subtotal', name: 'subtotal'},
+                ],
+            });
+
+            $('#tabelBahan').DataTable({
+                responsive: true,
+                autoWidth: false,
+                processing: true,
+                serverSide: true,
+                paging: false,
+                searching: false,
+                info: false,
+                ajax: {
+                    url: "{{ route('bahan.show', $antrian->ticket_order) }}",
+                },
+                columns: [
+                    {data: 'DT_RowIndex', name: 'id'},
+                    {data: 'nama_bahan', name: 'nama_bahan'},
+                    {data: 'harga', name: 'harga'},
+                    {data: 'note', name: 'note'},
+                    {data: 'aksi', name: 'aksi'},
                 ],
             });
 

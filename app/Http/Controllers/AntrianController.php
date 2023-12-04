@@ -15,6 +15,7 @@ use App\Models\Payment;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Anservice;
+use App\Models\Bahan;
 
 use App\Models\Dokumproses;
 use Illuminate\Http\Request;
@@ -732,8 +733,10 @@ class AntrianController extends Controller
             $subtotal = $item->price * $item->qty;
             $total += $subtotal;
         }
+
+        $bahan = Bahan::where('ticket_order', $id)->get();
         
-        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'payment'));
+        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'payment', 'bahan'));
     }
 
     public function updateDeadline(Request $request)
