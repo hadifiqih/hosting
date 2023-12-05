@@ -735,8 +735,14 @@ class AntrianController extends Controller
         }
 
         $bahan = Bahan::where('ticket_order', $id)->get();
+
+        $totalBahan = 0;
+
+        foreach($bahan as $b){
+            $totalBahan += $b->harga;
+        }
         
-        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'payment', 'bahan'));
+        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'payment', 'bahan', 'totalBahan'));
     }
 
     public function updateDeadline(Request $request)

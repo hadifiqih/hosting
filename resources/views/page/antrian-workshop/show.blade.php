@@ -292,7 +292,7 @@
                     @php
                         $omset = $antrian->omset;
                     @endphp
-                    <h5 class="font-weight-bold">Nominal Omset : <span class="text-danger">Rp{{ number_format($antrian->omset, 0, ',', '.') }}</span></h5>
+                    <h5 class="font-weight-bold">Nominal Omset : <span class="text-danger" id="omset">Rp{{ number_format($antrian->omset, 0, ',', '.') }}</span></h5>
                 </div>
             </div>
             <hr>
@@ -321,12 +321,12 @@
                                 <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>
+                        
                         @endforeach
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="2" class="text-right">Total Biaya Bahan : </th>
-                            <th id="totalBahan" class="text-danger" colspan="3"></th>
+                            <th colspan="5" class="text-center">Total Biaya Bahan : <span class="text-danger" id="bahanTotal">{{ $totalBahan }}</span></th>
                         </tr>
                     </tfoot>
                 </table>
@@ -360,7 +360,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="8" class="text-center">Total Biaya Lainnya : <span class="text-danger">Rp{{ number_format($omset * 0.03 + $omset * 0.02 + $omset * 0.03 + $omset * 0.05 + $omset * 0.025 + $omset * 0.01 + $omset * 0.025 + $omset * 0.02, 0, ',', '.') }}</span></th>
+                            <th colspan="8" class="text-center">Total Biaya Lainnya : <span class="text-danger" id="totalBiayaLain">Rp{{ number_format($omset * 0.03 + $omset * 0.02 + $omset * 0.03 + $omset * 0.05 + $omset * 0.025 + $omset * 0.01 + $omset * 0.025 + $omset * 0.02, 0, ',', '.') }}</span></th>
                         </tr>
                     </tfoot>
                 </table>
@@ -371,7 +371,16 @@
                             $totalBiaya = ($omset * 0.03 + $omset * 0.02 + $omset * 0.03 + $omset * 0.05 + $omset * 0.025 + $omset * 0.01 + $omset * 0.025 + $omset * 0.02) + $totalBahan;
                             $profit = $omset - $totalBiaya;
                         @endphp
-                        <h5 class="font-weight-bold">Profit Perusahaan : <span class="text-danger">Rp{{ number_format($profit, 0, ',', '.') }}</span></h5>
+                        <h5 class="font-weight-bold">Profit Perusahaan : <span class="text-danger" id="profit">Rp{{ number_format($profit, 0, ',', '.') }}</span></h5>
+                    </div>
+                    <div class="col">
+                        <div class="text-right">
+                            @if($antrian->done_production_at == null)
+                            <button class="btn btn-success btn-sm">Tandai Selesai <i class="fas fa-check"></i></button>
+                            @else
+                            <button class="btn btn-warning btn-sm">Unduh BP <i class="fas fa-download"></i></button>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -395,6 +404,26 @@
         function modalBahan() {
             $('#modalBahan').modal('show');
         }
+
+        $('#tabelBahan').DataTable({
+                responsive: true,
+                autoWidth: false,
+                processing: true,
+                serverSide: true,
+                paging: false,
+                searching: false,
+                info: false,
+                ajax: {
+                    url: "{{ route('bahan.show', $antrian->ticket_order) }}",
+                },
+                columns: [
+                    {data: 'DT_RowIndex', name: 'id'},
+                    {data: 'nama_bahan', name: 'nama_bahan'},
+                    {data: 'harga', name: 'harga'},
+                    {data: 'note', name: 'note'},
+                    {data: 'aksi', name: 'aksi'},
+                ],
+            });
 
         function deleteBahan(id) {
             Swal.fire({
@@ -430,6 +459,18 @@
             
                             //ajax reload table
                             $('#tabelBahan').DataTable().ajax.reload();
+                            //refresh ajax dari route bahan.total
+                            $.ajax({
+                                url: "{{ route('bahan.total', $antrian->ticket_order) }}",
+                                type: "GET",
+                                success: function(response) {
+                                    $('#bahanTotal').html(response.total);
+                                    $('#profit').html(response.profit);
+                                },
+                                error: function(xhr) {
+                                    console.log(xhr.responseText);
+                                }
+                            });
 
                         },
                         error: function(xhr) {
@@ -441,6 +482,19 @@
         }
 
         $(document).ready(function() {
+
+            $.ajax({
+                url: "{{ route('bahan.total', $antrian->ticket_order) }}",
+                type: "GET",
+                success: function(response) {
+                    $('#bahanTotal').html(response.total);
+                    $('#profit').html(response.profit);
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
+
             //format rupiah menggunakan maskMoney
             $('#harga_bahan').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
 
@@ -482,7 +536,18 @@
         
                         //ajax reload table
                         $('#tabelBahan').DataTable().ajax.reload();
-
+                        //refresh ajax dari route bahan.total
+                        $.ajax({
+                                url: "{{ route('bahan.total', $antrian->ticket_order) }}",
+                                type: "GET",
+                                success: function(response) {
+                                    $('#bahanTotal').html(response.total);
+                                    $('#profit').html(response.profit);
+                                },
+                                error: function(xhr) {
+                                    console.log(xhr.responseText);
+                                }
+                            });
                     },
                     error: function(xhr) {
                         console.log(xhr.responseText);
@@ -510,28 +575,6 @@
                     {data: 'subtotal', name: 'subtotal'},
                 ],
             });
-
-            $('#tabelBahan').DataTable({
-                responsive: true,
-                autoWidth: false,
-                processing: true,
-                serverSide: true,
-                paging: false,
-                searching: false,
-                info: false,
-                ajax: {
-                    url: "{{ route('bahan.show', $antrian->ticket_order) }}",
-                },
-                columns: [
-                    {data: 'DT_RowIndex', name: 'id'},
-                    {data: 'nama_bahan', name: 'nama_bahan'},
-                    {data: 'harga', name: 'harga'},
-                    {data: 'note', name: 'note'},
-                    {data: 'aksi', name: 'aksi'},
-                ],
-            });
-
-            
         });
     </script>
 @endsection

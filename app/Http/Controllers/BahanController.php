@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Bahan;
 
-use Yajra\DataTables\Facades\DataTables;
+use App\Models\Antrian;
 
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class BahanController extends Controller
 {
@@ -48,6 +49,9 @@ class BahanController extends Controller
         $bahan->note = $request->note != null ? $request->note : '-';
         $bahan->save();
 
+        $antrian = Antrian::where('ticket_order', $request->ticket_order)->first();
+
+
         return response()->json([
             'success' => true,
             'message' => 'Bahan berhasil ditambahkan',
@@ -61,30 +65,49 @@ class BahanController extends Controller
     {
         $bahan = Bahan::where('ticket_order', $id)->get();
 
-        $totalBahan = 0;
+        $antrian = Antrian::where('ticket_order', $id)->first();
 
-        foreach($bahan as $b){
-            $totalBahan += $b->harga;
+        $done = $antrian->done_production_at;
+
+        $bahanTotal = Bahan::where('ticket_order', $id)->sum('harga');
+
+        if($done == null) {
+            $dataTable = Datatables::of($bahan)
+            ->addIndexColumn()
+            ->addColumn('nama_bahan', function ($row) {
+                return $row->nama_bahan;
+            })
+            ->addColumn('harga', function ($row) {
+                return 'Rp ' . number_format($row->harga, 0, ',', '.');
+            })
+            ->addColumn('note', function ($row) {
+                return $row->note;
+            })
+            ->addColumn('aksi', function ($row) {
+                $btn = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBahan(' . $row->id . ')"><i class="fas fa-trash"></i></a>';
+                return $btn;
+            });
+
+            return $dataTable->rawColumns(['aksi'])->make(true);
+        }else{
+            $dataTable = Datatables::of($bahan)
+            ->addIndexColumn()
+            ->addColumn('nama_bahan', function ($row) {
+                return $row->nama_bahan;
+            })
+            ->addColumn('harga', function ($row) {
+                return 'Rp ' . number_format($row->harga, 0, ',', '.');
+            })
+            ->addColumn('note', function ($row) {
+                return $row->note;
+            })
+            ->addColumn('aksi', function ($row) {
+                $btn = '<a href="javascript:void(0)" class="btn btn-secondary btn-sm disabled"><i class="fas fa-trash"></i></a>';
+                return $btn;
+            });
+
+            return $dataTable->rawColumns(['aksi'])->make(true);
         }
-
-        return Datatables::of($bahan)
-        ->addIndexColumn()
-        ->addColumn('nama_bahan', function($row){
-            return $row->nama_bahan;
-        })
-        ->addColumn('harga', function($row){
-            return 'Rp '.number_format($row->harga, 0, ',', '.');
-        })
-        ->addColumn('note', function($row){
-            return $row->note;
-        })
-        ->addColumn('aksi', function($row){
-            $btn = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBahan('.$row->id.')"><i class="fas fa-trash"></i></a>';
-            return $btn;
-        })
-        ->rawColumns(['aksi'])
-        ->with('total', $totalBahan)
-        ->make(true);
     }
 
     /**
@@ -116,4 +139,32 @@ class BahanController extends Controller
             'message' => 'Bahan berhasil dihapus',
         ]);
     }
+
+    public function totalBahan(string $id)
+    {
+        $antrian = Antrian::where('ticket_order', $id)->first();
+
+        $omset = intval($antrian->omset);
+
+        $bahanTotal = Bahan::where('ticket_order', $id)->sum('harga');
+
+        $bahanLain = ($omset * 0.03) + ($omset * 0.02) + ($omset * 0.03) + ($omset * 0.05) + ($omset * 0.025) + ($omset * 0.01) + ($omset * 0.025) + ($omset * 0.02);
+
+        $totalProduksi = $bahanTotal + $bahanLain;
+
+        $profit = $omset - $totalProduksi;
+
+        //format menjadi rupiah dengan number_format
+        $bahanTotal = 'Rp'.number_format($bahanTotal, 0, ',', '.');
+
+        $profit = 'Rp'.number_format($profit, 0, ',', '.');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bahan berhasil dihapus',
+            'total' => $bahanTotal,
+            'profit' => $profit,
+        ]);
+    }
+
 }

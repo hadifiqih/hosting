@@ -285,6 +285,9 @@ Route::resource('barang', BarangController::class);
 //Route Resource BahanController
 Route::resource('bahan', BahanController::class);
 
+Route::controller(BahanController::class)->group(function(){
+    Route::get('/bahan/total/{id}', 'totalBahan')->name('bahan.total');
+});
 Route::get('/error', function () {
     //menampilkan halaman error dan error message
     if (session('error')) {
