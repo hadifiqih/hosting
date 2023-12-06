@@ -299,7 +299,9 @@
             <div class="row">
                 <div class="col-md table-responsive">
                     <h5><strong>Biaya Bahan</strong></h5>
-                <button class="btn btn-primary btn-sm m-0" onclick="modalBahan()"><i class="fas fa-plus-circle"></i> Tambah</button>
+                @if($antrian->done_production_at == null)
+                    <button class="btn btn-primary btn-sm m-0" onclick="modalBahan()"><i class="fas fa-plus-circle"></i> Tambah</button>
+                @endif
                 <table id="tabelBahan" class="table table-responsive table-bordered mt-3">
                     <thead>
                         <tr>
@@ -372,11 +374,12 @@
                             $profit = $omset - $totalBiaya;
                         @endphp
                         <h5 class="font-weight-bold">Profit Perusahaan : <span class="text-danger" id="profit">Rp{{ number_format($profit, 0, ',', '.') }}</span></h5>
+                        <h6>Dihitung oleh : <span class="text-danger">{{ $antrian->estimator->name }}</span></h6>
                     </div>
                     <div class="col">
                         <div class="text-right">
                             @if($antrian->done_production_at == null)
-                            <button class="btn btn-success btn-sm">Tandai Selesai <i class="fas fa-check"></i></button>
+                            <button class="btn btn-success btn-sm" onclick="tandaiSelesaiHitungBP()">Tandai Selesai <i class="fas fa-check"></i></button>
                             @else
                             <button class="btn btn-warning btn-sm">Unduh BP <i class="fas fa-download"></i></button>
                             @endif
@@ -397,14 +400,73 @@
 <script src="{{ asset('adminlte/dist/js/maskMoney.min.js') }}"></script>
 
     <script>
+        //menampilkan modal gambar acc desain
         function modalRefACC() {
             $('#modalRefACC').modal('show');
         }
 
+        //menampilkan form modal tambah bahan
         function modalBahan() {
             $('#modalBahan').modal('show');
         }
 
+        //fungsi untuk menandai selesai hitung BP
+        function tandaiSelesaiHitungBP() {
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: "Biaya Produksi akan disimpan dan tidak dapat diubah lagi!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Tandai Selesai',
+                cancelButtonText: 'Batal'
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('biaya.produksi.update', $antrian->ticket_order) }}",
+                        type: "POST",
+                        data: {
+                            "_method": "PUT",
+                            "_token": "{{ csrf_token() }}",
+                        },
+                        success: function(response) {
+                            //muncul toast success
+                            var Toast = Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Biaya Produksi berhasil disimpan !'
+                            });
+                            
+                            //ajax reload table
+                            $('#tabelBahan').DataTable().ajax.reload();
+                            //refresh ajax dari route bahan.total
+                            $.ajax({
+                                url: "{{ route('bahan.total', $antrian->ticket_order) }}",
+                                type: "GET",
+                                success: function(response) {
+                                    $('#bahanTotal').html(response.total);
+                                    $('#profit').html(response.profit);
+                                },
+                                error: function(xhr) {
+                                    console.log(xhr.responseText);
+                                }
+                            });
+                        },
+                        error: function(xhr) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                }
+            })
+        }
+
+        //menampilkan daftar bahan produksi
         $('#tabelBahan').DataTable({
                 responsive: true,
                 autoWidth: false,
@@ -425,6 +487,7 @@
                 ],
             });
 
+        //ajax untuk menghapus bahan
         function deleteBahan(id) {
             Swal.fire({
                 title: 'Apakah anda yakin?',
@@ -482,7 +545,7 @@
         }
 
         $(document).ready(function() {
-
+            //ajax untuk menampilkan total biaya bahan
             $.ajax({
                 url: "{{ route('bahan.total', $antrian->ticket_order) }}",
                 type: "GET",
@@ -503,6 +566,7 @@
                 $(this).html(text.replace(/\n/g, '<br/>'));
             });
 
+            //ajax untuk menambahkan bahan
             $('#formBahan').on('submit', function(e){
                 e.preventDefault();
                 var nama_bahan = $('#nama_bahan').val();
@@ -555,6 +619,7 @@
                 });
             })
 
+            //ajax untuk menampilkan barang yang dipesan
             $('#tableItems').DataTable({
                 responsive: true,
                 autoWidth: false,

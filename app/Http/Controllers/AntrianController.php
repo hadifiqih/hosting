@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Job;
 use App\Models\User;
+use App\Models\Bahan;
 use App\Models\Order;
 use App\Models\Sales;
 use App\Models\Barang;
@@ -15,10 +16,10 @@ use App\Models\Payment;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Anservice;
-use App\Models\Bahan;
 
 use App\Models\Dokumproses;
 use Illuminate\Http\Request;
+use App\Models\BiayaProduksi;
 use App\Models\Documentation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -721,8 +722,9 @@ class AntrianController extends Controller
 
     public function show($id)
     {
-        $antrian = Antrian::where('ticket_order', $id)->with('job', 'barang', 'sales', 'order', 'customer', 'payment', 'design', 'operator', 'finishing', 'dokumproses')->first();
+        $antrian = Antrian::where('ticket_order', $id)->with('job', 'barang', 'sales', 'order', 'customer', 'payment', 'design', 'operator', 'finishing', 'dokumproses','estimator')->first();
 
+        dd($antrian);
         $items = Barang::where('ticket_order', $id)->get();
 
         $payment = Payment::where('ticket_order', $id)->first();
@@ -919,21 +921,27 @@ class AntrianController extends Controller
         return redirect()->route('antrian.index')->with('success-dokumentasi', 'Berhasil ditandai selesai !');
     }
 
-    public function reminderProgress(){
-        // $beamsClient = new \Pusher\PushNotifications\PushNotifications(array(
-        //     "instanceId" => "0958376f-0b36-4f59-adae-c1e55ff3b848",
-        //     "secretKey" => "9F1455F4576C09A1DE06CBD4E9B3804F9184EF91978F3A9A92D7AD4B71656109",
-        // ));
+    public function biayaProduksiSelesai(Request $request, $id){
+        $antrian = Antrian::where('ticket_order', $id)->first();
+        $antrian->done_production_at = Carbon::now();
+        $antrian->done_production_by = auth()->user()->id;
+        $antrian->save();
 
-        // $publishResponse = $beamsClient->publishToInterests(
-        //     array("operator"),
-        //     array("web" => array("notification" => array(
-        //       "title" => "🔔 Kring.. Reminder!",
-        //       "body" => "Yuk cek progress pekerjaanmu sekarang, jangan lupa upload progressnya ya !",
-        //       "deep_link" => "https://interatama.my.id/",
-        //     )),
-        // ));
+        $omset = $antrian->omset;
+        $omset = intval($omset);
 
-        return response()->json('success', 200);
+        $bproduksi = new BiayaProduksi();
+        $bproduksi->ticket_order = $id;
+        $bproduksi->biaya_sales = $omset * 0.03;
+        $bproduksi->biaya_desain = $omset * 0.02;
+        $bproduksi->biaya_penanggung_jawab = $omset * 0.03;
+        $bproduksi->biaya_pekerjaan = $omset * 0.05;
+        $bproduksi->biaya_bpjs = $omset * 0.025;
+        $bproduksi->biaya_transportasi = $omset * 0.01;
+        $bproduksi->biaya_overhead = $omset * 0.025;
+        $bproduksi->biaya_alat_listrik = $omset * 0.02;
+        $bproduksi->save();
+
+        return response()->json(['message' => 'Biaya Produksi berhasil disimpan !'], 200);
     }
 }

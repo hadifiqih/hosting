@@ -9,8 +9,9 @@ use App\Models\Design;
 use App\Models\Payment;
 use App\Models\Customer;
 use App\Models\Employee;
-use App\Models\Documentation;
 use App\Models\Dokumproses;
+use App\Models\BiayaProduksi;
+use App\Models\Documentation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -19,6 +20,16 @@ class Antrian extends Model
     use HasFactory;
 
     protected $table = 'antrians';
+
+    public function estimator()
+    {
+        return $this->belongsTo(Employee::class, 'done_production_by', 'id');
+    }
+
+    public function biaya_produksi()
+    {
+        return $this->belongsTo(BiayaProduksi::class, 'ticket_order', 'ticket_order');
+    }
 
     public function sales()
     {

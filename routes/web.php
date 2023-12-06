@@ -232,6 +232,8 @@ Route::controller(AntrianController::class)->group(function(){
     Route::get('/antrian/reminder', 'reminderProgress')->middleware('auth')->name('antrian.reminder');
     Route::get('/antrian/tandai-selesai/{id}', 'markSelesai')->middleware('auth')->name('antrian.markSelesai');
     Route::post('/antrian/filterByCategory', 'filterProcess')->middleware('auth')->name('antrian.filterByCategory');
+
+    Route::put('/biaya-produksi/selesai/{id}', 'biayaProduksiSelesai')->middleware('auth')->name('biaya.produksi.update');
 });
 
 Route::controller(PaymentController::class)->group(function(){
