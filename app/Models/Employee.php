@@ -75,10 +75,4 @@ class Employee extends Model
     {
         return $this->role === 'sales';
     }
-
-    public function estimator()
-    {
-        //relasi dengan tabel antrian
-        return $this->hasMany(Antrian::class, 'estimator_id');
-    }
 }

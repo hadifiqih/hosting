@@ -91,7 +91,7 @@
                 <h6 class="mb-3 mr-2"><strong><i class="fas fa-circle"></i> <span class="ml-2">Ticket Order - </span></strong>{{ $antrian->ticket_order }}</h6>
                 <h6 class="mb-3 ml-2"><strong><i class="fas fa-circle"></i> <span class="ml-2">Sales : {{ $antrian->sales->sales_name }}</span></strong></h6>
             </div>
-            <div class="row">
+            <div class="row table-responsive">
             <table id="tableItems" class="table table-bordered table-responsive">
                 <thead>
                     <tr>
@@ -182,6 +182,15 @@
                             <a class="font-weight-bold my-0" onclick="modalBuktiPembayaran()">Bukti Pembayaran</a>
                             <p class="text-muted">{{ date_format($antrian->payment->updated_at, 'd F Y - H:i') }}</p>
                         </div>
+                        @if($antrian->file_po != null)
+                        <div class="col-2 mt-2">
+                            <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->file_po, -3)) }}</div>
+                        </div>
+                        <div class="col-4 my-auto">
+                            <a href="{{ route('antrian.downloadPO', $antrian->id) }}" class="font-weight-bold my-0">File Purchase Order(PO)</a>
+                            <p class="text-muted">{{ date_format($antrian->updated_at, 'd F Y - H:i') }}</p>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -374,7 +383,7 @@
                             $profit = $omset - $totalBiaya;
                         @endphp
                         <h5 class="font-weight-bold">Profit Perusahaan : <span class="text-danger" id="profit">Rp{{ number_format($profit, 0, ',', '.') }}</span></h5>
-                        <h6>Dihitung oleh : <span class="text-danger">{{ $antrian->estimator->name }}</span></h6>
+                        <h6>Dihitung oleh : <span class="text-danger">{{ $antrian->estimator_id ? $antrian->estimator->name : '-' }}</span></h6>
                     </div>
                     <div class="col">
                         <div class="text-right">
@@ -389,7 +398,6 @@
             </div>
         </div>
     </div>
-
     @includeIf('page.antrian-workshop.modal.modal-ref-acc')
     @includeIf('page.antrian-workshop.modal.modal-tambah-bahan')
 </div>

@@ -23,7 +23,7 @@ class Antrian extends Model
 
     public function estimator()
     {
-        return $this->belongsTo(Employee::class, 'done_production_by', 'id');
+        return $this->belongsTo(Employee::class, 'estimator_id');
     }
 
     public function biaya_produksi()

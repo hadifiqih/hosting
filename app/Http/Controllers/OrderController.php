@@ -636,8 +636,9 @@ class OrderController extends Controller
     // Mendapatkan Produk berdasarkan Kategori by Sales
     //-------------------------------------------------------------------------------------------------------------
 
-    public function getJobsByCategory($category_id){
-        $jobs = Job::where('job_type', $category_id)->get();
+    public function getJobsByCategory(Request $request){
+        $category = $request->kategoriProduk;
+        $jobs = Job::where('job_type', $category)->get();
 
         return response()->json($jobs);
     }

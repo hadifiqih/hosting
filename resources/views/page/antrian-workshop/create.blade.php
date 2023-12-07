@@ -122,7 +122,6 @@
 <script>
     $(function () {
         bsCustomFileInput.init();
-
     });
 
     function tambahProduk(){
@@ -130,6 +129,73 @@
     }
 
     $(document).ready(function(){
+        // Mask Money
+        $('#harga').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
+
+        //nama produk select2
+        $('#modalPilihProduk #kategoriProduk').on('change', function(){
+            var kategoriProduk = $(this).val();
+
+            $('#modalPilihProduk #namaProduk').val(null).trigger('change');
+            $('#modalPilihProduk #namaProduk').empty();
+            $('#modalPilihProduk #namaProduk').append(`<option value="" selected disabled>Pilih Produk</option>`);
+
+        $('#modalPilihProduk #namaProduk').select2({
+            placeholder: 'Pilih Produk',
+            ajax: {
+                url: "{{ route('getJobsByCategory') }}",
+                dataType: 'json',
+                delay: 250,
+                data: {
+                    kategoriProduk: kategoriProduk
+                },
+                processResults: function (data) {
+                    return {
+                        results:  $.map(data, function (item) {
+                            if(item.instansi == null){
+                                return {
+                                    text: item.job_name,
+                                    id: item.id,
+                                }
+                            }else{
+                                return {
+                                    text: item.job_name + ' - ' + item.instansi,
+                                    id: item.id,
+                                }
+                            }
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+        });
+
+        //DataTables Produk
+        $('#tableProduk').DataTable({
+            responsive: true,
+            autoWidth: false,
+            processing: true,
+            serverSide: true,
+            paging: false,
+            searching: false,
+            info: false,
+            ajax: {
+                url: "{{ route('barang.show', $order->ticket_order) }}",
+            },
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                {data: 'kategori', name: 'kategori'},
+                {data: 'produk', name: 'produk'},
+                {data: 'qty', name: 'qty'},
+                {data: 'harga', name: 'harga'},
+                {data: 'diskon', name: 'diskon'},
+                {data: 'hargaTotal', name: 'hargaTotal'},
+                {data: 'keterangan', name: 'keterangan'},
+                {data: 'action', name: 'action'},
+            ],
+        });
+
         // Nama Pelanggan
         $('#namaPelanggan').select2({
             placeholder: 'Pilih Pelanggan',
@@ -158,26 +224,6 @@
             }
         });
 
-        $('#namaProduk').select2({
-            placeholder: 'Pilih Produk',
-            ajax: {
-                url: "{{ route('getAllJobs') }}",
-                dataType: 'json',
-                delay: 250,
-                processResults: function (data) {
-                    return {
-                        results:  $.map(data, function (item) {
-                            return {
-                            text: item.job_name,
-                            id: item.id
-                            }
-                        })
-                    };
-                },
-                cache: true
-            }
-        });
-
         $('#formTambahProduk').on('submit', function(e){
             e.preventDefault();
 
@@ -186,54 +232,46 @@
             var kategoriProduk = $('#kategoriProduk').val();
             var qty = $('#qty').val();
             var harga = $('#harga').val();
-            var diskon = $('#diskon').val();
             var keterangan = $('#keterangan').val();
+            var ticket_order = $('#ticket_order').val();
 
-            // Menghitung Harga Total
-            var hargaTotal = harga * qty;
-            var hargaDiskon = hargaTotal * (diskon / 100);
-            var hargaTotalDiskon = hargaTotal - hargaDiskon;
+            //ajax request
+            $.ajax({
+                url: "{{ route('barang.store') }}",
+                type: 'POST',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    namaProduk: namaProduk,
+                    kategoriProduk: kategoriProduk,
+                    qty: qty,
+                    harga: harga,
+                    keterangan: keterangan,
+                    ticket_order: ticket_order,
+                },
+                success: function(data){
+                    $('#tableProduk').DataTable().ajax.reload();
+                    $('#modalPilihProduk').modal('hide');
+                    $('#namaProduk').val('');
+                    $('#qty').val('');
+                    $('#harga').val('');
+                    $('#keterangan').val('');
 
-            // Menambahkan Data ke Tabel
-            $('#tableProduk tbody').append(`
-                <tr>
-                    <td></td>
-                    <td><input type="hidden" name="katergori[]" value="${kategoriProduk}">${kategoriProduk}</td>
-                    <td><input type="hidden" name="produk[]" value="${namaProduk}">${namaProduk}</td>
-                    <td><input type="hidden" name="qty[]" value="${qty}">${qty}</td>
-                    <td><input type="hidden" name="harga[]" value="${harga}">${harga}</td>
-                    <td><input type="hidden" name="diskon[]" value="${diskon}">${diskon}</td>
-                    <td><input type="hidden" name="hargaTotal[]" value="${hargaTotalDiskon}">${hargaTotalDiskon}</td>
-                    <td><input type="hidden" name="keterangan[]" value="${keterangan}">${keterangan}</td>
-                    <td>
-                        <button type="button" class="btn btn-sm btn-danger btnHapusProduk"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `);
-
-            // Menambahkan Nomor Urut
-            var i = 1;
-            $('#tableProduk tbody tr').each(function(){
-                $(this).find('td:nth-child(1)').text(i);
-                i++;
+                    // Total Harga
+                    $.ajax({
+                        url: "{{ route('getTotalHarga', $order->ticket_order) }}",
+                        type: 'GET',
+                        success: function(data){
+                            $('#totalHarga').html(data.totalHarga);
+                        },
+                        error: function(data){
+                            console.log(data);
+                        }
+                    });
+                },
+                error: function(data){
+                    console.log(data);
+                }
             });
-
-            // Menambahkan Total Harga
-            var totalHarga = 0;
-            $('#tableProduk tbody tr').each(function(){
-                totalHarga += parseInt($(this).find('td:nth-child(7) input').val());
-            });
-            $('#totalHarga').text(totalHarga);
-
-            // Menutup Modal
-            $('#modalPilihProduk').modal('hide');
-
-            // Mengosongkan Form
-            $('#namaProduk').val("");
-            $('#qty').val('');
-            $('#harga').val('');
-            $('#diskon').val('');
-            $('#keterangan').val('');
         });
     });
 </script>

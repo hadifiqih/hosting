@@ -30,7 +30,33 @@ class BarangController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        dd($request->all());
+        $harga = str_replace('.', '', $request->harga);
+        $harga = str_replace('Rp ', '', $harga);
+
+        $barang = new Barang();
+        $barang->ticket_order = $request->ticket_order;
+        $barang->job_id = $request->namaProduk;
+        $barang->user_id = auth()->user()->id;
+        $barang->price = $harga;
+        $barang->qty = $request->qty;
+        $barang->note = $request->note;
+        $barang->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Barang berhasil ditambahkan !',
+        ]);
+    }
+
+    public function getTotalHarga($id)
+    {
+        $totalHarga = Barang::where('ticket_order', $id)->sum('price');
+
+        return response()->json([
+            'success' => true,
+            'totalHarga' => $totalHarga,
+        ]);
     }
 
     /**

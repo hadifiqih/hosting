@@ -186,7 +186,7 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/order/{id}/toAntrian', 'toAntrian')->middleware(['auth', 'checkrole:sales'])->name('order.toAntrian');
     Route::get('/antrian/make-antrian/', 'makeAntrian')->middleware('auth')->name('antrian.makeAntrian');
     Route::post('/order/tambahProdukByModal', 'tambahProdukByModal')->name('tambahProdukByModal');
-    Route::get('/get-jobs-by-category/{category_id}', 'getJobsByCategory')->name('getJobsByCategory');
+    Route::get('/get-jobs-by-category', 'getJobsByCategory')->name('getJobsByCategory');
     Route::get('/get-all-jobs', 'getAllJobs')->name('getAllJobs');
     Route::post('/order/set-desainer/', 'bagiDesain')->name('order.bagiDesain');
     //--------------------------------------------
@@ -209,6 +209,7 @@ Route::controller(OrderController::class)->group(function(){
     Route::post('/design/reupload-file', 'reuploadFileDesain')->name('design.reuploadFile');
     Route::get('/design/submit-reupload-file/{id}', 'submitReuploadFile')->name('submit.reupload');
     Route::post('/design/submit-reupload-link', 'submitLinkReupload')->name('submitLinkReupload');
+
 });
 
 Route::controller(AntrianController::class)->group(function(){
@@ -290,6 +291,11 @@ Route::resource('bahan', BahanController::class);
 Route::controller(BahanController::class)->group(function(){
     Route::get('/bahan/total/{id}', 'totalBahan')->name('bahan.total');
 });
+
+Route::controller(BarangController::class)->group(function(){
+    Route::get('/barang/getTotalHarga/{id}', 'getTotalHarga')->name('getTotalHarga');
+});
+
 Route::get('/error', function () {
     //menampilkan halaman error dan error message
     if (session('error')) {

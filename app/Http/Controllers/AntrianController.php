@@ -519,7 +519,9 @@ class AntrianController extends Controller
             // menyimpan inputan sisa pembayaran
             $sisaPembayaran = str_replace(['Rp ', '.'], '', $request->input('sisaPembayaran'));
 
+            
             // Menyimpan file purcase order
+            $namaPurchaseOrder = null;
             if($request->file('filePO')){
                 $purchaseOrder = $request->file('filePO');
                 $namaPurchaseOrder = $purchaseOrder->getClientOriginalName();
@@ -563,12 +565,8 @@ class AntrianController extends Controller
         $antrian->omset = $omset;
         $antrian->qty = $request->input('qty');
         $antrian->order_id = $request->input('idOrder');
-        if($request->input('alamatPengiriman') != null){
-            $antrian->alamat_pengiriman = $request->input('alamatPengiriman');
-        }
-        if($request->input('filePO')){
-            $antrian->file_po = $namaPurchaseOrder;
-        }
+        $antrian->alamat_pengiriman = $request->input('alamatPengiriman') ? $request->input('alamatPengiriman') : null;
+        $antrian->file_po = $namaPurchaseOrder == null ? null : $namaPurchaseOrder;
         $antrian->harga_produk = $hargaProduk;
         $antrian->packing_cost = $biayaPengemasan;
         $antrian->save();
@@ -724,7 +722,6 @@ class AntrianController extends Controller
     {
         $antrian = Antrian::where('ticket_order', $id)->with('job', 'barang', 'sales', 'order', 'customer', 'payment', 'design', 'operator', 'finishing', 'dokumproses','estimator')->first();
 
-        dd($antrian);
         $items = Barang::where('ticket_order', $id)->get();
 
         $payment = Payment::where('ticket_order', $id)->first();

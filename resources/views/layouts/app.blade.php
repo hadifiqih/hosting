@@ -205,7 +205,7 @@
 
                 @if(auth()->user()->role == 'admin' || auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising' || auth()->user()->role == 'dokumentasi' || auth()->user()->role == 'supervisor' || auth()->user()->role == 'manager' || auth()->user()->role == 'estimator')
                 <li class="nav-item">
-                    <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') ? 'active' : '' }}">
+                    <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') ? 'active' : '' }}">
                     <i class="far fa-circle nav-icon"></i>
                     <p>List Pekerjaan</p>
                     </a>
