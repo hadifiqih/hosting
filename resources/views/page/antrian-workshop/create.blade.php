@@ -234,6 +234,7 @@
             var harga = $('#harga').val();
             var keterangan = $('#keterangan').val();
             var ticket_order = $('#ticket_order').val();
+            var acc_desain = $('#acc_desain').val();
 
             //ajax request
             $.ajax({
@@ -247,7 +248,9 @@
                     harga: harga,
                     keterangan: keterangan,
                     ticket_order: ticket_order,
+                    acc_desain: acc_desain,
                 },
+
                 success: function(data){
                     $('#tableProduk').DataTable().ajax.reload();
                     $('#modalPilihProduk').modal('hide');
@@ -255,6 +258,7 @@
                     $('#qty').val('');
                     $('#harga').val('');
                     $('#keterangan').val('');
+                    $('#acc_desain').val('');
 
                     // Total Harga
                     $.ajax({

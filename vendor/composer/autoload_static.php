@@ -41,6 +41,7 @@ class ComposerStaticInit2278fa4ac8597cd90c63de4776acc1d9
         'a1cfe24d14977df6878b9bf804af2d1c' => __DIR__ . '/..' . '/nunomaduro/collision/src/Adapters/Phpunit/Autoload.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
         '320163ac6b93aebe3dc25b60a0533d56' => __DIR__ . '/..' . '/spatie/laravel-ignition/src/helpers.php',
+        'e2a538285cf59c83c7c8cbd273e0fcf6' => __DIR__ . '/../..' . '/app/Helpers/CustomHelper.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -223,10 +224,10 @@ class ComposerStaticInit2278fa4ac8597cd90c63de4776acc1d9
         array (
             0 => __DIR__ . '/..' . '/yajra/laravel-datatables-buttons/src',
             1 => __DIR__ . '/..' . '/yajra/laravel-datatables-editor/src',
-            2 => __DIR__ . '/..' . '/yajra/laravel-datatables-fractal/src',
-            3 => __DIR__ . '/..' . '/yajra/laravel-datatables-html/src',
-            4 => __DIR__ . '/..' . '/yajra/laravel-datatables-oracle/src',
-            5 => __DIR__ . '/..' . '/yajra/laravel-datatables-export/src',
+            2 => __DIR__ . '/..' . '/yajra/laravel-datatables-export/src',
+            3 => __DIR__ . '/..' . '/yajra/laravel-datatables-fractal/src',
+            4 => __DIR__ . '/..' . '/yajra/laravel-datatables-html/src',
+            5 => __DIR__ . '/..' . '/yajra/laravel-datatables-oracle/src',
         ),
         'Whoops\\' => 
         array (
@@ -654,8 +655,11 @@ class ComposerStaticInit2278fa4ac8597cd90c63de4776acc1d9
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Events\\SendGlobalNotification' => __DIR__ . '/../..' . '/app/Events/SendGlobalNotification.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
+        'App\\Helpers\\CustomHelper' => __DIR__ . '/../..' . '/app/Helpers/CustomHelper.php',
         'App\\Http\\Controllers\\AntrianController' => __DIR__ . '/../..' . '/app/Http/Controllers/AntrianController.php',
         'App\\Http\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/AuthController.php',
+        'App\\Http\\Controllers\\BahanController' => __DIR__ . '/../..' . '/app/Http/Controllers/BahanController.php',
+        'App\\Http\\Controllers\\BarangController' => __DIR__ . '/../..' . '/app/Http/Controllers/BarangController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\CustomerController' => __DIR__ . '/../..' . '/app/Http/Controllers/CustomerController.php',
         'App\\Http\\Controllers\\DaruratController' => __DIR__ . '/../..' . '/app/Http/Controllers/DaruratController.php',
@@ -684,6 +688,9 @@ class ComposerStaticInit2278fa4ac8597cd90c63de4776acc1d9
         'App\\Http\\Resources\\ReportResource' => __DIR__ . '/../..' . '/app/Http/Resources/ReportResource.php',
         'App\\Models\\Antrian' => __DIR__ . '/../..' . '/app/Models/Antrian.php',
         'App\\Models\\AntrianDesain' => __DIR__ . '/../..' . '/app/Models/AntrianDesain.php',
+        'App\\Models\\Bahan' => __DIR__ . '/../..' . '/app/Models/Bahan.php',
+        'App\\Models\\Barang' => __DIR__ . '/../..' . '/app/Models/Barang.php',
+        'App\\Models\\BiayaProduksi' => __DIR__ . '/../..' . '/app/Models/BiayaProduksi.php',
         'App\\Models\\Customer' => __DIR__ . '/../..' . '/app/Models/Customer.php',
         'App\\Models\\Design' => __DIR__ . '/../..' . '/app/Models/Design.php',
         'App\\Models\\Documentation' => __DIR__ . '/../..' . '/app/Models/Documentation.php',

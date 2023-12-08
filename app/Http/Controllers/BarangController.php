@@ -5,10 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use App\Helpers\CustomHelper;
 
 
 class BarangController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -30,9 +36,13 @@ class BarangController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
-        $harga = str_replace('.', '', $request->harga);
-        $harga = str_replace('Rp ', '', $harga);
+        $harga = CustomHelper::removeCurrencyFormat($request->harga);
+
+        //rename file acc_desain
+        $file = $request->file('acc_desain');
+        $fileName = time().'_'.$file->getClientOriginalName();
+        $file->move(public_path('acc_desain'), $fileName);
+        
 
         $barang = new Barang();
         $barang->ticket_order = $request->ticket_order;
@@ -41,6 +51,7 @@ class BarangController extends Controller
         $barang->price = $harga;
         $barang->qty = $request->qty;
         $barang->note = $request->note;
+        $barang->acc_desain = $request->file('acc_desain');
         $barang->save();
 
         return response()->json([
