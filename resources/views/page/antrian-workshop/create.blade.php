@@ -53,7 +53,6 @@
                                 <th>Nama Produk</th>
                                 <th>Qty</th>
                                 <th>Harga (satuan)</th>
-                                <th>Diskon</th>
                                 <th>Harga Total</th> 
                                 <th>Keterangan Spesifikasi</th>
                                 <th>Aksi</th>
@@ -63,23 +62,41 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="6" class="text-right">Total</th>
-                                    <th colspan="3" id="totalHarga">0</th>
+                                    <th colspan="5" class="text-center">Total</th>
+                                    <th id="subtotal" colspan="3" id="totalHarga" class="text-danger">Rp {{ number_format($totalBarang, 0, ',', '.') }}</th>
                                 </tr>
                             </tfoot>
                         </table>
-                </div>
-            </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Data Pembayaran</h2>
-                </div>
-                <div class="card-body">
+                
+                            <div class="form-group mt-3">
+                                <label for="packing">Biaya Packing</label>
+                                <input type="text" class="form-control" id="packing" placeholder="Contoh : Rp 100.000" name="packing">
+                            </div>
 
+                            <div class="form-group">
+                                <label for="ongkir">Biaya Ongkir</label>
+                                <input type="text" class="form-control" id="ongkir" placeholder="Contoh : Rp 100.000" name="ongkir">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pasang">Biaya Pasang</label>
+                                <input type="text" class="form-control" id="pasang" placeholder="Contoh : Rp 100.000" name="pasang">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="diskon">Diskon / Potongan Harga</label>
+                                <input type="text" class="form-control" id="diskon" placeholder="Contoh : Rp 100.000" name="diskon">
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <span>Total : </span><h4 class="font-weight-bold text-danger">Rp 1.840.000</h4>
+                                </div>
+                                <div class="col">
+                                    <span>Sisa Pembayaran : </span><h4 class="font-weight-bold text-danger">Rp 0</h4>
+                                </div>
+                            </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -91,7 +108,8 @@
                     <h2 class="card-title">Data Desain</h2>
                 </div>
                 <div class="card-body">
-                    
+                    <button class="btn-sm btn-primary">Upload ACC Desain <i class="fas fa-plus "></i></button>
+
                 </div>
             </div>
         </div>
@@ -181,15 +199,14 @@
             searching: false,
             info: false,
             ajax: {
-                url: "{{ route('barang.show', $order->ticket_order) }}",
+                url: "{{ route('barang.showCreate', $order->ticket_order) }}",
             },
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                 {data: 'kategori', name: 'kategori'},
-                {data: 'produk', name: 'produk'},
+                {data: 'namaProduk', name: 'namaProduk'},
                 {data: 'qty', name: 'qty'},
                 {data: 'harga', name: 'harga'},
-                {data: 'diskon', name: 'diskon'},
                 {data: 'hargaTotal', name: 'hargaTotal'},
                 {data: 'keterangan', name: 'keterangan'},
                 {data: 'action', name: 'action'},
@@ -227,55 +244,43 @@
         $('#formTambahProduk').on('submit', function(e){
             e.preventDefault();
 
-            // Get Value
-            var namaProduk = $('#namaProduk').val();
-            var kategoriProduk = $('#kategoriProduk').val();
-            var qty = $('#qty').val();
-            var harga = $('#harga').val();
-            var keterangan = $('#keterangan').val();
-            var ticket_order = $('#ticket_order').val();
-            var acc_desain = $('#acc_desain').val();
+            // Inisialisasi File acc_desain
+            var acc_desain = $('#acc_desain')[0].files[0];
+            acc_desain = new FormData(this);
+            acc_desain.append('acc_desain', acc_desain);
+            acc_desain.append('ticket_order', $('#ticket_order').val());
+            acc_desain.append('namaProduk', $('#namaProduk').val());
+            acc_desain.append('kategoriProduk', $('#kategoriProduk').val());
+            acc_desain.append('qty', $('#qty').val());
+            acc_desain.append('harga', $('#harga').val());
+            acc_desain.append('keterangan', $('#keterangan').val());
 
-            //ajax request
             $.ajax({
                 url: "{{ route('barang.store') }}",
-                type: 'POST',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    namaProduk: namaProduk,
-                    kategoriProduk: kategoriProduk,
-                    qty: qty,
-                    harga: harga,
-                    keterangan: keterangan,
-                    ticket_order: ticket_order,
-                    acc_desain: acc_desain,
-                },
-
+                method: "POST",
+                data: acc_desain,
+                contentType: false,
+                processData: false,
                 success: function(data){
-                    $('#tableProduk').DataTable().ajax.reload();
                     $('#modalPilihProduk').modal('hide');
-                    $('#namaProduk').val('');
-                    $('#qty').val('');
-                    $('#harga').val('');
-                    $('#keterangan').val('');
-                    $('#acc_desain').val('');
+                    $('#tableProduk').DataTable().ajax.reload();
+                    $('#formTambahProduk')[0].reset();
 
-                    // Total Harga
-                    $.ajax({
-                        url: "{{ route('getTotalHarga', $order->ticket_order) }}",
-                        type: 'GET',
-                        success: function(data){
-                            $('#totalHarga').html(data.totalHarga);
-                        },
-                        error: function(data){
-                            console.log(data);
-                        }
+                    //tampilkan toast sweet alert
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Produk berhasil ditambahkan',
+                        showConfirmButton: false,
+                        timer: 1500
                     });
                 },
-                error: function(data){
-                    console.log(data);
+                error: function(xhr, status, error){
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
                 }
             });
+        
         });
     });
 </script>

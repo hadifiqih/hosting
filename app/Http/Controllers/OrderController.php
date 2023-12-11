@@ -6,14 +6,15 @@ use App\Models\Job;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Sales;
-use App\Models\Design;
+use App\Models\Barang;
 
+use App\Models\Design;
 use App\Models\Customer;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Notifications\AntrianDesain;
-use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use App\Events\SendGlobalNotification;
 use Illuminate\Support\Facades\Storage;
@@ -602,8 +603,16 @@ class OrderController extends Controller
 
     public function toAntrian(string $id){
         $order = Order::find($id);
+        $tiket = $order->ticket_order;
 
-        return view ('page.antrian-workshop.create', compact('order'));
+        $barang = Barang::where('ticket_order', $tiket)->get();
+
+        $totalBarang = 0;
+        foreach($barang as $b){
+            $totalBarang += $b->price * $b->qty;
+        }
+
+        return view ('page.antrian-workshop.create', compact('order', 'totalBarang'));
     }
 
     //-------------------------------------------------------------------------------------------------------------

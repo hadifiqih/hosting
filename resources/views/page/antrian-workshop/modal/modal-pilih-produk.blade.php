@@ -8,7 +8,7 @@
                 </button>
             </div>
         <div class="modal-body">
-            <form id="formTambahProduk" action="">
+            <form id="formTambahProduk" action="" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
                     <h6 class="font-weight-bold">Kategori Produk</h6>
@@ -51,7 +51,7 @@
                 <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">
             </div>
             <div class="modal-footer">
-                <button id="submitProduk" type="submit" class="btn btn-primary btnTambah">Tambah</button>
+                <input id="submitProduk" type="submit" class="btn btn-primary btnTambah" value="Tambah">
             </div>
         </form>
       </div>

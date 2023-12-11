@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
 use App\Helpers\CustomHelper;
+use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 
 class BarangController extends Controller
@@ -41,17 +42,17 @@ class BarangController extends Controller
         //rename file acc_desain
         $file = $request->file('acc_desain');
         $fileName = time().'_'.$file->getClientOriginalName();
-        $file->move(public_path('acc_desain'), $fileName);
+        $pathGambar = 'acc_desain/'.$fileName;
+        Storage::disk('public')->put($pathGambar, file_get_contents($file));
         
-
         $barang = new Barang();
         $barang->ticket_order = $request->ticket_order;
         $barang->job_id = $request->namaProduk;
         $barang->user_id = auth()->user()->id;
         $barang->price = $harga;
         $barang->qty = $request->qty;
-        $barang->note = $request->note;
-        $barang->acc_desain = $request->file('acc_desain');
+        $barang->note = $request->keterangan;
+        $barang->acc_desain = $fileName;
         $barang->save();
 
         return response()->json([
@@ -97,6 +98,40 @@ class BarangController extends Controller
             return $row->note;
         })
         ->rawColumns(['nama_produk'])
+        ->make(true);
+    }
+
+    public function showCreate(string $id)
+    {
+        $items = Barang::where('ticket_order', $id)->with('job')->get();
+
+        return DataTables::of($items)
+        ->addIndexColumn()
+        ->addColumn('kategori', function($row){
+            return $row->job->job_type;
+        })
+        ->addColumn('namaProduk', function($row){
+            return $row->job->job_name; ;
+        })
+        ->addColumn('qty', function($row){
+            return $row->qty;
+        })
+        ->addColumn('harga', function($row){
+            return 'Rp '.number_format($row->price, 0, ',', '.');
+        })
+        ->addColumn('hargaTotal', function($row){
+            //Hitung subtotal = harga * qty
+            $subtotal = $row->price * $row->qty;
+            return 'Rp '.number_format($subtotal, 0, ',', '.');
+        })
+        ->addColumn('keterangan', function($row){
+            return $row->note;
+        })
+        ->addColumn('action', function($row){
+            $btn = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBarang('.$row->id.')"><i class="fas fa-trash"></i></a>';
+            return $btn;
+        })
+        ->rawColumns(['action', 'hargaTotal'])
         ->make(true);
     }
 
