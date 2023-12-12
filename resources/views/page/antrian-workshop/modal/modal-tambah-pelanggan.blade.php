@@ -57,10 +57,22 @@
                     <option value="Lainnya">Lainnya</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label for="provinsi">Wilayah</label>
+                <select class="custom-select" name="provinsi" id="provinsi">
+                    <option value="default" selected disabled>Pilih Provinsi</option>
+                </select>
+            </div>
+            <div class="form-group" style="display: none">
+                <label for="kota">Kota</label>
+                <select class="custom-select" name="kota" id="kota">
+                    <option value="default" selected disabled>Pilih Kota</option>
+                </select>
+            </div>
         </div>
         <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-        <input type="submit" class="btn btn-primary" id="submitPelanggan" value="Tambah"><span id="loader" class="loader" style="display: none;"></span>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+            <input type="submit" class="btn btn-primary" id="submitPelanggan" value="Tambah"><span id="loader" class="loader" style="display: none;"></span>
         </div>
     </form>
     </div>

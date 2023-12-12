@@ -222,6 +222,7 @@ Route::controller(AntrianController::class)->group(function(){
     Route::get('/antrian/dokumentasi/{id}', 'showDokumentasi')->middleware('auth')->name('antrian.showDokumentasi');
     Route::post('/antrian/storeDokumentasi', 'storeDokumentasi')->middleware('auth')->name('antrian.storeDokumentasi');
     Route::get('/design/download/{id}', 'downloadPrintFile')->name('design.download');
+    Route::get('/design/download-create/{id}', 'downloadPrintFileCreate')->name('design.download.create');
     Route::post('/list-machines', 'getMachine')->name('antrian.getMachine');
 
     Route::get('/estimator/index', 'estimatorIndex')->middleware('auth')->name('estimator.index');
@@ -295,6 +296,7 @@ Route::controller(BahanController::class)->group(function(){
 Route::controller(BarangController::class)->group(function(){
     Route::get('/barang/getTotalHarga/{id}', 'getTotalHarga')->name('getTotalHarga');
     Route::get('/barang/show/{id}', 'showCreate')->name('barang.showCreate');
+    Route::get('/barang/getTotalBarang/{id}', 'getTotalBarang')->name('getTotalBarang');
 });
 
 Route::get('/error', function () {

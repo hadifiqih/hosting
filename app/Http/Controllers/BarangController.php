@@ -135,6 +135,23 @@ class BarangController extends Controller
         ->make(true);
     }
 
+    public function getTotalBarang(string $id)
+    {
+        $totalBarang = Barang::where('ticket_order', $id)->get();
+
+        $total = 0;
+        foreach($totalBarang as $item){
+            $total += $item->qty * $item->price;
+        }
+
+        $total = 'Rp '.number_format($total, 0, ',', '.');
+
+        return response()->json([
+            'success' => true,
+            'totalBarang' => $total,
+        ]);
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -156,6 +173,12 @@ class BarangController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $barang = Barang::findOrFail($id);
+        $barang->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Barang berhasil dihapus !',
+        ]);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
     }
 }

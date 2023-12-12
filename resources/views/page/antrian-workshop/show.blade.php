@@ -168,27 +168,37 @@
             <div class="row">
                 <div class="col-md">
                     <div class="row">
-                        <div class="col-2 mt-2">
-                            <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->order->file_cetak, -3)) }}</div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-2 mt-2">
+                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->order->file_cetak, -3)) }}</div>
+                                </div>
+                                <div class="col-4 my-auto">
+                                    <a href="{{ route('design.download', $antrian->id) }}" class="font-weight-bold my-0">File Cetak</a>
+                                    <p class="text-muted">{{ date_format($antrian->order->updated_at, 'd F Y - H:i') }}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-4 my-auto">
-                            <a href="{{ route('design.download', $antrian->id) }}" class="font-weight-bold my-0">File Cetak</a>
-                            <p class="text-muted">{{ date_format($antrian->order->updated_at, 'd F Y - H:i') }}</p>
-                        </div>
-                        <div class="col-2 mt-2">
-                            <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->payment->payment_proof, -3)) }}</div>
-                        </div>
-                        <div class="col-4 my-auto">
-                            <a class="font-weight-bold my-0" onclick="modalBuktiPembayaran()">Bukti Pembayaran</a>
-                            <p class="text-muted">{{ date_format($antrian->payment->updated_at, 'd F Y - H:i') }}</p>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-2 mt-2">
+                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->payment->payment_proof, -3)) }}</div>
+                                </div>
+                                <div class="col-4 my-auto">
+                                    <a class="font-weight-bold my-0" onclick="modalBuktiPembayaran()">Bukti Pembayaran</a>
+                                    <p class="text-muted">{{ date_format($antrian->payment->updated_at, 'd F Y - H:i') }}</p>
+                                </div>
+                            </div>
                         </div>
                         @if($antrian->file_po != null)
-                        <div class="col-2 mt-2">
-                            <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->file_po, -3)) }}</div>
-                        </div>
-                        <div class="col-4 my-auto">
-                            <a href="{{ route('antrian.downloadPO', $antrian->id) }}" class="font-weight-bold my-0">File Purchase Order(PO)</a>
-                            <p class="text-muted">{{ date_format($antrian->updated_at, 'd F Y - H:i') }}</p>
+                        <div class="col">
+                            <div class="col-2 mt-2">
+                                <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->file_po, -3)) }}</div>
+                            </div>
+                            <div class="col-4 my-auto">
+                                <a href="{{ route('antrian.downloadPO', $antrian->id) }}" class="font-weight-bold my-0">File Purchase Order(PO)</a>
+                                <p class="text-muted">{{ date_format($antrian->updated_at, 'd F Y - H:i') }}</p>
+                            </div>
                         </div>
                         @endif
                     </div>

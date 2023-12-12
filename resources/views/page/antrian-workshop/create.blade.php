@@ -42,7 +42,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">Informasi Produk</h2>
+                    <h2 class="card-title">Informasi Order</h2>
                 </div>
                 <div class="card-body">
                     <button type="button" class="btn btn-sm btn-outline-primary mb-3" onclick="tambahProduk()"><i class="fas fa-plus"></i> Tambah Produk</button>
@@ -63,53 +63,102 @@
                             <tfoot>
                                 <tr>
                                     <th colspan="5" class="text-center">Total</th>
-                                    <th id="subtotal" colspan="3" id="totalHarga" class="text-danger">Rp {{ number_format($totalBarang, 0, ',', '.') }}</th>
+                                    <th colspan="3" class="text-danger maskRupiah"><span id="subtotal"></span></th>
                                 </tr>
                             </tfoot>
                         </table>
                 
                             <div class="form-group mt-3">
                                 <label for="packing">Biaya Packing</label>
-                                <input type="text" class="form-control" id="packing" placeholder="Contoh : Rp 100.000" name="packing">
+                                <input type="text" class="form-control maskRupiah" id="packing" placeholder="Contoh : Rp 100.000" name="packing">
                             </div>
 
                             <div class="form-group">
                                 <label for="ongkir">Biaya Ongkir</label>
-                                <input type="text" class="form-control" id="ongkir" placeholder="Contoh : Rp 100.000" name="ongkir">
+                                <input type="text" class="form-control maskRupiah" id="ongkir" placeholder="Contoh : Rp 100.000" name="ongkir">
                             </div>
 
                             <div class="form-group">
                                 <label for="pasang">Biaya Pasang</label>
-                                <input type="text" class="form-control" id="pasang" placeholder="Contoh : Rp 100.000" name="pasang">
+                                <input type="text" class="form-control maskRupiah" id="pasang" placeholder="Contoh : Rp 100.000" name="pasang">
                             </div>
 
                             <div class="form-group">
                                 <label for="diskon">Diskon / Potongan Harga</label>
-                                <input type="text" class="form-control" id="diskon" placeholder="Contoh : Rp 100.000" name="diskon">
+                                <input type="text" class="form-control maskRupiah" id="diskon" placeholder="Contoh : Rp 100.000" name="diskon">
                             </div>
 
                             <div class="row">
                                 <div class="col">
-                                    <span>Total : </span><h4 class="font-weight-bold text-danger">Rp 1.840.000</h4>
-                                </div>
-                                <div class="col">
-                                    <span>Sisa Pembayaran : </span><h4 class="font-weight-bold text-danger">Rp 0</h4>
+                                    <span>Total : </span><h4 class="font-weight-bold text-danger" id="totalAll">Rp 1.840.000</h4>
                                 </div>
                             </div>
                     </div>
                 </div>
             </div>
         </div>
-      </div>
-      <div class="row">
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Informasi Pembayaran</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="metodePembayaran">Metode Pembayaran</label>
+                        <select name="metodePembayaran" id="metodePembayaran" class="form-control" required>
+                            <option value="" selected disabled>Pilih Metode Pembayaran</option>
+                            <option value="Cash">Cash</option>
+                            <option value="BCA">Transfer BCA</option>
+                            <option value="BNI">Transfer BNI</option>
+                            <option value="BRI">Transfer BRI</option>
+                            <option value="Mandiri">Transfer Mandiri</option>
+                            <option value="Bayar Waktu Ambil">Bayar Waktu Ambil</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="statusPembayaran">Status Pembayaran</label>
+                        <select name="statusPembayaran" id="statusPembayaran" class="form-control" required>
+                            <option value="" selected disabled>Pilih Status Pembayaran</option>
+                            <option value="Lunas">Lunas</option>
+                            <option value="Belum Lunas">Belum Lunas</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jumlahPembayaran">Jumlah Pembayaran</label>
+                        <input type="text" class="form-control maskRupiah" id="jumlahPembayaran" placeholder="Contoh : Rp 100.000" name="jumlahPembayaran" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <span>Sisa Pembayaran : </span><h4 class="font-weight-bold text-danger" id="sisaPembayaran"></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">Data Desain</h2>
                 </div>
                 <div class="card-body">
-                    <button class="btn-sm btn-primary">Upload ACC Desain <i class="fas fa-plus "></i></button>
-
+                    <div class="form-group">
+                        <label for="exampleInputFile">Gambar ACC Desain</label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="exampleInputFile">
+                            <label class="custom-file-label" for="exampleInputFile">Pilih File</label>
+                            </div>
+                        </div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -146,9 +195,156 @@
         $('#modalPilihProduk').modal('show');
     }
 
+    function updateTotalBarang(){
+        $.ajax({
+            url: "{{ route('getTotalBarang', $order->ticket_order) }}",
+            method: "GET",
+            success: function(data){
+                $('#subtotal').html(data.totalBarang);
+                $('#totalAll').html(data.totalBarang);
+                $('#sisaPembayaran').html(data.totalBarang);
+            },
+            error: function(xhr, status, error){
+                var err = eval("(" + xhr.responseText + ")");
+                alert(err.Message);
+            }
+        });
+    }
+
+    function deleteBarang(id){
+        Swal.fire({
+            title: 'Apakah anda yakin?',
+            text: "Produk akan dihapus dari antrian ini!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            confirmButtonText: 'Ya, Hapus!'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/barang/" + id,
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        _method: "DELETE",
+                        id: id
+                    },
+                    success: function(data){
+                        $('#tableProduk').DataTable().ajax.reload();
+
+                        // function updateTotalBarang
+                        updateTotalBarang();
+
+                        //tampilkan toast sweet alert
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Produk berhasil dihapus',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    },
+                    error: function(xhr, status, error){
+                        var err = eval("(" + xhr.responseText + ")");
+                        alert(err.Message);
+                    }
+                });
+            }
+        });
+    }
+
     $(document).ready(function(){
+        // function provinsi
+        $.ajax({
+            url: "{{ route('getProvinsi') }}",
+            method: "GET",
+            success: function(data){
+                $('#provinsi').html(data);
+            }
+        });
+
+        // function updateTotalBarang
+        updateTotalBarang();
+
         // Mask Money
         $('#harga').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
+
+        // Mask Money .maskRupiah
+        $('.maskRupiah').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
+
+        // saat ada perubahan pada inputan biaya packing, biaya ongkir, biaya pasang, diskon maka totalAll akan berubah
+        $('#packing, #ongkir, #pasang, #diskon').on('keyup', function(){
+            var packing = $('#packing').val();
+            packing = packing.replace(/[^0-9]/g, '');
+            packing = parseInt(packing);
+
+            var ongkir = $('#ongkir').val();
+            ongkir = ongkir.replace(/[^0-9]/g, '');
+            ongkir = parseInt(ongkir);
+
+            var pasang = $('#pasang').val();
+            pasang = pasang.replace(/[^0-9]/g, '');
+            pasang = parseInt(pasang);
+
+            var diskon = $('#diskon').val();
+            diskon = diskon.replace(/[^0-9]/g, '');
+            diskon = parseInt(diskon);
+
+            var totalAll = $('#subtotal').text();
+            totalAll = totalAll.replace(/[^0-9]/g, '');
+            totalAll = parseInt(totalAll);
+
+            if(isNaN(packing)){
+                packing = 0;
+            }
+
+            if(isNaN(ongkir)){
+                ongkir = 0;
+            }
+
+            if(isNaN(pasang)){
+                pasang = 0;
+            }
+
+            if(isNaN(diskon)){
+                diskon = 0;
+            }
+
+            if(isNaN(totalAll)){
+                totalAll = 0;
+            }
+
+            var totalAll = totalAll + packing + ongkir + pasang - diskon;
+            totalAll = totalAll.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            $('#totalAll').html('Rp ' + totalAll);
+        });
+
+        // sisaPembayaran akan berubah saat ada perubahan pada inputan jumlahPembayaran - totalAll
+        $('#jumlahPembayaran').on('keyup', function(){
+            var jumlahPembayaran = $('#jumlahPembayaran').val();
+            jumlahPembayaran = jumlahPembayaran.replace(/[^0-9]/g, '');
+            jumlahPembayaran = parseInt(jumlahPembayaran);
+
+            var totalAll = $('#totalAll').text();
+            totalAll = totalAll.replace(/[^0-9]/g, '');
+            totalAll = parseInt(totalAll);
+
+            if(isNaN(jumlahPembayaran)){
+                jumlahPembayaran = 0;
+            }
+
+            if(isNaN(totalAll)){
+                totalAll = 0;
+            }
+
+            var sisaPembayaran = totalAll - jumlahPembayaran;
+            if(sisaPembayaran < 0){
+                sisaPembayaran = "Melebihi Total Pembayaran";
+            }
+            sisaPembayaran = sisaPembayaran.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            $('#sisaPembayaran').html('Rp ' + sisaPembayaran);
+        });
 
         //nama produk select2
         $('#modalPilihProduk #kategoriProduk').on('change', function(){
@@ -266,6 +462,9 @@
                     $('#tableProduk').DataTable().ajax.reload();
                     $('#formTambahProduk')[0].reset();
 
+                    // function updateTotalBarang
+                    updateTotalBarang();
+
                     //tampilkan toast sweet alert
                     Swal.fire({
                         icon: 'success',
@@ -274,6 +473,8 @@
                         showConfirmButton: false,
                         timer: 1500
                     });
+
+
                 },
                 error: function(xhr, status, error){
                     var err = eval("(" + xhr.responseText + ")");
