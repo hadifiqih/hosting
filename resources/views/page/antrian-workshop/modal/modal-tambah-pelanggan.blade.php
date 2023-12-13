@@ -1,16 +1,17 @@
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalTambahPelanggan" tabindex="-1" aria-labelledby="modalTambahPelangganLabel" aria-hidden="true">
     <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Tambah Pelanggan</h5>
+        <h5 class="modal-title" id="modalTambahPelangganLabel">Tambah Pelanggan</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
         </div>
         <div class="modal-body">
-            <form id="pelanggan-form" method="POST">
+            <form id="pelanggan-form" method="POST" enctype="multipart/form-data" action="">
             @csrf
+            <input type="hidden" name="salesID" id="salesID" value="{{ auth()->user()->sales->id }}">
             <div class="form-group">
                 <label for="nama">Nama Pelanggan <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" id="modalNama" placeholder="Nama Pelanggan" name="modalNama" required>
@@ -32,7 +33,7 @@
             </div>
             <div class="form-group">
                 <label for="infoPelanggan">Sumber Pelanggan <span class="text-danger">*</span></label>
-                <select class="custom-select rounded-0" id="infoPelanggan" name="modalInfoPelanggan" required>
+                <select class="custom-select" id="infoPelanggan" name="modalInfoPelanggan" required>
                     <option value="default" selected>Pilih Sumber Pelanggan</option>
                     <option value="Google">Google</option>
                     <option value="G-Maps">G-Maps</option>
@@ -58,15 +59,15 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="provinsi">Wilayah</label>
-                <select class="custom-select" name="provinsi" id="provinsi">
+                <label for="provinsi">Provinsi <span class="text-danger">*</span></label>
+                <select class="custom-select" name="provinsi" id="provinsi" required>
                     <option value="default" selected disabled>Pilih Provinsi</option>
                 </select>
             </div>
-            <div class="form-group" style="display: none">
-                <label for="kota">Kota</label>
-                <select class="custom-select" name="kota" id="kota">
-                    <option value="default" selected disabled>Pilih Kota</option>
+            <div class="form-group" id="groupKota" style="display: none">
+                <label for="kota">Kabupaten/Kota <span class="text-danger">*</span></label>
+                <select class="custom-select" name="kota" id="kota" required>
+                    <option value="default" selected disabled>Pilih Kabupaten/Kota</option>
                 </select>
             </div>
         </div>

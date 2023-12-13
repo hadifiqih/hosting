@@ -20,8 +20,8 @@
                 </div>
                 <div class="card-body">
                     {{-- Tambah Pelanggan Baru --}}
-                    <button type="button" class="btn btn-sm btn-primary mb-3" data-toggle="modal" data-target="#exampleModal">
-                        Tambah Pelanggan Baru
+                    <button type="button" class="btn btn-sm btn-primary mb-3" data-toggle="modal" data-target="#modalTambahPelanggan">
+                        <i class="fas fa-user"></i> Tambah Pelanggan
                     </button>
 
                     <div class="form-group">
@@ -142,27 +142,6 @@
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Data Desain</h2>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="exampleInputFile">Gambar ACC Desain</label>
-                        <div class="input-group">
-                            <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="exampleInputFile">
-                            <label class="custom-file-label" for="exampleInputFile">Pilih File</label>
-                            </div>
-                        </div>
-                        </div>
-                </div>
-            </div>
-        </div>
-      </div>
       {{-- Tombol Submit Antrikan --}}
         <div class="row">
             <div class="col-12">
@@ -190,6 +169,11 @@
     $(function () {
         bsCustomFileInput.init();
     });
+
+    Dropzone.options.myAwesomeDropzone = {
+            paramName: "acc_desain", // The name that will be used to transfer the file
+            maxFilesize: 50, // MB
+    };
 
     function tambahProduk(){
         $('#modalPilihProduk').modal('show');
@@ -260,8 +244,37 @@
             url: "{{ route('getProvinsi') }}",
             method: "GET",
             success: function(data){
-                $('#provinsi').html(data);
+                //foreach provinsi
+                $.each(data, function(key, value){
+                    $('#provinsi').append(`
+                        <option value="${key}">${value}</option>
+                    `);
+                });
             }
+        });
+
+        // function kota
+        $('#provinsi').on('change', function(){
+            var provinsi = $(this).val();
+            $('#groupKota').show();
+            $('#kota').empty();
+            $('#kota').append(`<option value="" selected disabled>Pilih Kota</option>`);
+            $.ajax({
+                url: "{{ route('getKota') }}",
+                method: "GET",
+                delay: 250,
+                data: {
+                    provinsi: provinsi
+                },
+                success: function(data){
+                    //foreach kota
+                    $.each(data, function(key, value){
+                        $('#kota').append(`
+                            <option value="${key}">${value}</option>
+                        `);
+                    });
+                }
+            });
         });
 
         // function updateTotalBarang
@@ -482,6 +495,71 @@
                 }
             });
         
+        });
+
+        // function simpanPelanggan
+        $('#pelanggan-form').on('submit', function(e){
+            e.preventDefault();
+
+            $.ajax({
+                url: "{{ route('pelanggan.store') }}",
+                method: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    salesID: $('#salesID').val(),
+                    nama: $('#modalNama').val(),
+                    telepon: $('#modalTelepon').val(),
+                    alamat: $('#modalAlamat').val(),
+                    instansi: $('#modalInstansi').val(),
+                    infoPelanggan: $('#infoPelanggan').val(),
+                    provinsi: $('#provinsi').val(),
+                    kota: $('#kota').val(),
+                },
+                success: function(data){
+                    $('#modalTambahPelanggan').modal('hide');
+                    $('#namaPelanggan').append(`<option value="${data.id}" selected>${data.nama}</option>`);
+                    $('#namaPelanggan').val(data.id).trigger('change');
+                    $('#namaPelanggan').select2({
+                        placeholder: 'Pilih Pelanggan',
+                        ajax: {
+                            url: "{{ route('getAllCustomers') }}",
+                            dataType: 'json',
+                            delay: 250,
+                            processResults: function (data) {
+                                return {
+                                    results:  $.map(data, function (item) {
+                                        if(item.instansi == null){
+                                            return {
+                                                text: item.nama,
+                                                id: item.id,
+                                            }
+                                        }else{
+                                            return {
+                                                text: item.nama + ' - ' + item.telepon, 
+                                                id: item.id,
+                                            }
+                                        }
+                                    })
+                                };
+                            },
+                            cache: true
+                        }
+                    });
+
+                    //tampilkan toast sweet alert
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Pelanggan berhasil ditambahkan',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                },
+                error: function(xhr, status, error){
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                }
+            });
         });
     });
 </script>

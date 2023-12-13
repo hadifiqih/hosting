@@ -12,15 +12,16 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Password;
+use App\Http\Controllers\BahanController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Auth\Events\PasswordReset;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\DesignController;
-use App\Http\Controllers\BahanController;
 
 use App\Http\Controllers\ReportController;
 
 use App\Http\Controllers\AntrianController;
+use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerController;
@@ -291,6 +292,11 @@ Route::resource('bahan', BahanController::class);
 
 Route::controller(BahanController::class)->group(function(){
     Route::get('/bahan/total/{id}', 'totalBahan')->name('bahan.total');
+});
+
+Route::controller(GeneralController::class)->group(function(){
+    Route::get('/getProvinsi', 'getProvinsi')->name('getProvinsi');
+    Route::get('/getKota', 'getKota')->name('getKota');
 });
 
 Route::controller(BarangController::class)->group(function(){

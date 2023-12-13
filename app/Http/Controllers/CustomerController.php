@@ -75,7 +75,7 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         //Menyimpan no.telp dalam format seperti berikut 081234567890, tanpa spasi. strip, titik, dll
-        $telp = preg_replace('/\D/', '', $request->modalTelepon);
+        $telp = preg_replace('/\D/', '', $request->telepon);
 
         if(substr($telp, 0, 1) == '0'){
             $telp = '62'.substr($telp, 1);
@@ -86,30 +86,27 @@ class CustomerController extends Controller
         $customer = new Customer;
 
         $customer->telepon = $telp;
+        $customer->sales_id = $request->salesID;
+        $customer->provinsi = $request->provinsi;
+        $customer->kota = $request->kota;
 
-        $salesID = $request->salesID;
-
-        if($request->modalNama){
-            $customer->nama = $request->modalNama;
+        if($request->nama){
+            $customer->nama = $request->nama;
         }
 
-        if($request->modalAlamat){
-            $customer->alamat = $request->modalAlamat;
+        if($request->alamat){
+            $customer->alamat = $request->alamat;
         }
 
-        if($request->modalInstansi){
-            $customer->instansi = $request->modalInstansi;
+        if($request->instansi){
+            $customer->instansi = $request->instansi;
         }
 
         if($request->modalInfoPelanggan){
-            $customer->infoPelanggan = $request->modalInfoPelanggan;
+            $customer->infoPelanggan = $request->infoPelanggan;
         }
-
-        $customer->sales_id = $salesID;
-
         $customer->save();
-
-        return response()->json(['success' => 'true', 'message' => 'Data berhasil ditambahkan']);
+        return response()->json(['success' => 'true', 'message' => 'Pelanggan berhasil ditambahkan !']);
     }
 
     public function update(Request $request, $id)
@@ -124,7 +121,7 @@ class CustomerController extends Controller
         $customer->sales_id = $request->sales;
         $customer->save();
 
-        return response()->json(['success' => 'true', 'message' => 'Data berhasil diubah']);
+        return response()->json(['success' => 'true', 'message' => 'Data berhasil diubah !']);
     }
 
     public function destroy($id)
@@ -132,7 +129,7 @@ class CustomerController extends Controller
         $customer = Customer::find($id);
         $customer->delete();
 
-        return response()->json(['success' => 'true', 'message' => 'Data berhasil dihapus']);
+        return response()->json(['success' => 'true', 'message' => 'Data berhasil dihapus !']);
     }
 
     public function getAllCustomers(Request $request)
@@ -153,6 +150,6 @@ class CustomerController extends Controller
         $customer->sales_id = $request->sales;
         $customer->save();
 
-        return response()->json(['success' => 'true', 'message' => 'Data berhasil diubah']);
+        return response()->json(['success' => 'true', 'message' => 'Data berhasil diubah !']);
     }
 }
