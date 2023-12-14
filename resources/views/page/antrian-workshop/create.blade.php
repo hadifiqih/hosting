@@ -10,6 +10,22 @@
 
 @section('content')
 <div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Upload ACC Desain</h2>
+                </div>
+                <div class="card-body">
+                    <form action="" method="POST" enctype="multipart/form-data" class="dropzone" id="my-dropzone">
+                        @csrf
+                        <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <form action="{{ route('antrian.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
     <div class="row">
@@ -149,7 +165,7 @@
                     <div class="card-body text-right">
                         {{-- Tombol Submit --}}
                         <div class="d-flex align-items-center">
-                            <button id="submitToAntrian" type="submit" class="btn btn-primary">Submit<div id="loader" class="loader" style="display: none;"></div>
+                            <button id="submitToAntrian" type="submit" class="btn btn-primary">Submit<div id="loader" class="loader" style="display: none;">
                         </div>
                     </div>
                 </div>
@@ -164,16 +180,18 @@
 
 @section('script')
 <script src="{{ asset('adminlte/dist/js/maskMoney.min.js') }}"></script>
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 
 <script>
+    Dropzone.options.myDropzone = {
+        url: "{{ route('simpanAcc') }}",
+        paramName: "gambarAcc",
+        maxFilesize: 20,
+    };
+
     $(function () {
         bsCustomFileInput.init();
     });
-
-    Dropzone.options.myAwesomeDropzone = {
-            paramName: "acc_desain", // The name that will be used to transfer the file
-            maxFilesize: 50, // MB
-    };
 
     function tambahProduk(){
         $('#modalPilihProduk').modal('show');

@@ -925,7 +925,8 @@ class AntrianController extends Controller
         return redirect()->route('antrian.index')->with('success-dokumentasi', 'Berhasil ditandai selesai !');
     }
 
-    public function biayaProduksiSelesai(Request $request, $id){
+    public function biayaProduksiSelesai(Request $request, $id)
+    {
         $antrian = Antrian::where('ticket_order', $id)->first();
         $antrian->done_production_at = Carbon::now();
         $antrian->done_production_by = auth()->user()->id;

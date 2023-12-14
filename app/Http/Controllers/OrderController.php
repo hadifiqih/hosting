@@ -11,9 +11,10 @@ use App\Models\Barang;
 use App\Models\Design;
 use App\Models\Customer;
 use App\Models\Employee;
+use App\Models\GambarAcc;
 use Illuminate\Http\Request;
-use App\Notifications\AntrianDesain;
 
+use App\Notifications\AntrianDesain;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use App\Events\SendGlobalNotification;
@@ -656,6 +657,31 @@ class OrderController extends Controller
         $jobs = Job::where('job_name', 'LIKE', "%".request('q')."%")->get();
 
         return response()->json($jobs);
+    }
+
+    public function simpanAcc(Request $request)
+    {
+        $order = Order::where('ticket_order', $request->ticket_order)->first();
+
+        $file = $request->file('gambarAcc');
+        
+        try{
+            $fileName = time() . '_' . $order->title . $file->getClientOriginalExtension();
+            $path = 'acc-desain/' . $fileName;
+            Storage::disk('public')->put($path, file_get_contents($file));
+
+            $design = new GambarAcc;
+            $design->ticket_order = $order->ticket_order;
+            $design->sales_id = $order->sales_id;
+            $design->filename = $fileName;
+            $design->filepath = $path;
+            $design->filetype = $file->getClientOriginalExtension();
+            $design->save();
+        }catch(\Exception $e){
+            return redirect()->back()->with('error', 'Gagal menyimpan file desain');
+        }
+
+        response()->json(['success' => $fileName]);
     }
 
 }

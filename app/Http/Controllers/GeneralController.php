@@ -29,4 +29,5 @@ class GeneralController extends Controller
         //Mengembalikan data kota dalam bentuk JSON
         return response()->json($kota);
     }
+
 }

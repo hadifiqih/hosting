@@ -196,6 +196,7 @@ Route::controller(OrderController::class)->group(function(){
     Route::post('/order/upload-print-file', 'uploadPrintFile')->name('design.upload');
     Route::get('/design/submit-file-cetak/{id}', 'submitFileCetak')->name('submit.file-cetak');
     Route::post('/submit-link', 'submitLinkUpload')->name('submitLinkUpload');
+    Route::post('/order/unggah-gambar-acc', 'simpanAcc')->name('simpanAcc');
     //--------------------------------------------
     // Route Revisi Desain
     //--------------------------------------------
@@ -210,7 +211,7 @@ Route::controller(OrderController::class)->group(function(){
     Route::post('/design/reupload-file', 'reuploadFileDesain')->name('design.reuploadFile');
     Route::get('/design/submit-reupload-file/{id}', 'submitReuploadFile')->name('submit.reupload');
     Route::post('/design/submit-reupload-link', 'submitLinkReupload')->name('submitLinkReupload');
-
+    //--------------------------------------------
 });
 
 Route::controller(AntrianController::class)->group(function(){

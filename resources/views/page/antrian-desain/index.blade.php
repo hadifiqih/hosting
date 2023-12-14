@@ -758,7 +758,7 @@
             dictInvalidFileType: "Type file ini tidak dizinkan",
             addRemoveLinks: true,
             dictRemoveFile: "Hapus file",
-            maxFileSize: 52428800,
+            maxFileSize: 50,
         };
 
         //Jika input submitLink kosong, maka tambahkan class disabled pada button submit
@@ -783,7 +783,7 @@
                 dictInvalidFileType: "Type file ini tidak dizinkan",
                 addRemoveLinks: true,
                 dictRemoveFile: "Hapus file",
-                maxFileSize: 52428800,
+                maxFileSize: 50,
             };
 
         @endforeach
