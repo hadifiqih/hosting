@@ -10,7 +10,7 @@
 
 @section('content')
 
-<div class="card card-warning">
+<div class="card">
   <h5 class="card-header">Tambah Antrian Desain</h5>
 
   {{-- Tampilkan jika ada error apapun --}}
@@ -52,7 +52,7 @@
       <div class="mb-3">
         <label for="job" class="form-label">Jenis Produk <span class="text-danger">*</span></label>
         <br>
-        <select class="custom-select rounded-0" name="job" id="job" required>
+        <select class="custom-select rounded-2" name="job" id="job" required>
 
         </select>
       </div>
@@ -74,17 +74,6 @@
       <div class="form-check form-check-inline mb-3">
         <input class="form-check-input" type="radio" name="jenisPekerjaan" id="inlineRadio2" value="edit" required>
         <label class="form-check-label" for="inlineRadio2">Edit Desain</label>
-      </div>
-
-      {{-- Uplaoad File Referensi Desain --}}
-      <div class="mb-3" id="refDesain">
-        <h6><strong>File Ref. Desain</strong><span class="text-secondary font-italic"> (.jpeg / .jpg / .png / .cdr )</span></h6>
-        <div class="input-group">
-          <div class="custom-file">
-            <input type="file" class="custom-file-input" id="refDesain" name="refdesain">
-            <label class="custom-file-label" for="refDesain"><span class="text-secondary">Pilih File..</span></label>
-          </div>
-        </div>
       </div>
 
       {{-- Menangani jika ada error file tidak ditemukan --}}
@@ -155,6 +144,35 @@
   $(document).ready(function() {
     bsCustomFileInput.init();
 
+    $('#kategori').on('change', function() {
+      $('#job').empty();
+      $('#job').append('<option selected disabled>--Pilih Jenis Produk--</option>');
+
+      $('#job').select2({
+        placeholder: 'Pilih Jenis Produk',
+        ajax : {
+          url: "{{ route('getJobsByCategory') }}",
+          type: "GET",
+          dataType: 'json',
+          delay: 250,
+          data: {
+            kategori: $(this).val()
+          },
+            processResults: function (data) {
+              return {
+                results:  $.map(data, function (item) {
+                  return {
+                    text: item.job_name,
+                    id: item.id
+                  }
+                })
+              };
+            },
+            cache: true
+          }
+        });
+      });
+
     $('#formOrder').on('submit', function(e) {
         e.preventDefault();
         $('.submitButton').attr('disabled', true);
@@ -216,33 +234,5 @@
       });
     });
   });
-</script>
-<script>
-    const kategoriSelect = $('#kategori');
-    const jobSelect = $('#job');
-
-    jobSelect.prop('disabled', true);
-
-    kategoriSelect.on('change', function() {
-        const selectedCategoryId = kategoriSelect.val();
-        jobSelect.prop('disabled', false);
-        jobSelect.empty().append('<option selected disabled>Pilih Jenis Produk</option>');
-
-        if (selectedCategoryId) {
-            $.ajax({
-                url: `/get-jobs-by-category/${selectedCategoryId}`,
-                method: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    $.each(data, function(index, job) {
-                        jobSelect.append($('<option>', {
-                            value: job.id,
-                            text: job.job_name
-                        }));
-                    });
-                }
-            });
-        }
-    });
 </script>
 @endsection

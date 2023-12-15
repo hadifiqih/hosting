@@ -32,16 +32,16 @@
     <div class="row">
         <div class="col-12">
             <ul class="nav nav-tabs mb-2" id="custom-content-below-tab" role="tablist">
-                @if(Auth::user()->role == 'sales' || Auth::user()->role == 'supervisor')
+                @if(Auth::user()->role == 'sales')
                 <li class="nav-item">
-                    <a class="nav-link active" id="custom-content-below-home-tab" data-toggle="pill" href="#custom-content-below-home" role="tab" aria-controls="custom-content-below-home" aria-selected="true">Menunggu Desain</a>
+                  <a class="nav-link active" id="custom-content-below-home-tab" data-toggle="pill" href="#custom-content-below-home" role="tab" aria-controls="custom-content-below-home" aria-selected="true">Menunggu Desain</a>
                 </li>
                 @endif
                 <li class="nav-item">
-                    <a class="nav-link" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Progress Desain</a>
+                  <a class="nav-link {{ Auth::user()->role != 'sales' ? 'active' : '' }}" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Progress Desain</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="custom-content-below-messages-tab" data-toggle="pill" href="#custom-content-below-messages" role="tab" aria-controls="custom-content-below-messages" aria-selected="false">Selesai Desain</a>
+                  <a class="nav-link" id="custom-content-below-messages-tab" data-toggle="pill" href="#custom-content-below-messages" role="tab" aria-controls="custom-content-below-messages" aria-selected="false">Selesai Desain</a>
                 </li>
                 @if(auth()->user()->role == 'sales')
                 <li class="nav-item">
@@ -55,7 +55,7 @@
                 @endif
             </ul>
             <div class="tab-content" id="custom-content-below-tabContent">
-            @if(Auth::user()->role == 'sales' || Auth::user()->role == 'supervisor')
+            @if(Auth::user()->role == 'sales')
             <div class="tab-pane fade show active" id="custom-content-below-home" role="tabpanel" aria-labelledby="custom-content-below-home-tab">
                 <div class="card">
                 <div class="card-header">
@@ -73,15 +73,77 @@
                             <th>No</th>
                             <th>Ticket Order</th>
                             <th>Judul Desain</th>
-                            <th>Sales</th>
                             <th>Ref. Desain</th>
                             <th>Jenis Pekerjaan</th>
                             <th>Status</th>
+                            <th>Waktu Dibuat</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        
+                        @foreach($listDesain as $desain)
+                        <tr>
+                            <td>
+                                {{ $loop->iteration }}
+                                {{-- Jika is_priority = 1, maka tambahkan icon star war warna kuning disebelah nomer urut --}}
+                                @if($desain->is_priority == '1')
+                                    <i class="fas fa-star text-warning"></i>
+                                @endif
+                            </td>
+                            
+                            <td>{{ $desain->ticket_order }}</td>
+
+                            <td>{{ $desain->title }}</td>
+
+                            {{-- Jika desain tidak kosong, maka tampilkan nama file desain, jika kosong, maka tampilkan tanda strip (-) --}}
+                            @if($desain->desain != null)
+                                @php
+                                    $refImage = strlen($desain->desain) > 15 ? substr($desain->desain, 0, 15) . '...' : $desain->desain;
+                                @endphp
+                                    <td scope="row"><a href="{{ asset('storage/ref-desain/'.$desain->desain) }}" target="_blank">{{ $refImage }}</a></td>
+                            @else
+                                    <td scope="row">-</td>
+                            @endif
+
+                            <td>
+                                @php
+                                if($desain->type_work){
+                                    if($desain->type_work == 'baru'){
+                                        echo 'Desain Baru';
+                                    }elseif($desain->type_work == 'edit'){
+                                        echo 'Edit Desain';
+                                    }
+                                }else{
+                                    echo '-';
+                                }
+                                @endphp
+                            </td>
+
+                            {{-- Jika status = 0, maka tampilkan badge warning, jika status = 1, maka tampilkan badge primary, jika status = 2, maka tampilkan badge success --}}
+                            @if($desain->status == '0')
+                                <td><span class="badge badge-warning">Menunggu</span></td>
+                            @elseif($desain->status == '1')
+                                <td><span class="badge badge-primary">Dikerjakan</span></td>
+                            @elseif($desain->status == '2')
+                                <td><span class="badge badge-success">Selesai</span></td>
+                            @endif
+
+                            <td>{{ $desain->created_at }}</td>
+
+                            {{-- Jika role = desain, maka tampilkan tombol aksi --}}
+                                <td>
+                                    <a href="{{ url('order/'. $desain->id .'/edit') }}" class="btn btn-sm btn-primary" {{ Auth::user()->role != 'sales' ? "style=display:none" : '' }}><i class="fas fa-edit"></i></a>
+                                    @if(Auth::user()->role == '22')
+                                    {{-- Tombol untuk membagi desain --}}
+                                    <button class="btn btn-sm bg-orange" data-toggle="modal" data-target="#modalBagiDesain"><i class="fas fa-user"></i></button>
+                                    @endif
+                                    {{-- Tombol Modal Detail Keterangan Desain --}}
+                                    <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#detailWorking{{ $desain->id }}">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                </td>
+                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
                 {{-- End Menampilkan Antrian Desain --}}
@@ -209,18 +271,60 @@
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Ticket Order</th>
+                                <th>Ticker Order</th>
                                 <th>Judul Desain</th>
-                                <th>Sales</th>
-                                <th>Ref. Desain</th>
-                                <th>Jenis Produk</th>
                                 <th>Desainer</th>
                                 <th>Status</th>
+                                <th>Waktu Dimulai</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            
+                            @foreach($listDikerjakan as $desain)
+                            <tr>
+                                <td>
+                                    {{ $loop->iteration }}
+                                    {{-- Jika is_priority = 1, maka tambahkan icon star war warna kuning disebelah nomer urut --}}
+                                    @if($desain->is_priority == '1')
+                                        <i class="fas fa-star text-warning"></i>
+                                    @endif
+                                </td>
+
+                                <td>{{ $desain->ticket_order }}</td>
+
+                                <td>{{ $desain->title }}</td>
+
+                                <td>{{ $desain->employee->name }}</td>
+
+                                @if($desain->status == '0')
+                                    <td><span class="badge badge-warning">Menunggu</span></td>
+                                @elseif($desain->status == '1')
+                                    <td><span class="badge badge-primary">Dikerjakan</span></td>
+                                @elseif($desain->status == '2')
+                                    <td><span class="badge badge-success">Selesai</span></td>
+                                @endif
+
+                                <td>{{ $desain->time_taken }}</td>
+
+                                <td>
+                                    <div class="btn-group">
+                                    @if(Auth::user()->role == 'sales')
+                                    <a type="button" href="{{ url('order/'. $desain->id .'/edit') }}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                                    @endif
+
+                                    @if(Auth::user()->role == 'desain' || Auth::user()->role == 'stempel' || Auth::user()->role == 'advertising' || Auth::user()->role == 'estimator')
+                                        {{-- Button untuk menampilkan modal Upload --}}
+                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#modalUpload{{ $desain->id }}"><i class="fas fa-upload"></i> Upload Desain</button>
+                                    @endif
+
+                                    {{-- Tombol Modal Detail Keterangan Desain --}}
+                                    <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#detailWorking{{ $desain->id }}">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                     {{-- End Menampilkan Antrian Desain --}}
@@ -668,6 +772,7 @@
                 $('.submitButtonUpload').addClass('disabled');
             }
         });
+
         @endforeach
 
         @foreach ($listRevisi as $revisi)
@@ -700,73 +805,26 @@
 <script>
     $(function () {
         $("#tableAntrianDesain").DataTable({
-            responsive: true,
-            autoWidth: false,
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: "{{ route('list.menunggu') }}",
-            },
-            columns: [
-                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                {data: 'ticket_order', name: 'ticket_order'},
-                {data: 'title', name: 'title'},
-                {data: 'sales', name: 'sales'},
-                {data: 'ref_desain', name: 'ref_desain'},
-                {data: 'job_name', name: 'job_name'},
-                {data: 'status', name: 'status'},
-                {data: 'action', name: 'action'},
-            ],
+            "responsive": true,
+            "autoWidth": false,
         });
         $("#tableAntrianDikerjakan").DataTable({
-            responsive: true,
-            autoWidth: false,
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: "{{ route('list.dalamProses') }}",
-            },
-            columns: [
-                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                {data: 'ticket_order', name: 'ticket_order'},
-                {data: 'title', name: 'title'},
-                {data: 'sales', name: 'sales'},
-                {data: 'ref_desain', name: 'ref_desain'},
-                {data: 'job_name', name: 'job_name'},
-                {data: 'desainer', name: 'desainer'},
-                {data: 'status', name: 'status'},
-                {data: 'action', name: 'action'},
-            ],
+            "responsive": true,
+            "autoWidth": false,
         });
         $("#tableAntrianSelesai").DataTable({
-            responsive: true,
-            autoWidth: false,
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: "{{ route('list.selesai') }}",
-            },
-            columns: [
-                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                {data: 'ticket_order', name: 'ticket_order'},
-                {data: 'title', name: 'title'},
-                {data: 'sales', name: 'sales'},
-                {data: 'ref_desain', name: 'ref_desain'},
-                {data: 'job_name', name: 'job_name'},
-                {data: 'desainer', name: 'desainer'},
-                {data: 'status', name: 'status'},
-                {data: 'action', name: 'action'},
-            ],
+            "responsive": true,
+            "autoWidth": false,
         });
 
         $("#tableInputProduksi").DataTable({
-            responsive: true,
-            autoWidth: false,
+            "responsive": true,
+            "autoWidth": false,
         });
 
         $("#tableRevisiDesain").DataTable({
-            responsive: true,
-            autoWidth: false,
+            "responsive": true,
+            "autoWidth": false,
         });
     });
 </script>
