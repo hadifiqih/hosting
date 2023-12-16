@@ -180,6 +180,8 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/list-desain/menunggu', 'listMenunggu')->name('list.menunggu');
     Route::get('/list-desain/dalam-proses', 'listDalamProses')->name('list.dalamProses');
     Route::get('/list-desain/selesai', 'listSelesai')->name('list.selesai');
+    Route::get('/list-desain/desainer', 'listDesainer')->name('list.desainer');
+
     Route::get('/order/create', 'create')->name('order.create');
     Route::post('/order', 'store')->name('order.store');
     Route::get('/order/{id}/edit', 'edit')->name('order.edit');

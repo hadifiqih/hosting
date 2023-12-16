@@ -54,28 +54,7 @@ class OrderController extends Controller
     }
 
     public function antrianDesain(){
-        $listDesainer = Employee::where('can_design', 1)->get();
-
-        if(auth()->user()->role == 'sales'){
-            $sales = Sales::where('user_id', auth()->user()->id)->first();
-            $salesId = $sales->id;
-            $listDesain = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->where('status', 0)->where('sales_id', $salesId)->get();
-            $listDikerjakan = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->where('status', 1)->where('sales_id', $salesId)->get();
-            $listSelesai = Order::with('employee', 'sales', 'job', 'user')->where('status', 2)->where('sales_id', $salesId)->get();
-            $listRevisi = [];
-        }elseif(auth()->user()->role == 'desain' || auth()->user()->role == 'stempel'){
-            $listDesain = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->where('status', 0)->get();
-            $listDikerjakan = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->where('status', 1)->where('employee_id', Auth::user()->employee->id)->get();
-            $listSelesai = Order::with('employee', 'sales', 'job', 'user')->where('status', 2)->where('employee_id', Auth::user()->employee->id)->get();
-            $listRevisi = Order::with('employee', 'sales', 'job', 'user')->where('status', 2)->where('ada_revisi', 1)->where('employee_id', Auth::user()->employee->id)->get();
-        }else{
-            $listDesain = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->where('status', 0)->get();
-            $listDikerjakan = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->where('status', 1)->get();
-            $listSelesai = Order::with('employee', 'sales', 'job', 'user')->where('status', 2)->get();
-            $listRevisi = [];
-        }
-
-        return view('page.antrian-desain.index', compact('listDesain', 'listDikerjakan', 'listSelesai', 'listDesainer', 'listRevisi'));
+        return view('page.antrian-desain.index');
     }
 
     public function listMenunggu()
@@ -104,13 +83,13 @@ class OrderController extends Controller
             return $data->job->job_name;
         })
         ->addColumn('status', function($data){
-            return $data->status == 0 ? '<span class="badge badge-warning">Menunggu</span>' : '<span class="badge badge-success">Dikerjakan</span>';
+            return $data->status == 0 ? '<span class="badge badge-primary">Menunggu</span>' : '<span class="badge badge-success">Dikerjakan</span>';
         })
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
-            $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>';
-            $button .= '<a href="'. route('order.bagiDesain', $data->id) .'" class="btn btn-sm btn-dark"><i class="fas fa-user"></i></a>';
-            $button .= '<a href="'. route('order.delete', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>';
+            $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
+            $button .= '<a href="javascript:void(0)" onclick="pilihDesainer('. $data->id .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Pilih Desainer</a>';
+            $button .= '<a href="'. route('order.delete', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
             $button .= '</div>';
             return $button;
         })
@@ -151,12 +130,12 @@ class OrderController extends Controller
             }
         })
         ->addColumn('status', function($data){
-            return $data->status == 0 ? '<span class="badge badge-warning">Menunggu</span>' : '<span class="badge badge-success">Dikerjakan</span>';
+            return $data->status == 0 ? '<span class="badge badge-primary">Menunggu</span>' : '<span class="badge badge-warning">Dikerjakan</span>';
         })
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
-            $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>';
-            $button .= '<a href="'. route('order.delete', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>';
+            $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
+            $button .= '<a href="'. route('order.delete', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
             $button .= '</div>';
             return $button;
         })
@@ -183,7 +162,24 @@ class OrderController extends Controller
             return $data->time_end;
         })
         ->addColumn('periode', function($data){
-            return $data->time_end->diffForHumans($data->time_taken);
+            //hitung selisih waktu selesai dan waktu mulai
+            $timeStart = strtotime($data->time_taken);
+            $timeEnd = strtotime($data->time_end);
+            $diff = $timeEnd - $timeStart;
+
+            //hitung selisih hari
+            $days = floor($diff / (60 * 60 * 24));
+
+            //hitung selisih jam
+            $hours = floor(($diff - $days * (60 * 60 * 24)) / (60 * 60));
+
+            //hitung selisih menit
+            $minutes = floor(($diff - $days * (60 * 60 * 24) - $hours * (60 * 60)) / 60);
+
+            //hitung selisih detik
+            $seconds = floor(($diff - $days * (60 * 60 * 24) - $hours * (60 * 60) - $minutes * 60));
+
+            return $days . ' Hari ' . $hours . ' Jam ' . $minutes . ' Menit ' . $seconds . ' Detik';
         })
         ->addColumn('produk', function($data){
             return $data->job->job_name;
@@ -192,16 +188,22 @@ class OrderController extends Controller
             return $data->employee->name;
         })
         ->addColumn('status', function($data){
-            return $data->status == 0 ? '<span class="badge badge-warning">Menunggu</span>' : '<span class="badge badge-success">Dikerjakan</span>';
+            return '<span class="badge badge-success">Selesai</span>';
         })
         ->addColumn('file_cetak', function($data){
             if($data->file_cetak == null){
                 return '-';
             }else{
-                return '<a href="'. asset('storage/file-cetak/' . $data->file_cetak) .'" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>';
+                return '<a href="'. asset('storage/file-cetak/' . $data->file_cetak) .'" target="_blank" class="btn btn-sm btn-primary">'. $data->file_cetak .' <i class="fas fa-download"></i></a>';
             }
         })
-        ->rawColumns(['ref_desain', 'status', 'desainer'])
+        ->addColumn('action', function($data){
+            $button = '<div class="btn-group">';
+            $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-fire"></i> Antrikan</a>';
+            $button .= '</div>';
+            return $button;
+        })
+        ->rawColumns(['ref_desain', 'status', 'desainer', 'periode', 'file_cetak', 'action'])
         ->make(true);
     }
 
@@ -253,6 +255,10 @@ class OrderController extends Controller
         $sales = Sales::where('user_id', auth()->user()->id)->first();
         $job = Job::where('id', $order->job_id)->first();
         $jobs = Job::all();
+
+        if($sales == null){
+            return redirect()->back()->with('error', 'Oops! Akses "Ubah" hanya dapat diakses oleh Sales.');
+        }
 
         return view('page.order.edit', compact('order', 'sales', 'job', 'jobs'));
     }
@@ -808,5 +814,26 @@ class OrderController extends Controller
         response()->json(['success' => $fileName]);
     }
 
+    public function listDesainer()
+    {
+        $desainer = Employee::with('user')->where('can_design', '1')->get();
+
+        return Datatables()->of($desainer)
+        ->addIndexColumn()
+        ->addColumn('nama_desainer', function($data){
+            return $data->name;
+        })
+        ->addColumn('jumlah_desain', function($data){
+            return $data->design_load;
+        })
+        ->addColumn('action', function($data){
+            $button = '<div class="btn-group">';
+            $button .= '<a href="javascript:void(0)" onclick="pilihDesainer('. $data->id .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Pilih</a>';
+            $button .= '</div>';
+            return $button;
+        })
+        ->rawColumns(['action'])
+        ->make(true);
+    }
 }
 

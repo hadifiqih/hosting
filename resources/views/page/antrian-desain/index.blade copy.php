@@ -9,7 +9,7 @@
 @section('breadcrumb', 'Antrian Desain')
 
 @section('style')
-  <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/dropzone/min/dropzone.min.css">
+    <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/dropzone/min/dropzone.min.css">
 @endsection
 
 @section('content')
