@@ -29,6 +29,12 @@ class OrderController extends Controller
         $this->middleware('auth');
     }
 
+    public function show($id){
+        $order = Order::with('sales', 'user', 'employee', 'job')->where('ID', $id)->first();
+
+        return response()->json($order);
+    }
+
     public function cobaPush()
     {
         // Menampilkan push notifikasi saat selesai
@@ -40,8 +46,8 @@ class OrderController extends Controller
         $publishResponse = $beamsClient->publishToInterests(
             array("sales"),
             array("web" => array("notification" => array(
-              "title" => "Ada desain baru menunggu !",
-              "body" => "📣 Cek brief sekarang, jangan sampai diambil orang lain !",
+                "title" => "Ada desain baru menunggu !",
+                "body" => "📣 Cek brief sekarang, jangan sampai diambil orang lain !",
             )),
         ));
     }
@@ -88,7 +94,8 @@ class OrderController extends Controller
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
             $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
-            $button .= '<a href="javascript:void(0)" onclick="pilihDesainer('. $data->id .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Pilih Desainer</a>';
+            $button .= '<a href="javascript:void(0)" onclick="showDetailDesain('. $data->id .')" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
+            $button .= '<a href="javascript:void(0)" onclick="showDesainer('. $data->id .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Pilih Desainer</a>';
             $button .= '<a href="'. route('order.delete', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
             $button .= '</div>';
             return $button;
@@ -209,13 +216,13 @@ class OrderController extends Controller
 
     public function bagiDesain(Request $request){
 
-        $order = Order::find($request->order_id);
+        $order = Order::find($request->id);
         $order->status = 1;
-        $order->employee_id = $request->desainer_id;
+        $order->employee_id = $request->desainer;
         $order->time_taken = now();
         $order->save();
 
-        $employee = Employee::find($request->desainer_id);
+        $employee = Employee::find($request->desainer);
         $employee->design_load += 1;
         $employee->save();
 
@@ -232,12 +239,15 @@ class OrderController extends Controller
         $publishResponse = $beamsClient->publishToUsers(
             array("user-". $order->employee->user->id),
             array("web" => array("notification" => array(
-              "title" => "Kiw Kiw! Ada desain baru menunggu !",
-              "body" => "📣 Cek brief dulu, pastikan ga ada revisi !✨",
+                "title" => "Pengumuman!, Ada desain baru menunggu!",
+                "body" => "📣 Cek brief dulu, pastikan ga ada revisi !✨",
             )),
         ));
 
-        return redirect()->route('design.index')->with('success', 'Berhasil memilih desainer');
+        return response()->json([
+            'status' => 200,
+            'message' => 'Desain berhasil diberikan ke desainer!'
+        ]);
     }
 
     public function create()

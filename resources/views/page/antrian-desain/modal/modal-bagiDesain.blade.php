@@ -1,6 +1,6 @@
 {{-- Modal Bagi Desain --}}
 <div class="modal fade" id="modalBagiDesain">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-md">
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Pilih Desainer</h4>
@@ -9,6 +9,7 @@
           </button>
         </div>
         <div class="modal-body">
+          <input type="hidden" id="ticketModalDesainer" name="ticketModalDesainer" value="">
             <table id="tableDesainer" class="table table-bordered table-responsive" style="width: 100%">
                 <thead>
                     <tr>

@@ -189,6 +189,7 @@ Route::controller(OrderController::class)->group(function(){
     Route::put('/order/{id}', 'update')->name('order.update');
     Route::delete('/order/{id}', 'destroy')->name('order.destroy');
     Route::get('/design', 'antrianDesain')->name('design.index');
+    Route::get('/order/{id}/show', 'show')->name('order.show');
 
     Route::get('/order/{id}/toAntrian', 'toAntrian')->middleware(['auth', 'checkrole:sales'])->name('order.toAntrian');
     Route::get('/antrian/make-antrian/', 'makeAntrian')->middleware('auth')->name('antrian.makeAntrian');

@@ -158,6 +158,7 @@
         </div>
     </div>
     @includeIf('page.antrian-desain.modal.modal-bagiDesain')
+    @includeIf('page.antrian-desain.modal.modal-detail-desain')
 </div>
 @endsection
 
@@ -166,8 +167,83 @@
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 
     <script>
-        function pilihDesainer(id) {
+        function showDetailDesain(id){
+            $('#detailWorking').modal('show');
+
+            $.ajax({
+                url: "/order/"+ id +"/show",
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    //membersihkan isi dari seluruh element modal
+                    $('#ticketDetail').empty();
+                    $('#createdAtWorking').empty();
+                    $('#lastUpdateWorking').empty();
+                    $('#namaSalesWorking').empty();
+                    $('#judulDesainWorking').empty();
+                    $('#jenisProdukWorking').empty();
+                    $('#keteranganWorking').empty();
+                    $('#refgambar').empty();
+
+                    $('#ticketDetail').text(data.ticket_order);
+                    $('#createdAtWorking').val(data.created_at);
+                    $('#lastUpdateWorking').val(data.updated_at);
+                    $('#namaSalesWorking').val(data.sales.sales_name);
+                    $('#judulDesainWorking').val(data.title);
+                    $('#jenisProdukWorking').val(data.job.job_name);
+                    $('#keteranganWorking').val(data.description);
+                    $('#refgambar').attr('src', "{{ asset('storage/ref-desain') }}/" + data.desain);
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Terjadi Kesalahan!'
+                    });
+                }
+            });
+        }
+
+        function showDesainer(id) {
             $('#modalBagiDesain').modal('show');
+            $('#ticketModalDesainer').val(id);
+        }
+
+        function pilihDesainer(id) {
+            //ambil value dari inputan ticketModalDesainer
+            var idOrder = $('#ticketModalDesainer').val();
+            //ajax untuk memilih desainer
+            $.ajax({
+                url: "{{ route('order.bagiDesain') }}",
+                type: "POST",
+                dataType: "JSON",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: idOrder,
+                    desainer: id,
+                },
+                success: function(data) {
+                    if(data.success) {
+                        $('#modalBagiDesain').modal('hide');
+                        $('#tableDesainer').DataTable().ajax.reload();
+                        $('#tableAntrianDesain').DataTable().ajax.reload();
+                        $('#tableAntrianDikerjakan').DataTable().ajax.reload();
+                        $('#tableAntrianSelesai').DataTable().ajax.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: data.success
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Terjadi Kesalahan!'
+                    });
+                }
+            });
         }
 
         $("#tableAntrianDesain").DataTable({
@@ -215,6 +291,7 @@
             responsive: true,
             autoWidth: false,
             processing: true,
+            searching: false,
             serverSide: true,
             ajax: {
                 url: "{{ route('list.selesai') }}",
