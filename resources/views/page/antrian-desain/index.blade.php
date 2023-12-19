@@ -138,7 +138,7 @@
                                 <th>Sales</th>
                                 <th>Judul Desain</th>
                                 <th>Waktu Selesai</th>
-                                <th>Periode</th>
+                                <th>Lama Proses</th>
                                 <th>Produk</th>
                                 <th>Desainer</th>
                                 <th>Status</th>
@@ -185,9 +185,19 @@
                     $('#keteranganWorking').empty();
                     $('#refgambar').empty();
 
+                    var dibuat = new Date(data.created_at);
+                    var tanggalDibuat = dibuat.getFullYear() + '-' + (dibuat.getMonth() + 1) + '-' + dibuat.getDate();
+                    var waktuDibuat = dibuat.getHours() + ":" + dibuat.getMinutes() + ":" + dibuat.getSeconds();
+
+                    var perbarui = new Date(data.updated_at);
+                    var tanggalUpdate = perbarui.getFullYear() + '-' + (perbarui.getMonth() + 1) + '-' + perbarui.getDate();
+                    var waktuUpdate = perbarui.getHours() + ":" + perbarui.getMinutes() + ":" + perbarui.getSeconds();
+
+                    //format tanggal dan jam
+                    $("#createdAtWorking").val(tanggalDibuat + " " + waktuDibuat);
+                    $("#lastUpdateWorking").val(tanggalUpdate + " " + waktuUpdate);
+
                     $('#ticketDetail').text(data.ticket_order);
-                    $('#createdAtWorking').val(data.created_at);
-                    $('#lastUpdateWorking').val(data.updated_at);
                     $('#namaSalesWorking').val(data.sales.sales_name);
                     $('#judulDesainWorking').val(data.title);
                     $('#jenisProdukWorking').val(data.job.job_name);
@@ -207,6 +217,49 @@
         function showDesainer(id) {
             $('#modalBagiDesain').modal('show');
             $('#ticketModalDesainer').val(id);
+        }
+
+        function deleteOrder(id) {
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: "Data yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/order/hapus"+ id,
+                        type: "DELETE",
+                        dataType: "JSON",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                        },
+                        success: function(data) {
+                            if(data.success) {
+                                $('#tableAntrianDesain').DataTable().ajax.reload();
+                                $('#tableAntrianDikerjakan').DataTable().ajax.reload();
+                                $('#tableAntrianSelesai').DataTable().ajax.reload();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: data.success
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Terjadi Kesalahan!'
+                            });
+                        }
+                    });
+                }
+            });
         }
 
         function pilihDesainer(id) {

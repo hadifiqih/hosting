@@ -28,7 +28,6 @@
   <div class="card-body">
     <form id="formOrder" action="{{ route('order.store') }}" method="POST" enctype="multipart/form-data">
       @csrf
-
       {{-- Inputan untuk judul desain --}}
       <div class="mb-3">
         <label for="title" class="form-label">Judul Project (Keyword)<span class="text-danger">*</span></label>
@@ -65,7 +64,15 @@
         <textarea class="form-control" id="description" name="description" rows="3" placeholder="Contoh : Ukuran 6x6cm, ditambah No. Telp : 08xxxxxxxx"></textarea>
       </div>
 
-      <h6 class="font-weight-bold">Jenis Pekerjaan<span class="text-danger">*</span></h6>
+      <div class="form-group">
+        <label for="refdesain">Gambar Referensi <span class="text-danger">*</span></label>
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" id="refdesain" name="refdesain" required>
+            <label class="custom-file-label" for="refdesain">Pilih Gambar</label>
+        </div>
+      </div>
+
+      <h6 class="font-weight-bold">Jenis Pekerjaan <span class="text-danger">*</span></h6>
       <div class="form-check form-check-inline mb-3">
         <input class="form-check-input" type="radio" name="jenisPekerjaan" id="inlineRadio1" value="baru" required>
         <label class="form-check-label" for="inlineRadio1">Desain Baru</label>

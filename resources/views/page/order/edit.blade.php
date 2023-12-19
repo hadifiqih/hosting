@@ -154,6 +154,43 @@
   $(document).ready(function() {
     bsCustomFileInput.init();
 
+    $('input[type="radio"]').click(function() {
+            if ($(this).attr('id') == 'inlineRadio1') {
+                $('#refDesain').show();
+            } else {
+                $('#refDesain').hide();
+            }
+        });
+
+    $('#kategori').on('change', function() {
+      $('#job').empty();
+      $('#job').append('<option selected disabled>--Pilih Jenis Produk--</option>');
+
+      $('#job').select2({
+        placeholder: 'Pilih Jenis Produk',
+        ajax : {
+          url: "{{ route('getJobsByCategory') }}",
+          type: "GET",
+          dataType: 'json',
+          delay: 250,
+          data: {
+            kategori: $(this).val()
+          },
+            processResults: function (data) {
+              return {
+                results:  $.map(data, function (item) {
+                  return {
+                    text: item.job_name,
+                    id: item.id
+                  }
+                })
+              };
+            },
+            cache: true
+          }
+        });
+      });
+
     //saat formEditOrder di submit, maka tombol submit akan disabled & loader akan muncul
     $('#formEditOrder').on('submit', function() {
       $(this).find('input[type="submit"]').prop('disabled', true);
@@ -218,44 +255,6 @@
     });
 
   });
-</script>
-<script>
-    const kategoriSelect = $('#kategori');
-    const jobSelect = $('#job');
-
-    kategoriSelect.on('change', function() {
-        const selectedCategoryId = kategoriSelect.val();
-        jobSelect.empty().append('<option selected disabled>Pilih Jenis Produk</option>');
-
-        if (selectedCategoryId) {
-            $.ajax({
-                url: `/get-jobs-by-category/${selectedCategoryId}`,
-                method: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    $.each(data, function(index, job) {
-                        jobSelect.append($('<option>', {
-                            value: job.id,
-                            text: job.job_name
-                        }));
-                    });
-                }
-            });
-        }
-    });
-</script>
-
-<script>
-    //menampilkan input refdesain jika memilih desain baru & menghilangkan input refdesain jika memilih edit desain
-    $(document).ready(function() {
-        $('input[type="radio"]').click(function() {
-            if ($(this).attr('id') == 'inlineRadio1') {
-                $('#refDesain').show();
-            } else {
-                $('#refDesain').hide();
-            }
-        });
-    });
 </script>
 
 @endsection

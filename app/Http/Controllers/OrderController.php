@@ -30,7 +30,7 @@ class OrderController extends Controller
     }
 
     public function show($id){
-        $order = Order::with('sales', 'user', 'employee', 'job')->where('ID', $id)->first();
+        $order = Order::with('sales', 'user', 'employee', 'job')->where('id', $id)->first();
 
         return response()->json($order);
     }
@@ -93,10 +93,18 @@ class OrderController extends Controller
         })
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
-            $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
+
+            if(auth()->user()->role == 'sales'){
+                $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
+            }
+
             $button .= '<a href="javascript:void(0)" onclick="showDetailDesain('. $data->id .')" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
+
+            if(auth()->user()->role == 'supervisor'){
             $button .= '<a href="javascript:void(0)" onclick="showDesainer('. $data->id .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Pilih Desainer</a>';
-            $button .= '<a href="'. route('order.delete', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
+            }
+
+            $button .= '<a href="javascript:void(0)" onclick="delelteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
             $button .= '</div>';
             return $button;
         })
@@ -141,7 +149,10 @@ class OrderController extends Controller
         })
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
-            $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
+            $button .= '<a href="javascript:void(0)" onclick="showDetailDesain('. $data->id .')" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
+            if(auth()->user()->role == 'sales'){
+                $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
+            }
             $button .= '<a href="'. route('order.delete', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
             $button .= '</div>';
             return $button;
@@ -212,6 +223,17 @@ class OrderController extends Controller
         })
         ->rawColumns(['ref_desain', 'status', 'desainer', 'periode', 'file_cetak', 'action'])
         ->make(true);
+    }
+
+    public function hapus($id)
+    {
+        $order = Order::find($id);
+        $order->delete();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Order berhasil dihapus !'
+        ]);
     }
 
     public function bagiDesain(Request $request){
@@ -356,7 +378,7 @@ class OrderController extends Controller
         //ubah nama file
         if($request->file('refdesain')){
             $file = $request->file('refdesain');
-            $fileName = time() . '_' . $request->title . $file->getClientOriginalExtension();
+            $fileName = time() . '_' . $request->title . '.' . $file->getClientOriginalExtension();
             $path = 'ref-desain/' . $fileName;
             Storage::disk('public')->put($path, file_get_contents($file));
         }else{
