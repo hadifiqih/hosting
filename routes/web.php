@@ -185,7 +185,7 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/order/create', 'create')->name('order.create');
     Route::post('/order', 'store')->name('order.store');
     Route::get('/order/{id}/edit', 'edit')->name('order.edit');
-    Route::get('/order/hapus/{id}', 'hapus')->name('order.delete');
+    Route::delete('/order/hapus/{id}', 'hapus')->name('order.delete');
     Route::put('/order/{id}', 'update')->name('order.update');
     Route::delete('/order/{id}', 'destroy')->name('order.destroy');
     Route::get('/design', 'antrianDesain')->name('design.index');
@@ -271,8 +271,9 @@ Route::controller(CustomerController::class)->group(function(){
     Route::delete('/customer/{id}', 'destroy')->name('customer.destroy');
     Route::get('/pelanggan/search', 'cariPelanggan')->name('pelanggan.search');
     Route::get('/customer/searchByNama', 'searchById')->name('pelanggan.searchById');
-    Route::get('/pelanggan-all', 'getAllCustomers')->name('getAllCustomers');
+    Route::get('/pelanggan-all/{id}', 'getAllCustomers')->name('getAllCustomers');
     Route::post('/customer/store', 'store')->name('pelanggan.store');
+    Route::get('/pelanggan/status/{id}', 'statusPelanggan')->name('pelanggan.status');
 });
 
 Route::controller(JobController::class)->group(function(){

@@ -113,7 +113,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
     <div class="row">
         <div class="col-12">
@@ -257,6 +256,8 @@
     }
 
     $(document).ready(function(){
+
+
         // function provinsi
         $.ajax({
             url: "{{ route('getProvinsi') }}",
@@ -349,6 +350,7 @@
             var totalAll = totalAll + packing + ongkir + pasang - diskon;
             totalAll = totalAll.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
             $('#totalAll').html('Rp ' + totalAll);
+            $('#sisaPembayaran').html('Rp ' + totalAll);
         });
 
         // sisaPembayaran akan berubah saat ada perubahan pada inputan jumlahPembayaran - totalAll
@@ -444,7 +446,7 @@
         $('#namaPelanggan').select2({
             placeholder: 'Pilih Pelanggan',
             ajax: {
-                url: "{{ route('getAllCustomers') }}",
+                url: "/pelanggan-all/{{ $order->sales_id }}",
                 dataType: 'json',
                 delay: 250,
                 processResults: function (data) {
@@ -466,6 +468,18 @@
                 },
                 cache: true
             }
+        });
+
+        //onchange nama pelanggan
+        $('#namaPelanggan').on('change', function(){
+            var id = $(this).val();
+            $.ajax({
+                url: "/pelanggan/status/" + id,
+                method: "GET",
+                success: function(data){
+                    $('#statusPelanggan').val(data.status);
+                }
+            });
         });
 
         $('#formTambahProduk').on('submit', function(e){
@@ -540,7 +554,7 @@
                     $('#namaPelanggan').select2({
                         placeholder: 'Pilih Pelanggan',
                         ajax: {
-                            url: "{{ route('getAllCustomers') }}",
+                            url: "/pelanggan-all/{{ $order->sales_id }}",
                             dataType: 'json',
                             delay: 250,
                             processResults: function (data) {
@@ -548,7 +562,7 @@
                                     results:  $.map(data, function (item) {
                                         if(item.instansi == null){
                                             return {
-                                                text: item.nama,
+                                                text: item.nama + ' - ' + item.telepon,
                                                 id: item.id,
                                             }
                                         }else{

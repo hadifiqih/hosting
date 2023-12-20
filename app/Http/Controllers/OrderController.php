@@ -104,7 +104,7 @@ class OrderController extends Controller
             $button .= '<a href="javascript:void(0)" onclick="showDesainer('. $data->id .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Pilih Desainer</a>';
             }
 
-            $button .= '<a href="javascript:void(0)" onclick="delelteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
+            $button .= '<a href="javascript:void(0)" onclick="deleteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
             $button .= '</div>';
             return $button;
         })
@@ -153,7 +153,7 @@ class OrderController extends Controller
             if(auth()->user()->role == 'sales'){
                 $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
             }
-            $button .= '<a href="'. route('order.delete', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
+            $button .= '<a href="javascript:void(0)" onclick="deleteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
             $button .= '</div>';
             return $button;
         })
@@ -217,7 +217,11 @@ class OrderController extends Controller
         })
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
-            $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-fire"></i> Antrikan</a>';
+            if(auth()->user()->role == 'sales' && $data->toWorkshop == 0){
+                $button .= '<a href="'. route('order.toAntrian', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-fire"></i> Antrikan</a>';
+            }else{
+                $button .= '<a href="javascript:void(0)" onclick="showDetailDesain('. $data->id .')" class="btn btn-sm btn-warning"><i class="fas fa-eye"></i> Detail</a>';
+            }
             $button .= '</div>';
             return $button;
         })

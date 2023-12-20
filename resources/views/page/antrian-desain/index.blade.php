@@ -232,23 +232,22 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "/order/hapus"+ id,
+                        url: "/order/hapus/"+ id,
                         type: "DELETE",
                         dataType: "JSON",
                         data: {
                             _token: "{{ csrf_token() }}",
                         },
                         success: function(data) {
-                            if(data.success) {
-                                $('#tableAntrianDesain').DataTable().ajax.reload();
-                                $('#tableAntrianDikerjakan').DataTable().ajax.reload();
-                                $('#tableAntrianSelesai').DataTable().ajax.reload();
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: data.success
-                                });
-                            }
+                            $('#tableAntrianDesain').DataTable().ajax.reload();
+                            $('#tableAntrianDikerjakan').DataTable().ajax.reload();
+                            $('#tableAntrianSelesai').DataTable().ajax.reload();
+                            
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: data.success
+                            });
                         },
                         error: function() {
                             Swal.fire({

@@ -132,10 +132,29 @@ class CustomerController extends Controller
         return response()->json(['success' => 'true', 'message' => 'Data berhasil dihapus !']);
     }
 
-    public function getAllCustomers(Request $request)
+    public function getAllCustomers(Request $request, $id)
     {
-        $customers = Customer::where('nama', 'LIKE', "%".request('q')."%")->get();
+        $customers = Customer::where('nama', 'LIKE', "%".request('q')."%")->where('sales_id', $id)->get();
         return response()->json($customers);
+    }
+
+    public function statusPelanggan($id)
+    {
+        $customer = Customer::find($id);
+
+        $frekuensi = $customer->frekuensi_order;
+
+        if($frekuensi == 0){
+            $status = 'New Leads';
+        }elseif($frekuensi > 0){
+            $status = 'Pelanggan Baru';
+        }elseif($frekuensi > 1){
+            $status = 'Repeat Order';
+        }else{
+            $status = 'Sangat Sering';
+        }
+
+        return response()->json(['status' => $status]);
     }
 
     public function tambahProduk(Request $request)
