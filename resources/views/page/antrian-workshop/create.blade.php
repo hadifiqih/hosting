@@ -17,10 +17,26 @@
                     <h2 class="card-title">Upload ACC Desain</h2>
                 </div>
                 <div class="card-body">
+                    <h6 class="font-weight-bold mb-2">Upload Gambar ACC Desain</h6>
                     <form action="" method="POST" enctype="multipart/form-data" class="dropzone" id="my-dropzone">
                         @csrf
                         <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">
                     </form>
+
+                    <h6 class="font-weight-bold mt-3">Uploaded File</h6>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <img src="{{ asset('storage/acc_desain/') }}" alt="" class="img-fluid">
+                                </div>
+                                <div class="card-footer">
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteAcc()"><i class="fas fa-trash"></i> Hapus</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

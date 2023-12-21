@@ -29,7 +29,6 @@
     <form id="formEditOrder" action="{{ route('order.update', $order->id) }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
-
       {{-- Inputan untuk judul desain --}}
       <div class="mb-3">
         <label for="title" class="form-label">Judul Project (Keyword) <span class="text-danger">*</span></label>
@@ -67,6 +66,17 @@
         <textarea class="form-control" id="description" name="description" rows="3">{{ $order->description }}</textarea>
       </div>
 
+      {{-- Uplaoad File Referensi Desain --}}
+      <div class="mb-3" id="refdesain">
+        <h6><strong>File Ref. Desain </strong><span class="font-italic text-danger text-sm">*(Jika tidak ada perubahan, hiraukan / kosongkan ini)</span></h6>
+        <div class="input-group">
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" id="refdesain" name="refdesain">
+            <label class="custom-file-label" for="refDesain"><span class="text-secondary">Pilih File..</span></label>
+          </div>
+        </div>
+      </div>
+
       <h6 class="font-weight-bold">Jenis Pekerjaan <span class="text-danger">*</span></h6>
       <div class="form-check form-check-inline mb-3">
         <input class="form-check-input" type="radio" name="jenisPekerjaan" id="inlineRadio1" value="baru" {{ $order->type_work == 'baru' ? 'checked' : '' }} required>
@@ -75,17 +85,6 @@
       <div class="form-check form-check-inline mb-3">
         <input class="form-check-input" type="radio" name="jenisPekerjaan" id="inlineRadio2" value="edit" {{ $order->type_work == 'edit' ? 'checked' : '' }} required>
         <label class="form-check-label" for="inlineRadio2">Edit Desain</label>
-      </div>
-
-      {{-- Uplaoad File Referensi Desain --}}
-      <div class="mb-3" id="refDesain">
-        <h6><strong>File Ref. Desain </strong><span class="font-italic text-danger text-sm">*(Jika tidak ada perubahan, hiraukan / kosongkan ini)</span></h6>
-        <div class="input-group">
-          <div class="custom-file">
-            <input type="file" class="custom-file-input" id="refDesain" name="refdesain">
-            <label class="custom-file-label" for="refDesain"><span class="text-secondary">Pilih File..</span></label>
-          </div>
-        </div>
       </div>
 
       {{-- Menangani jika ada error file tidak ditemukan --}}
