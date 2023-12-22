@@ -128,13 +128,13 @@ class BarangController extends Controller
             return $row->note;
         })
         ->addColumn('accdesain', function($row){
-            return '<a href="'.asset('storage/acc_desain/'.$row->acc_desain).'" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>';
+            return '<a href="'.asset('storage/acc-desain/'.$row->acc_desain).'" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>';
         })
         ->addColumn('action', function($row){
             $btn = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBarang('.$row->id.')"><i class="fas fa-trash"></i></a>';
             return $btn;
         })
-        ->rawColumns(['action', 'hargaTotal'])
+        ->rawColumns(['action', 'hargaTotal', 'accdesain'])
         ->make(true);
     }
 

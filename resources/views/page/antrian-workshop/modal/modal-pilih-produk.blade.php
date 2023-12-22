@@ -40,12 +40,12 @@
 
                 <div class="form-group">
                     <label for="keterangan">Note</label>
-                    <textarea name="keterangan" id="keterangan" cols="30" rows="5" class="form-control" required></textarea>
+                    <textarea name="keterangan" id="keterangan" cols="30" rows="5" class="form-control" placeholder="Ukuran : 6x6cm" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="acc_desain">Gambar ACC Desain</label>
-                    <input type="file" class="form-control-file" id="acc_desain" name="acc_desain" required>
+                    <label for="codeAcc">Code ACC Desain</label>
+                    <input type="text" class="form-control" id="codeAcc" name="codeAcc" placeholder="Misal : 23" required>
                 </div>
 
                 <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">

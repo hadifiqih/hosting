@@ -285,6 +285,27 @@ class OrderController extends Controller
         return view('page.order.add', compact('sales', 'jobs'));
     }
 
+    public function getAccDesain($id)
+    {
+        $order = GambarAcc::where('ticket_order', $id)->get();
+
+        return response()->json($order);
+    }
+
+    public function hapusAcc($id)
+    {
+        $gambar = GambarAcc::find($id);
+        $gambar->delete();
+
+        //hapus file
+        Storage::disk('public')->delete('acc-desain/' . $gambar->filename);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Gambar berhasil dihapus !'
+        ]);
+    }
+
     public function edit($id)
     {
         $order = Order::find($id);

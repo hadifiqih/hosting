@@ -204,6 +204,8 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/design/submit-file-cetak/{id}', 'submitFileCetak')->name('submit.file-cetak');
     Route::post('/submit-link', 'submitLinkUpload')->name('submitLinkUpload');
     Route::post('/order/unggah-gambar-acc', 'simpanAcc')->name('simpanAcc');
+    Route::get('/order/get-acc/{id}', 'getAccDesain')->name('getAccDesain');
+    Route::delete('/acc-desain/hapus/{id}', 'hapusAcc')->name('hapusAcc');
     //--------------------------------------------
     // Route Revisi Desain
     //--------------------------------------------

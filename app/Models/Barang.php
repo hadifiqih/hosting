@@ -25,4 +25,9 @@ class Barang extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getAccDesainAttribute($value)
+    {
+        return $value ? asset('storage/acc_desain/'.$value) : null;
+    }
 }

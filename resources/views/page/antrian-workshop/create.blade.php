@@ -17,24 +17,11 @@
                     <h2 class="card-title">Upload ACC Desain</h2>
                 </div>
                 <div class="card-body">
-                    <h6 class="font-weight-bold mb-2">Upload Gambar ACC Desain</h6>
-                    <form action="" method="POST" enctype="multipart/form-data" class="dropzone" id="my-dropzone">
-                        @csrf
-                        <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">
-                    </form>
-
+                    <button class="btn btn-primary btn-sm" data-target="#modalUploadAcc" data-toggle="modal"><i class="fas fa-upload"></i> Upload Gambar ACC Desain</button>
+                    @includeIf('page.antrian-workshop.modal.modal-upload-acc-desain')
                     <h6 class="font-weight-bold mt-3">Uploaded File</h6>
-                    <div class="row">
-                        <div class="col-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <img src="{{ asset('storage/acc_desain/') }}" alt="" class="img-fluid">
-                                </div>
-                                <div class="card-footer">
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteAcc()"><i class="fas fa-trash"></i> Hapus</button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="row previewCanvas">
+                        
                     </div>
 
                 </div>
@@ -87,6 +74,7 @@
                                 <th>Harga (satuan)</th>
                                 <th>Harga Total</th> 
                                 <th>Keterangan Spesifikasi</th>
+                                <th>Acc Desain</th>
                                 <th>Aksi</th>
                             </thead>
                             <tbody>
@@ -202,6 +190,7 @@
         url: "{{ route('simpanAcc') }}",
         paramName: "gambarAcc",
         maxFilesize: 20,
+        autoProcessQueue: false,
     };
 
     $(function () {
@@ -210,6 +199,88 @@
 
     function tambahProduk(){
         $('#modalPilihProduk').modal('show');
+    }
+
+    function gambarAcc(){
+        $('.previewCanvas').empty();
+        //ajax untuk menampilkan gambar acc pada 1 ticket order
+        $.ajax({
+            url: "{{ route('getAccDesain', $order->ticket_order) }}",
+            method: "GET",
+            success: function(data){
+                $.each(data, function(index, item) {
+                    $('.previewCanvas').append(`
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <img src="{{ asset('storage/acc-desain/${item.filename}') }}" alt="" class="img-fluid">
+                                </div>
+                                <div class="card-footer">
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteAcc(${item.id})"><i class="fas fa-trash"></i> Hapus</button>
+                                    <span class="text-muted float-right">Code : ${item.id}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                });
+            }
+        });
+    }
+
+    function simpanAcc(){
+        $('#btnTambah').attr('disabled', true);
+        $('#btnBatal').attr('disabled', true);
+        $('#btnTambah').html('Menyimpan...');
+        var ticket_order = $('#ticket_order').val();
+        var myDropzone = Dropzone.forElement("#my-dropzone");
+        myDropzone.processQueue();
+        myDropzone.on("complete", function (file) {
+            myDropzone.removeFile(file);
+            $('#modalUploadAcc').modal('hide');
+            gambarAcc();
+        });
+    }
+
+    function deleteAcc(id)
+    {
+        Swal.fire({
+            title: 'Apakah anda yakin?',
+            text: "Gambar ACC Desain akan dihapus dari antrian ini!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            confirmButtonText: 'Ya, Hapus!'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/acc-desain/hapus/" + id,
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        _method: "DELETE",
+                        id: id
+                    },
+                    success: function(data){
+                        // function gambarAcc
+                        gambarAcc();
+
+                        //tampilkan toast sweet alert
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Gambar ACC Desain berhasil dihapus',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    },
+                    error: function(xhr, status, error){
+                        var err = eval("(" + xhr.responseText + ")");
+                        alert(err.Message);
+                    }
+                });
+            }
+        });
     }
 
     function updateTotalBarang(){
@@ -272,7 +343,7 @@
     }
 
     $(document).ready(function(){
-
+        gambarAcc();
 
         // function provinsi
         $.ajax({
@@ -454,6 +525,7 @@
                 {data: 'harga', name: 'harga'},
                 {data: 'hargaTotal', name: 'hargaTotal'},
                 {data: 'keterangan', name: 'keterangan'},
+                {data: 'accdesain', name: 'accdesain'},
                 {data: 'action', name: 'action'},
             ],
         });
