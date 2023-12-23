@@ -38,7 +38,7 @@
                 </li>
                 @endif
                 <li class="nav-item">
-                    <a class="nav-link" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Progress Desain</a>
+                    <a class="nav-link {{ Auth::user()->role != 'sales' || Auth::user()->role != 'supervisor' ? 'active' : ''}}" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Progress Desain</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="custom-content-below-messages-tab" data-toggle="pill" href="#custom-content-below-messages" role="tab" aria-controls="custom-content-below-messages" aria-selected="false">Selesai Desain</a>
@@ -85,7 +85,7 @@
             </div>
             @endif
 
-            <div class="tab-pane fade" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
+            <div class="tab-pane fade {{ Auth::user()->role != 'sales' || Auth::user()->role != 'supervisor' ? 'show active' : ''}}" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
                 <div class="card">
                     <div class="card-header">
                       <h2 class="card-title">Antrian Desain</h2>
@@ -159,6 +159,7 @@
     </div>
     @includeIf('page.antrian-desain.modal.modal-bagiDesain')
     @includeIf('page.antrian-desain.modal.modal-detail-desain')
+    @includeIf('page.antrian-desain.modal.modal-upload')
 </div>
 @endsection
 
@@ -217,6 +218,11 @@
         function showDesainer(id) {
             $('#modalBagiDesain').modal('show');
             $('#ticketModalDesainer').val(id);
+        }
+
+        function showUploadCetak(id) {
+            $('#modalUpload').modal('show');
+            $('#ticketModal').val(id);
         }
 
         function deleteOrder(id) {

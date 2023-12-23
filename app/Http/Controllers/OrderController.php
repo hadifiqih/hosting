@@ -153,6 +153,9 @@ class OrderController extends Controller
             if(auth()->user()->role == 'sales'){
                 $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
             }
+            if(auth()->user()->employee->can_design == 1 && $data->employee_id == null){
+                $button .= '<a href="javascript:void(0)" onclick="showUploadCetak('. $data->id .')" class="btn btn-sm btn-dark"><i class="fas fa-upload"></i> File Cetak '. auth()->user()->id .'</a>';
+            }
             $button .= '<a href="javascript:void(0)" onclick="deleteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
             $button .= '</div>';
             return $button;

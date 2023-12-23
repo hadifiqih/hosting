@@ -1,27 +1,27 @@
-<div class="modal fade" id="modalUpload{{ $desain->id }}" aria-labelledby="modalUpload{{ $desain->id }}" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalUpload" aria-labelledby="modalUpload" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">File Upload #{{ $desain->id }}</h4>
+                <h4 class="modal-title">File Upload #</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 {{-- Dropzone JS --}}
-                <form action="{{ route('design.upload') }}" class="dropzone" id="my-dropzone{{ $desain->id }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('design.upload') }}" class="dropzone" id="my-dropzone" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" name="id" value="{{ $desain->id }}">
+                    <input type="hidden" name="id" value="">
                     <input type="hidden" name="linkFile" value="">
-                    <a href="{{ route('submit.file-cetak', $desain->id) }}" class="btn btn-primary btn-sm submitButtonUpload">Unggah</a>
+                    <a href="" class="btn btn-primary btn-sm submitButtonUpload">Unggah</a>
                 </form>
 
                 <div class="form-group mt-2">
                     <form action="{{ route('submitLinkUpload') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <label for="linkFileUpload{{ $desain->id }}">Link File <span class="text-muted font-italic text-sm">*Opsional</span></label>
-                        <input type="text" class="form-control" id="linkFileUpload{{ $desain->id }}" name="linkFileUpload" placeholder="https://drive.google.com/xxxxx">
-                        <input type="hidden" name="id" value="{{ $desain->id }}">
+                        <label for="linkFileUpload">Link File <span class="text-muted font-italic text-sm">*Opsional</span></label>
+                        <input type="text" class="form-control" id="linkFileUpload" name="linkFileUpload" placeholder="https://drive.google.com/xxxxx">
+                        <input type="hidden" name="id" value="">
                         <input type="submit" class="btn btn-primary btn-sm mt-2 submitLink disabled" value="Simpan">
                     </form>
                 </div>
