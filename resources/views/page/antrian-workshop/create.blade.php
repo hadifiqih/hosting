@@ -10,24 +10,6 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Upload ACC Desain</h2>
-                </div>
-                <div class="card-body">
-                    <button class="btn btn-primary btn-sm" data-target="#modalUploadAcc" data-toggle="modal"><i class="fas fa-upload"></i> Upload Gambar ACC Desain</button>
-                    @includeIf('page.antrian-workshop.modal.modal-upload-acc-desain')
-                    <h6 class="font-weight-bold mt-3">Uploaded File</h6>
-                    <div class="row previewCanvas">
-                        
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
 
     <form action="{{ route('antrian.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -83,7 +65,7 @@
                             <tfoot>
                                 <tr>
                                     <th colspan="5" class="text-center">Total</th>
-                                    <th colspan="3" class="text-danger maskRupiah"><span id="subtotal"></span></th>
+                                    <th colspan="4" class="text-danger maskRupiah"><span id="subtotal"></span></th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -110,7 +92,7 @@
 
                             <div class="row">
                                 <div class="col">
-                                    <span>Total : </span><h4 class="font-weight-bold text-danger" id="totalAll">Rp 1.840.000</h4>
+                                    <span>Total : </span><h4 class="font-weight-bold text-danger" id="totalAll"></h4>
                                 </div>
                             </div>
                     </div>

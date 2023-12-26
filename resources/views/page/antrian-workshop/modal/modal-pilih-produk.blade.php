@@ -44,8 +44,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="codeAcc">Code ACC Desain</label>
-                    <input type="text" class="form-control" id="codeAcc" name="codeAcc" placeholder="Misal : 23" required>
+                    <label for="file">File ACC Desain</label>
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="fileAccDesain" name="fileAccDesain" required>
+                            <label class="custom-file-label" for="fileAccDesain">Pilih File</label>
+                        </div>
+                    </div>
                 </div>
 
                 <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">
