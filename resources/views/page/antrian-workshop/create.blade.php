@@ -76,11 +76,6 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="ongkir">Biaya Ongkir</label>
-                                <input type="text" class="form-control maskRupiah" id="ongkir" placeholder="Contoh : Rp 100.000" name="ongkir">
-                            </div>
-
-                            <div class="form-group">
                                 <label for="pasang">Biaya Pasang</label>
                                 <input type="text" class="form-control maskRupiah" id="pasang" placeholder="Contoh : Rp 100.000" name="pasang">
                             </div>
@@ -88,6 +83,52 @@
                             <div class="form-group">
                                 <label for="diskon">Diskon / Potongan Harga</label>
                                 <input type="text" class="form-control maskRupiah" id="diskon" placeholder="Contoh : Rp 100.000" name="diskon">
+                            </div>
+
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input custom-control-input-danger" type="checkbox" id="isOngkir" name="isOngkir">
+                                    <label for="isOngkir" class="custom-control-label">Menggunakan Pengiriman ?</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group divOngkir">
+                                <label for="ongkir">Biaya Ongkir</label>
+                                <input type="text" class="form-control maskRupiah" id="ongkir" placeholder="Contoh : Rp 100.000" name="ongkir">
+                            </div>
+
+                            <div class="form-group divAlamatKirim">
+                                <label for="ongkir">Alamat Pengiriman</label>
+                                <input type="text" class="form-control" id="alamatKirim" placeholder="Jl. Alamat Lengkap" name="alamatKirim">
+                                <p class="text-muted font-italic text-sm mb-0 mt-1">*Harap isi dengan alamat lengkap, agar tidak terjadi kesalahan pengiriman.</p>
+                                <p class="text-muted font-italic text-sm mt-0">*Contoh alamat lengkap: Jalan Mangga Kecil No.13, RT 09 RW 03, Kelurahan Besi Tua, Kecamatan Sukaraja, Kab. Binjai, Sumatera Utara, 53421.</p>
+                            </div>
+
+                            <div class="form-group divEkspedisi">
+                                <label for="ekspedisi">Ekspedisi</label>
+                                <select name="ekspedisi" id="ekspedisi" class="form-control">
+                                    <option value="" selected disabled>Pilih Ekspedisi</option>
+                                    <option value="GOSEND">GO-SEND (Instant)</option>
+                                    <option value="JNE">JNE</option>
+                                    <option value="J&T">J&T Express</option>
+                                    <option value="POS">POS Indonesia</option>
+                                    <option value="TIKI">TIKI</option>
+                                    <option value="WAHANA">Wahana</option>
+                                    <option value="SICEPAT">SiCepat Express</option>
+                                    <option value="NINJA">Ninja Express</option>
+                                    <option value="LION">Lion Parcel</option>
+                                    <option value="IDE">ID Express</option>
+                                    <option value="ANTERAJA">AnterAja</option>
+                                    <option value="BALI">Bali Prima Travel</option>
+                                    <option value="BUS">Bus Terminal</option>
+                                    <option value="KERETA">Kereta Api</option>
+                                    <option value="LAIN">Lainnya</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group divEksLain">
+                                <label for="keterangan">Nama Ekspedisi</label>
+                                <input type="text" class="form-control" id="namaEkspedisi" placeholder="Nama Ekspedisi" name="namaEkspedisi">
                             </div>
 
                             <div class="row">
@@ -183,31 +224,18 @@
         $('#modalPilihProduk').modal('show');
     }
 
-    function gambarAcc(){
-        $('.previewCanvas').empty();
-        //ajax untuk menampilkan gambar acc pada 1 ticket order
-        $.ajax({
-            url: "{{ route('getAccDesain', $order->ticket_order) }}",
-            method: "GET",
-            success: function(data){
-                $.each(data, function(index, item) {
-                    $('.previewCanvas').append(`
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <img src="{{ asset('storage/acc-desain/${item.filename}') }}" alt="" class="img-fluid">
-                                </div>
-                                <div class="card-footer">
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteAcc(${item.id})"><i class="fas fa-trash"></i> Hapus</button>
-                                    <span class="text-muted float-right">Code : ${item.id}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `);
-                });
-            }
-        });
-    }
+    //fungsi untuk menyembunyikan file acc desain saat kosoongAcc dicentang
+    $('#kosongAcc').on('change', function(){
+        if($(this).is(':checked')){
+            //remove required
+            $('#fileAccDesain').removeAttr('required');
+            $('#fileAccDesain').attr('disabled', true);
+        }else{
+            //add required
+            $('#fileAccDesain').attr('required', true);
+            $('#fileAccDesain').attr('disabled', false);
+        }
+    });
 
     function simpanAcc(){
         $('#btnTambah').attr('disabled', true);
@@ -223,8 +251,7 @@
         });
     }
 
-    function deleteAcc(id)
-    {
+    function deleteAcc(id){
         Swal.fire({
             title: 'Apakah anda yakin?',
             text: "Gambar ACC Desain akan dihapus dari antrian ini!",
@@ -325,7 +352,11 @@
     }
 
     $(document).ready(function(){
-        gambarAcc();
+
+        $('.divAlamatKirim').hide();
+        $('.divOngkir').hide();
+        $('.divEkspedisi').hide();
+        $('.divEksLain').hide();
 
         // function provinsi
         $.ajax({
@@ -555,23 +586,29 @@
         $('#formTambahProduk').on('submit', function(e){
             e.preventDefault();
 
+            var kosongAcc = ($('#kosongAcc').is(':checked')) ? 1 : 0;
+
             // Inisialisasi File acc_desain
-            var acc_desain = $('#acc_desain')[0].files[0];
-            acc_desain = new FormData(this);
-            acc_desain.append('acc_desain', acc_desain);
-            acc_desain.append('ticket_order', $('#ticket_order').val());
-            acc_desain.append('namaProduk', $('#namaProduk').val());
-            acc_desain.append('kategoriProduk', $('#kategoriProduk').val());
-            acc_desain.append('qty', $('#qty').val());
-            acc_desain.append('harga', $('#harga').val());
-            acc_desain.append('keterangan', $('#keterangan').val());
+            var acc_desain = ($('#fileAccDesain')[0].files.length > 0) ? $('#fileAccDesain')[0].files[0] : "";
+
+            var dataInput = new FormData();
+            dataInput.append('acc_desain', acc_desain);
+            dataInput.append('_token', "{{ csrf_token() }}" );
+            dataInput.append('ticket_order', $('#ticket_order').val());
+            dataInput.append('namaProduk', $('#namaProduk').val());
+            dataInput.append('kategoriProduk', $('#kategoriProduk').val());
+            dataInput.append('qty', $('#qty').val());
+            dataInput.append('harga', $('#harga').val());
+            dataInput.append('keterangan', $('#keterangan').val());
 
             $.ajax({
                 url: "{{ route('barang.store') }}",
                 method: "POST",
-                data: acc_desain,
+                //data is form dataInput, acc_desain, _token
+                data: dataInput,
                 contentType: false,
                 processData: false,
+                cache: false,
                 success: function(data){
                     $('#modalPilihProduk').modal('hide');
                     $('#tableProduk').DataTable().ajax.reload();
@@ -588,8 +625,6 @@
                         showConfirmButton: false,
                         timer: 1500
                     });
-
-
                 },
                 error: function(xhr, status, error){
                     var err = eval("(" + xhr.responseText + ")");
@@ -597,6 +632,48 @@
                 }
             });
         
+        });
+
+        // ketika isOngkir dicentang maka divAlamatKirim, divOngkir, divEkspedisi akan muncul
+        $('#isOngkir').on('change', function(){
+            if($(this).is(':checked')){
+                //reset value
+                $('#alamatKirim').val('');
+                $('#ongkir').val('');
+                $('#ekspedisi').val('');
+                $('#namaEkspedisi').val('');
+                
+                $('.divAlamatKirim').show();
+                $('.divOngkir').show();
+                $('.divEkspedisi').show();
+                //add required
+                $('#alamatKirim').attr('required', true);
+                $('#ongkir').attr('required', true);
+                $('#ekspedisi').attr('required', true);
+
+            }else{
+                $('.divAlamatKirim').hide();
+                $('.divOngkir').hide();
+                $('.divEkspedisi').hide();
+                $('.divEksLain').hide();
+                //remove required
+                $('#alamatKirim').removeAttr('required');
+                $('#ongkir').removeAttr('required');
+                $('#ekspedisi').removeAttr('required');
+            }
+        });
+
+        //jika ekspedisi dipilih selain Lainnya maka divEksLain akan hide
+        $('#ekspedisi').on('change', function(){
+            if($(this).val() != 'LAIN'){
+                $('.divEksLain').hide();
+                //remove required
+                $('#namaEkspedisi').removeAttr('required');
+            }else{
+                $('.divEksLain').show();
+                //add required
+                $('#namaEkspedisi').attr('required', true);
+            }
         });
 
         // function simpanPelanggan

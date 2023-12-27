@@ -465,8 +465,8 @@ class AntrianController extends Controller
         return response()->download($path);
     }
 
-     public function store(Request $request)
-     {
+    public function store(Request $request)
+    {
         //Mencari data order berdasarkan id order yang diinputkan
         $order = Order::where('id', $request->input('idOrder'))->first();
         $ticketOrder = $order->ticket_order;
@@ -525,7 +525,6 @@ class AntrianController extends Controller
 
             // menyimpan inputan sisa pembayaran
             $sisaPembayaran = str_replace(['Rp ', '.'], '', $request->input('sisaPembayaran'));
-
             
             // Menyimpan file purcase order
             $namaPurchaseOrder = null;

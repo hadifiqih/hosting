@@ -40,10 +40,15 @@ class BarangController extends Controller
         $harga = CustomHelper::removeCurrencyFormat($request->harga);
 
         //rename file acc_desain
-        $file = $request->file('acc_desain');
-        $fileName = time().'_'.$file->getClientOriginalName();
-        $pathGambar = 'acc_desain/'.$fileName;
-        Storage::disk('public')->put($pathGambar, file_get_contents($file));
+        if($request->file('acc_desain') == null ){
+            $fileName = null;
+        }
+        else{
+            $file = $request->file('acc_desain');
+            $fileName = time().'_'.$file->getClientOriginalName();
+            $pathGambar = 'acc_desain/'.$fileName;
+            Storage::disk('public')->put($pathGambar, file_get_contents($file));
+        }
         
         $barang = new Barang();
         $barang->ticket_order = $request->ticket_order;
@@ -52,7 +57,7 @@ class BarangController extends Controller
         $barang->price = $harga;
         $barang->qty = $request->qty;
         $barang->note = $request->keterangan;
-        $barang->acc_desain = $fileName;
+        $barang->accdesain = $fileName;
         $barang->save();
 
         return response()->json([
@@ -128,7 +133,11 @@ class BarangController extends Controller
             return $row->note;
         })
         ->addColumn('accdesain', function($row){
-            return '<a href="'.asset('storage/acc-desain/'.$row->acc_desain).'" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>';
+            if($row->accdesain == null){
+                return '<span class="text-danger">Tidak ada file</span>';
+            }else{
+                return '<a href="'. asset('storage/acc-desain/'. $row->accdesain).'" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>';
+            }
         })
         ->addColumn('action', function($row){
             $btn = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBarang('.$row->id.')"><i class="fas fa-trash"></i></a>';

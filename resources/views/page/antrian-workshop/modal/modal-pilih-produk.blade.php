@@ -44,12 +44,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="file">File ACC Desain</label>
+                    <label for="fileAccDesain">File ACC Desain</label>
                     <div class="input-group">
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" id="fileAccDesain" name="fileAccDesain" required>
                             <label class="custom-file-label" for="fileAccDesain">Pilih File</label>
                         </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input custom-control-input-danger" type="checkbox" id="kosongAcc" name="kosongAcc">
+                        <label for="kosongAcc" class="custom-control-label">Tidak Ada Gambar ACC</label>
                     </div>
                 </div>
 
