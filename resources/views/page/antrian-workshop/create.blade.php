@@ -372,6 +372,20 @@
             }
         });
 
+        $.ajax({
+            url: "{{ route('getInfoPelanggan') }}",
+            method: "GET",
+            success: function(data){
+                console.log(data);
+                //foreach info pelanggan
+                $.each(data, function(key, value){
+                    $('#infoPelanggan').append(`
+                        <option value="${key}">${value}</option>
+                    `);
+                });
+            }
+        });
+
         // function kota
         $('#provinsi').on('change', function(){
             var provinsi = $(this).val();

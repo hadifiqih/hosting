@@ -276,6 +276,7 @@ Route::controller(CustomerController::class)->group(function(){
     Route::get('/pelanggan-all/{id}', 'getAllCustomers')->name('getAllCustomers');
     Route::post('/customer/store', 'store')->name('pelanggan.store');
     Route::get('/pelanggan/status/{id}', 'statusPelanggan')->name('pelanggan.status');
+    Route::get('/get-info-pelanggan', 'getInfoPelanggan')->name('getInfoPelanggan');
 });
 
 Route::controller(JobController::class)->group(function(){

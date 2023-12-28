@@ -203,7 +203,12 @@ class OrderController extends Controller
             return $days . ' Hari ' . $hours . ' Jam ' . $minutes . ' Menit ' . $seconds . ' Detik';
         })
         ->addColumn('produk', function($data){
-            return $data->job->job_name;
+            $produk = $data->job->job_name;
+            if($produk == null){
+                return '-';
+            }else{
+                return $produk;
+            }
         })
         ->addColumn('desainer', function($data){
             return $data->employee->name;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Sales;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use App\Models\SumberPelanggan;
 use Yajra\DataTables\Facades\DataTables;
 
 class CustomerController extends Controller
@@ -170,5 +171,12 @@ class CustomerController extends Controller
         $customer->save();
 
         return response()->json(['success' => 'true', 'message' => 'Data berhasil diubah !']);
+    }
+
+    public function getInfoPelanggan()
+    {
+        $sumberAll = SumberPelanggan::pluck('nama_sumber', 'id');
+
+        return response()->json($sumberAll);
     }
 }

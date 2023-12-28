@@ -35,27 +35,7 @@
                 <label for="infoPelanggan">Sumber Pelanggan <span class="text-danger">*</span></label>
                 <select class="custom-select" id="infoPelanggan" name="modalInfoPelanggan" required>
                     <option value="default" selected>Pilih Sumber Pelanggan</option>
-                    <option value="Google">Google</option>
-                    <option value="G-Maps">G-Maps</option>
-                    <option value="Facebook">Facebook</option>
-                    <option value="Tokopedia">Tokopedia</option>
-                    <option value="Shopee">Shopee</option>
-                    <option value="Bukalapak">Bukalapak</option>
-                    <option value="Instagram">Instagram</option>
-                    <option value="Tiktok">Tiktok</option>
-                    <option value="Youtube">Youtube</option>
-                    <option value="Snackvideo">Snackvideo</option>
-                    <option value="OLX">OLX</option>
-                    <option value="Teman/Keluarga/Kerabat">Teman/Keluarga/Kerabat</option>
-                    <option value="Iklan Facebook">Iklan Facebook</option>
-                    <option value="Iklan Instagram">Iklan Instagram</option>
-                    <option value="Iklan Google">Iklan Google</option>
-                    <option value="Iklan Tiktok">Iklan Tiktok</option>
-                    <option value="Salescall">Salescall</option>
-                    <option value="Visit">Visit / Kunjungan</option>
-                    <option value="Follow Up">Follow Up</option>
-                    <option value="RO WA">RO WhatsApp</option>
-                    <option value="Lainnya">Lainnya</option>
+                    
                 </select>
             </div>
             <div class="form-group">

@@ -465,6 +465,10 @@ class AntrianController extends Controller
         return response()->download($path);
     }
 
+    public function simpanAntrian(Request $request){
+        
+    }
+
     public function store(Request $request)
     {
         //Mencari data order berdasarkan id order yang diinputkan

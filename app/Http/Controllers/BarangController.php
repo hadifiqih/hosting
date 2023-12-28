@@ -113,7 +113,7 @@ class BarangController extends Controller
         return DataTables::of($items)
         ->addIndexColumn()
         ->addColumn('kategori', function($row){
-            return $row->job->job_type;
+            return $row->job->kategori->nama_kategori;
         })
         ->addColumn('namaProduk', function($row){
             return $row->job->job_name; ;
