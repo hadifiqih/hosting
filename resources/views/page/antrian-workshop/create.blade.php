@@ -11,13 +11,13 @@
 @section('content')
 <div class="container-fluid">
 
-    <form action="{{ route('antrian.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('antrian.simpanAntrian') }}" method="POST" enctype="multipart/form-data">
         @csrf
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                  <h2 class="card-title">Data Pelanggan</h2>
+                    <h2 class="card-title">Data Pelanggan</h2>
                 </div>
                 <div class="card-body">
                     {{-- Tambah Pelanggan Baru --}}
@@ -190,6 +190,7 @@
                 <div class="card">
                     <div class="card-body text-right">
                         {{-- Tombol Submit --}}
+                        <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">
                         <div class="d-flex align-items-center">
                             <button id="submitToAntrian" type="submit" class="btn btn-primary">Submit<div id="loader" class="loader" style="display: none;">
                         </div>
@@ -236,61 +237,6 @@
             $('#fileAccDesain').attr('disabled', false);
         }
     });
-
-    function simpanAcc(){
-        $('#btnTambah').attr('disabled', true);
-        $('#btnBatal').attr('disabled', true);
-        $('#btnTambah').html('Menyimpan...');
-        var ticket_order = $('#ticket_order').val();
-        var myDropzone = Dropzone.forElement("#my-dropzone");
-        myDropzone.processQueue();
-        myDropzone.on("complete", function (file) {
-            myDropzone.removeFile(file);
-            $('#modalUploadAcc').modal('hide');
-            gambarAcc();
-        });
-    }
-
-    function deleteAcc(id){
-        Swal.fire({
-            title: 'Apakah anda yakin?',
-            text: "Gambar ACC Desain akan dihapus dari antrian ini!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#aaa',
-            confirmButtonText: 'Ya, Hapus!'
-            }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: "/acc-desain/hapus/" + id,
-                    method: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        _method: "DELETE",
-                        id: id
-                    },
-                    success: function(data){
-                        // function gambarAcc
-                        gambarAcc();
-
-                        //tampilkan toast sweet alert
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: 'Gambar ACC Desain berhasil dihapus',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    },
-                    error: function(xhr, status, error){
-                        var err = eval("(" + xhr.responseText + ")");
-                        alert(err.Message);
-                    }
-                });
-            }
-        });
-    }
 
     function updateTotalBarang(){
         $.ajax({
@@ -495,7 +441,6 @@
 
         //nama produk select2
         $('#modalPilihProduk #kategoriProduk').on('change', function(){
-            var kategoriProduk = $(this).val();
 
             $('#modalPilihProduk #namaProduk').val(null).trigger('change');
             $('#modalPilihProduk #namaProduk').empty();
@@ -505,25 +450,19 @@
             placeholder: 'Pilih Produk',
             ajax: {
                 url: "{{ route('getJobsByCategory') }}",
-                dataType: 'json',
-                delay: 250,
-                data: {
-                    kategoriProduk: kategoriProduk
+                data: function (params) {
+                    var query = {
+                        kategoriProduk: $('#kategoriProduk').val()
+                    }
+                    return query;
                 },
                 processResults: function (data) {
                     return {
                         results:  $.map(data, function (item) {
-                            if(item.instansi == null){
-                                return {
-                                    text: item.job_name,
-                                    id: item.id,
-                                }
-                            }else{
-                                return {
-                                    text: item.job_name + ' - ' + item.instansi,
-                                    id: item.id,
-                                }
-                            }
+                        return { 
+                            id: item.id,
+                            text: item.job_name
+                        };
                         })
                     };
                 },

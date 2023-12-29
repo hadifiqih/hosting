@@ -14,10 +14,11 @@
                     <h6 class="font-weight-bold">Kategori Produk</h6>
                     <select name="kategoriProduk" id="kategoriProduk" class="form-control" data-allow-search="true" style="width: 100%" required>
                         <option value="" selected disabled>Pilih Kategori</option>
-                        <option value="Stempel">Stempel</option>
-                        <option value="Non Stempel">Non Stempel</option>
-                        <option value="Advertising">Advertising</option>
-                        <option value="Digital Printing">Digital Printing</option>
+                        <option value="1">Stempel</option>
+                        <option value="2">Non Stempel</option>
+                        <option value="3">Advertising</option>
+                        <option value="4">Digital Printing</option>
+                        <option value="5">Jasa Servis</option>
                     </select>
                 </div>
 

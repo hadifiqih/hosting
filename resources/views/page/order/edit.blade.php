@@ -41,10 +41,21 @@
       <div class="mb-3">
         <label for="kategori" class="form-label">Kategori <span class="text-danger">*</span></label>
         <select class="custom-select rounded-2" name="kategori" id="kategori" required>
-            <option disabled>--Pilih Kategori--</option>
-            <option value="Stempel" {{ $job->job_type == "Stempel" ? 'selected' : "" }}>Stempel</option>
-            <option value="Non Stempel" {{ $job->job_type == "Non Stempel" ? 'selected' : "" }}>Non Stempel</option>
-            <option value="Advertising" {{ $job->job_type == "Advertising" ? 'selected' : "" }}>Advertising</option>
+            @if($job != null)
+            <option value="0" disabled>--Pilih Kategori--</option>
+            <option value="1" {{ $job->kategori_id == "1" && $job != null ? 'selected' : "" }}>Stempel</option>
+            <option value="2" {{ $job->kategori_id == "2" && $job != null ? 'selected' : "" }}>Non Stempel</option>
+            <option value="3" {{ $job->kategori_id == "3" && $job != null ? 'selected' : "" }}>Advertising</option>
+            <option value="4" {{ $job->kategori_id == "4" && $job != null ? 'selected' : "" }}>Digital Printing</option>
+            <option value="5" {{ $job->kategori_id == "5" && $job != null ? 'selected' : "" }}>Jasa Servis</option>
+            @else
+            <option value="0" selected disabled>--Pilih Kategori--</option>
+            <option value="1">Stempel</option>
+            <option value="2">Non Stempel</option>
+            <option value="3">Advertising</option>
+            <option value="4">Digital Printing</option>
+            <option value="5">Jasa Servis</option>
+            @endif
         </select>
       </div>
 
@@ -57,9 +68,6 @@
             @endforeach
         </select>
       </div>
-      <button type="button" class="btn btn-sm btn-outline-primary mb-3" data-toggle="modal" data-target="#exampleModalProduk">
-        Tambah Produk
-      </button>
 
       <div class="mb-3">
         <label for="description" class="form-label">Keterangan</label>
@@ -173,7 +181,7 @@
           dataType: 'json',
           delay: 250,
           data: {
-            kategori: $(this).val()
+            kategoriProduk: $(this).val()
           },
             processResults: function (data) {
               return {

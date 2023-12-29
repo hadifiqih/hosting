@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Kategori;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Job extends Model
 {
@@ -19,5 +20,10 @@ class Job extends Model
     public function employees()
     {
         return $this->belongsToMany(Employee::class);
+    }
+
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class);
     }
 }

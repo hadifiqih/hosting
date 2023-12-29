@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Kategori;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {
@@ -37,5 +38,13 @@ class Order extends Model
 
     public function payments(){
         return $this->hasOne(Payment::class, 'ticket_order');
+    }
+
+    public function barang(){
+        return $this->hasMany(Barang::class, 'ticket_order');
+    }
+
+    public function kategori(){
+        return $this->belongsTo(Kategori::class);
     }
 }

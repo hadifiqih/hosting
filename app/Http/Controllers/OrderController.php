@@ -86,7 +86,8 @@ class OrderController extends Controller
             }
         })
         ->addColumn('job_name', function($data){
-            return $data->job->job_name;
+            $produk = $data->job_id == 0 ? "Belum Dipilih" : $data->job->job_name;
+            return $produk;
         })
         ->addColumn('status', function($data){
             return $data->status == 0 ? '<span class="badge badge-primary">Menunggu</span>' : '<span class="badge badge-success">Dikerjakan</span>';
@@ -135,7 +136,8 @@ class OrderController extends Controller
             }
         })
         ->addColumn('job_name', function($data){
-            return $data->job->job_name;
+            $produk = $data->job_id == 0 ? "Belum Dipilih" : $data->job->job_name;
+            return $produk;
         })
         ->addColumn('desainer', function($data){
             if($data->employee_id == null){
@@ -166,7 +168,7 @@ class OrderController extends Controller
 
     public function listSelesai()
     {
-        $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 2)->get();
+        $listOrder = Order::with('employee', 'sales', 'job', 'user', 'kategori')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 2)->get();
 
         return Datatables()->of($listOrder)
         ->addIndexColumn()
@@ -203,12 +205,8 @@ class OrderController extends Controller
             return $days . ' Hari ' . $hours . ' Jam ' . $minutes . ' Menit ' . $seconds . ' Detik';
         })
         ->addColumn('produk', function($data){
-            $produk = $data->job->job_name;
-            if($produk == null){
-                return '-';
-            }else{
-                return $produk;
-            }
+            $produk = $data->job_id == 0 ? "Belum Dipilih" : $data->job->job_name;
+            return $produk;
         })
         ->addColumn('desainer', function($data){
             return $data->employee->name;
@@ -818,7 +816,6 @@ class OrderController extends Controller
     //-------------------------------------------------------------------------------------------------------------
 
     public function makeAntrian(){
-
         return view ('page.antrian-workshop.create');
     }
 
@@ -843,13 +840,12 @@ class OrderController extends Controller
     // Mendapatkan Produk berdasarkan Kategori by Sales
     //-------------------------------------------------------------------------------------------------------------
     public function getJobsByCategory(Request $request){
-        $jobs = Job::where('job_type', $request->kategoriProduk)->get();
+        $jobs = Job::where('kategori_id', 'LIKE' , "%". $request->kategoriProduk ."%")->get();
         return response()->json($jobs);
     }
 
     public function getAllJobs(Request $request){
         $jobs = Job::where('job_name', 'LIKE', "%".request('q')."%")->get();
-
         return response()->json($jobs);
     }
 

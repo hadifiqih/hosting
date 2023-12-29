@@ -466,7 +466,8 @@ class AntrianController extends Controller
     }
 
     public function simpanAntrian(Request $request){
-        
+        $antrian = new Antrian();
+        $antrian->ticket_order = $request->input('ticket_order');
     }
 
     public function store(Request $request)
