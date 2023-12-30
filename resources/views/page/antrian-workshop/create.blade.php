@@ -27,7 +27,7 @@
 
                     <div class="form-group">
                         <label for="nama">Nama Pelanggan <span class="text-danger">*</span></label>
-                        <select class="form-control select2" id="namaPelanggan" name="namaPelanggan" style="width: 100%">
+                        <select class="form-control select2" id="customer_id" name="customer_id" style="width: 100%">
                             <option value="" selected>Pilih Pelanggan</option>
                         </select>
                     </div>
@@ -131,6 +131,12 @@
                                 <input type="text" class="form-control" id="namaEkspedisi" placeholder="Nama Ekspedisi" name="namaEkspedisi">
                             </div>
 
+                            <div class="form-group divResi">
+                                <label for="">No. Resi</label>
+                                <input type="text" class="form-control" id="noResi" placeholder="No. Resi" name="noResi">
+                                <p class="text-muted font-italic text-sm mb-0 mt-1">*Opsional, khusus order dari Marketplace. Hiraukan selain dari marketplace.</p>
+                            </div>
+
                             <div class="row">
                                 <div class="col">
                                     <span>Total : </span><h4 class="font-weight-bold text-danger" id="totalAll"></h4>
@@ -175,6 +181,17 @@
                         <input type="text" class="form-control maskRupiah" id="jumlahPembayaran" placeholder="Contoh : Rp 100.000" name="jumlahPembayaran" required>
                     </div>
 
+                    {{-- Upload bukti transfer using dropzone --}}
+                    <div class="form-group">
+                        <label for="paymentImage">Bukti Pembayaran</label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="paymentImage" name="paymentImage">
+                                <label class="custom-file-label" for="paymentImage">Pilih Gambar</label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col">
                             <span>Sisa Pembayaran : </span><h4 class="font-weight-bold text-danger" id="sisaPembayaran"></h4>
@@ -191,6 +208,8 @@
                     <div class="card-body text-right">
                         {{-- Tombol Submit --}}
                         <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">
+                        <input type="hidden" name="sales_id" id="salesID" value="{{ $order->sales_id }}">
+
                         <div class="d-flex align-items-center">
                             <button id="submitToAntrian" type="submit" class="btn btn-primary">Submit<div id="loader" class="loader" style="display: none;">
                         </div>
@@ -303,6 +322,7 @@
         $('.divOngkir').hide();
         $('.divEkspedisi').hide();
         $('.divEksLain').hide();
+        $('.divResi').hide();
 
         // function provinsi
         $.ajax({
@@ -595,10 +615,12 @@
                 $('#ongkir').val('');
                 $('#ekspedisi').val('');
                 $('#namaEkspedisi').val('');
+                $('#noResi').val('');
                 
                 $('.divAlamatKirim').show();
                 $('.divOngkir').show();
                 $('.divEkspedisi').show();
+                $('.divResi').show();
                 //add required
                 $('#alamatKirim').attr('required', true);
                 $('#ongkir').attr('required', true);
@@ -609,6 +631,7 @@
                 $('.divOngkir').hide();
                 $('.divEkspedisi').hide();
                 $('.divEksLain').hide();
+                $('.divResi').hide();
                 //remove required
                 $('#alamatKirim').removeAttr('required');
                 $('#ongkir').removeAttr('required');

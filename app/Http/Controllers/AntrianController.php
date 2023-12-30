@@ -17,6 +17,7 @@ use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Anservice;
 
+use App\Models\DataAntrian;
 use App\Models\Dokumproses;
 use Illuminate\Http\Request;
 use App\Models\BiayaProduksi;
@@ -465,9 +466,59 @@ class AntrianController extends Controller
         return response()->download($path);
     }
 
-    public function simpanAntrian(Request $request){
-        $antrian = new Antrian();
+    public function simpanAntrian(Request $request)
+    {
+        //simpan antrian 
+        $antrian = new DataAntrian();
         $antrian->ticket_order = $request->input('ticket_order');
+        $antrian->sales_id = $request->input('sales_id');
+        $antrian->customer_id = $request->input('customer_id');
+        $antrian->order_id = $request->input('order_id');
+        $antrian->printed_id = $request->input('printed_id');
+        $antrian->status = 1;
+        $antrian->save();
+
+        //jika antrian berhasil disimpan, customer frekuensi order ditambah 1
+        $customer = Customer::where('id', $request->input('customer_id'))->first();
+        $customer->frekuensi_order += 1;
+        $customer->save();
+
+        //simpan pembayaran
+        $payment = new Pembayaran();
+        $payment->ticket_order = $request->input('ticket_order');
+        $payment->metode_pembayaran = $request->input('metode_pembayaran');
+        $payment->biaya_packing = $request->input('biaya_packing');
+        $payment->biaya_pasang = $request->input('biaya_pasang');
+        $payment->diskon = $request->input('diskon');
+        $payment->total_harga = $request->input('total_harga');
+        $payment->dibayarkan = $request->input('dibayarkan');
+        $payment->status_pembayaran = $request->input('status_pembayaran');
+        $payment->save();
+
+        //simpan pengiriman
+        $pengiriman = new Pengiriman();
+        $pengiriman->ticket_order = $request->input('ticket_order');
+        $pengiriman->ongkir = $request->input('biaya_pengiriman');
+        $pengiriman->no_resi = $request->input('no_resi');
+        $pengiriman->ekspedisi = $request->input('ekspedisi');
+        $pengiriman->alamat_pengiriman = $request->input('alamat_pengiriman');
+        $pengiriman->save();
+
+        //simpan bukti pembayaran
+        if($request->file('bukti_pembayaran') == null){
+            $buktiPembayaran = null;
+        }else{
+            $buktiPembayaran = $request->file('bukti_pembayaran');
+            $namaBuktiPembayaran = $buktiPembayaran->getClientOriginalName();
+            $namaBuktiPembayaran = time() . '_' . $namaBuktiPembayaran;
+            $path = 'bukti-pembayaran/' . $namaBuktiPembayaran;
+            Storage::disk('public')->put($path, file_get_contents($buktiPembayaran));
+        }
+
+        $bukti = new BuktiPembayaran();
+        $bukti->ticket_order = $request->input('ticket_order');
+        $bukti->gambar = $namaBuktiPembayaran;
+        $bukti->save();
     }
 
     public function store(Request $request)

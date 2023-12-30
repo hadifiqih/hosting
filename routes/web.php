@@ -226,6 +226,7 @@ Route::controller(OrderController::class)->group(function(){
 Route::controller(AntrianController::class)->group(function(){
     Route::get('/antrian/indexAntrian', 'indexData')->middleware('auth')->name('antrian.indexData');
     Route::get('/antrian/selesai', 'indexSelesai')->middleware('auth')->name('antrian.indexSelesai');
+    Route::get('/antrian/simpan-antrian', 'simpanAntrian')->middleware('auth')->name('antrian.simpanAntrian');
 
     Route::post('/antrian/storeToAntrian', 'store')->middleware('auth')->name('antrian.store');
     Route::get('/antrian/show/{id}', 'show')->middleware('auth')->name('antrian.show');

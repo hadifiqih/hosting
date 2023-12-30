@@ -136,7 +136,7 @@ class BarangController extends Controller
             if($row->accdesain == null){
                 return '<span class="text-danger">Tidak ada file</span>';
             }else{
-                return '<a href="'. asset('storage/acc-desain/'. $row->accdesain).'" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>';
+                return '<a href="'. asset($row->accdesain).'" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>';
             }
         })
         ->addColumn('action', function($row){
