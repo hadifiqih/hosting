@@ -17,11 +17,14 @@ use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Anservice;
 
+use App\Models\Pembayaran;
+use App\Models\Pengiriman;
 use App\Models\DataAntrian;
 use App\Models\Dokumproses;
 use Illuminate\Http\Request;
 use App\Models\BiayaProduksi;
 use App\Models\Documentation;
+use App\Models\BuktiPembayaran;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\AntrianWorkshop;
@@ -29,6 +32,7 @@ use App\Http\Resources\AntrianResource;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\AntrianDiantrikan;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Notification;
 
 
@@ -468,13 +472,27 @@ class AntrianController extends Controller
 
     public function simpanAntrian(Request $request)
     {
+        //Validasi inputan
+        $validator = Validator::make($request->all(),[
+            'ticket_order' => 'required',
+            'customer_id' => 'required',
+            'metodePembayaran' => 'required',
+            'statusPembayaran' => 'required',
+            'jumlahPembayaran' => 'required',
+            'sales_id' => 'required',
+        ]);
+
+        //Jika validasi gagal, kembali ke halaman sebelumnya dengan error
+        if($validator->fails()){
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         //simpan antrian 
         $antrian = new DataAntrian();
         $antrian->ticket_order = $request->input('ticket_order');
         $antrian->sales_id = $request->input('sales_id');
         $antrian->customer_id = $request->input('customer_id');
         $antrian->order_id = $request->input('order_id');
-        $antrian->printed_id = $request->input('printed_id');
         $antrian->status = 1;
         $antrian->save();
 
@@ -519,6 +537,8 @@ class AntrianController extends Controller
         $bukti->ticket_order = $request->input('ticket_order');
         $bukti->gambar = $namaBuktiPembayaran;
         $bukti->save();
+
+        return redirect()->route('antrian.index')->with('success', 'Data antrian berhasil ditambahkan!');
     }
 
     public function store(Request $request)

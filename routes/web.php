@@ -192,7 +192,6 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/order/{id}/show', 'show')->name('order.show');
 
     Route::get('/order/{id}/toAntrian', 'toAntrian')->middleware(['auth', 'checkrole:sales'])->name('order.toAntrian');
-    Route::get('/antrian/make-antrian/', 'makeAntrian')->middleware('auth')->name('antrian.makeAntrian');
     Route::post('/order/tambahProdukByModal', 'tambahProdukByModal')->name('tambahProdukByModal');
     Route::get('/get-jobs-by-category', 'getJobsByCategory')->name('getJobsByCategory');
     Route::get('/get-all-jobs', 'getAllJobs')->name('getAllJobs');
@@ -226,7 +225,7 @@ Route::controller(OrderController::class)->group(function(){
 Route::controller(AntrianController::class)->group(function(){
     Route::get('/antrian/indexAntrian', 'indexData')->middleware('auth')->name('antrian.indexData');
     Route::get('/antrian/selesai', 'indexSelesai')->middleware('auth')->name('antrian.indexSelesai');
-    Route::get('/antrian/simpan-antrian', 'simpanAntrian')->middleware('auth')->name('antrian.simpanAntrian');
+    Route::post('/antrian/simpan-antrian', 'simpanAntrian')->middleware('auth')->name('antrian.simpanAntrian');
 
     Route::post('/antrian/storeToAntrian', 'store')->middleware('auth')->name('antrian.store');
     Route::get('/antrian/show/{id}', 'show')->middleware('auth')->name('antrian.show');

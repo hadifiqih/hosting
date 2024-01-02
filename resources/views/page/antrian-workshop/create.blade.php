@@ -9,8 +9,17 @@
 @section('breadcrumb', 'Tambah Antrian')
 
 @section('content')
-<div class="container-fluid">
+@if ($errors->any())
+<div class="alert alert-danger">
+  <ul>
+    @foreach ($errors->all() as $error)
+      <li>{{ $error }}</li>
+    @endforeach
+  </ul>
+</div>
+@endif
 
+<div class="container-fluid">
     <form action="{{ route('antrian.simpanAntrian') }}" method="POST" enctype="multipart/form-data">
         @csrf
     <div class="row">
@@ -33,7 +42,7 @@
                     </div>
                     <div class="form-group">
                         <label for="sumberPelanggan">Status Pelanggan</label>
-                        <input type="text" class="form-control" id="statusPelanggan" placeholder="Status Pelanggan" value="" readonly>
+                        <input type="text" class="form-control" id="statusPelanggan" name="statusPelanggan" placeholder="Status Pelanggan" value="{{ old('statusPelanggan') }}" readonly>
                     </div>
               </div>
             </div>
@@ -72,34 +81,34 @@
                 
                             <div class="form-group mt-3">
                                 <label for="packing">Biaya Packing</label>
-                                <input type="text" class="form-control maskRupiah" id="packing" placeholder="Contoh : Rp 100.000" name="packing">
+                                <input type="text" class="form-control maskRupiah" id="packing" placeholder="Contoh : Rp 100.000" name="packing" value="{{ old('packing') }}">
                             </div>
 
                             <div class="form-group">
                                 <label for="pasang">Biaya Pasang</label>
-                                <input type="text" class="form-control maskRupiah" id="pasang" placeholder="Contoh : Rp 100.000" name="pasang">
+                                <input type="text" class="form-control maskRupiah" id="pasang" placeholder="Contoh : Rp 100.000" name="pasang" value="{{ old('pasang') }}">
                             </div>
 
                             <div class="form-group">
                                 <label for="diskon">Diskon / Potongan Harga</label>
-                                <input type="text" class="form-control maskRupiah" id="diskon" placeholder="Contoh : Rp 100.000" name="diskon">
+                                <input type="text" class="form-control maskRupiah" id="diskon" placeholder="Contoh : Rp 100.000" name="diskon" value="{{ old('diskon') }}">
                             </div>
 
                             <div class="form-group">
                                 <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input custom-control-input-danger" type="checkbox" id="isOngkir" name="isOngkir">
+                                    <input class="custom-control-input custom-control-input-danger" type="checkbox" id="isOngkir" name="isOngkir" value="{{ old('isOngkir') }}">
                                     <label for="isOngkir" class="custom-control-label">Menggunakan Pengiriman ?</label>
                                 </div>
                             </div>
 
                             <div class="form-group divOngkir">
                                 <label for="ongkir">Biaya Ongkir</label>
-                                <input type="text" class="form-control maskRupiah" id="ongkir" placeholder="Contoh : Rp 100.000" name="ongkir">
+                                <input type="text" class="form-control maskRupiah" id="ongkir" placeholder="Contoh : Rp 100.000" name="ongkir" value="{{ old('ongkir') }}">
                             </div>
 
                             <div class="form-group divAlamatKirim">
                                 <label for="ongkir">Alamat Pengiriman</label>
-                                <input type="text" class="form-control" id="alamatKirim" placeholder="Jl. Alamat Lengkap" name="alamatKirim">
+                                <input type="text" class="form-control" id="alamatKirim" placeholder="Jl. Alamat Lengkap" name="alamatKirim" value="{{ old('alamatKirim') }}">
                                 <p class="text-muted font-italic text-sm mb-0 mt-1">*Harap isi dengan alamat lengkap, agar tidak terjadi kesalahan pengiriman.</p>
                                 <p class="text-muted font-italic text-sm mt-0">*Contoh alamat lengkap: Jalan Mangga Kecil No.13, RT 09 RW 03, Kelurahan Besi Tua, Kecamatan Sukaraja, Kab. Binjai, Sumatera Utara, 53421.</p>
                             </div>
@@ -128,12 +137,12 @@
 
                             <div class="form-group divEksLain">
                                 <label for="keterangan">Nama Ekspedisi</label>
-                                <input type="text" class="form-control" id="namaEkspedisi" placeholder="Nama Ekspedisi" name="namaEkspedisi">
+                                <input type="text" class="form-control" id="namaEkspedisi" placeholder="Nama Ekspedisi" name="namaEkspedisi" value="{{ old('namaEkspedisi') }}">
                             </div>
 
                             <div class="form-group divResi">
                                 <label for="">No. Resi</label>
-                                <input type="text" class="form-control" id="noResi" placeholder="No. Resi" name="noResi">
+                                <input type="text" class="form-control" id="noResi" placeholder="No. Resi" name="noResi" value="{{ old('noResi') }}">
                                 <p class="text-muted font-italic text-sm mb-0 mt-1">*Opsional, khusus order dari Marketplace. Hiraukan selain dari marketplace.</p>
                             </div>
 
@@ -163,6 +172,9 @@
                             <option value="BNI">Transfer BNI</option>
                             <option value="BRI">Transfer BRI</option>
                             <option value="Mandiri">Transfer Mandiri</option>
+                            <option value="Shopee">Saldo Shopee</option>
+                            <option value="Tokopedia">Saldo Tokopedia</option>
+                            <option value="Bukalapak">Saldo Bukalapak</option>
                             <option value="Bayar Waktu Ambil">Bayar Waktu Ambil</option>
                         </select>
                     </div>
@@ -174,11 +186,13 @@
                             <option value="Lunas">Lunas</option>
                             <option value="Belum Lunas">Belum Lunas</option>
                         </select>
+                        <p class="text-muted font-italic text-sm mb-0 mt-1">*Jika order dari marketplace, bisa ditandai sebagai lunas.</p>
                     </div>
 
                     <div class="form-group">
                         <label for="jumlahPembayaran">Jumlah Pembayaran</label>
                         <input type="text" class="form-control maskRupiah" id="jumlahPembayaran" placeholder="Contoh : Rp 100.000" name="jumlahPembayaran" required>
+                        <p class="text-muted font-italic text-sm mb-0 mt-1">*Untuk marketplace, total jumlah pembayaran adalah total keseluruhan penjualan (termasuk biaya admin)</p>
                     </div>
 
                     {{-- Upload bukti transfer using dropzone --}}
@@ -208,7 +222,8 @@
                     <div class="card-body text-right">
                         {{-- Tombol Submit --}}
                         <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">
-                        <input type="hidden" name="sales_id" id="salesID" value="{{ $order->sales_id }}">
+                        <input type="hidden" name="sales_id" id="sales_id" value="{{ $order->sales_id }}">
+                        <input type="hidden" name="order_id" id="order_id" value="{{ $order->id }}">
 
                         <div class="d-flex align-items-center">
                             <button id="submitToAntrian" type="submit" class="btn btn-primary">Submit<div id="loader" class="loader" style="display: none;">
@@ -221,7 +236,6 @@
     @includeIf('page.antrian-workshop.modal.modal-tambah-pelanggan')
     @includeIf('page.antrian-workshop.modal.modal-pilih-produk')
 </div>
-
 @endsection
 
 @section('script')
@@ -342,7 +356,6 @@
             url: "{{ route('getInfoPelanggan') }}",
             method: "GET",
             success: function(data){
-                console.log(data);
                 //foreach info pelanggan
                 $.each(data, function(key, value){
                     $('#infoPelanggan').append(`
@@ -466,29 +479,29 @@
             $('#modalPilihProduk #namaProduk').empty();
             $('#modalPilihProduk #namaProduk').append(`<option value="" selected disabled>Pilih Produk</option>`);
 
-        $('#modalPilihProduk #namaProduk').select2({
-            placeholder: 'Pilih Produk',
-            ajax: {
-                url: "{{ route('getJobsByCategory') }}",
-                data: function (params) {
-                    var query = {
-                        kategoriProduk: $('#kategoriProduk').val()
-                    }
-                    return query;
-                },
-                processResults: function (data) {
-                    return {
-                        results:  $.map(data, function (item) {
-                        return { 
-                            id: item.id,
-                            text: item.job_name
+            $('#modalPilihProduk #namaProduk').select2({
+                placeholder: 'Pilih Produk',
+                ajax: {
+                    url: "{{ route('getJobsByCategory') }}",
+                    data: function (params) {
+                        var query = {
+                            kategoriProduk: $('#kategoriProduk').val()
+                        }
+                        return query;
+                    },
+                    processResults: function (data) {
+                        return {
+                            results:  $.map(data, function (item) {
+                            return { 
+                                id: item.id,
+                                text: item.job_name
+                            };
+                            })
                         };
-                        })
-                    };
-                },
-                cache: true
-            }
-        });
+                    },
+                    cache: true
+                    }   
+                });
         });
 
         //DataTables Produk
@@ -517,7 +530,7 @@
         });
 
         // Nama Pelanggan
-        $('#namaPelanggan').select2({
+        $('#customer_id').select2({
             placeholder: 'Pilih Pelanggan',
             ajax: {
                 url: "/pelanggan-all/{{ $order->sales_id }}",
@@ -545,7 +558,7 @@
         });
 
         //onchange nama pelanggan
-        $('#namaPelanggan').on('change', function(){
+        $('#customer_id').on('change', function(){
             var id = $(this).val();
             $.ajax({
                 url: "/pelanggan/status/" + id,
@@ -555,6 +568,12 @@
                 }
             });
         });
+
+        // Nama Pelanggan Old
+        let old = "{{ old('customer_id') }}";
+        if(old) {
+            $('#customer_id').val(old).trigger('change');
+        }
 
         $('#formTambahProduk').on('submit', function(e){
             e.preventDefault();
@@ -566,7 +585,7 @@
 
             var dataInput = new FormData();
             dataInput.append('acc_desain', acc_desain);
-            dataInput.append('_token', "{{ csrf_token() }}" );
+            dataInput.append('_token', "{{ csrf_token() }}");
             dataInput.append('ticket_order', $('#ticket_order').val());
             dataInput.append('namaProduk', $('#namaProduk').val());
             dataInput.append('kategoriProduk', $('#kategoriProduk').val());
@@ -604,7 +623,6 @@
                     alert(err.Message);
                 }
             });
-        
         });
 
         // ketika isOngkir dicentang maka divAlamatKirim, divOngkir, divEkspedisi akan muncul

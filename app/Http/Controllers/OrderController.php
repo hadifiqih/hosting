@@ -815,14 +815,6 @@ class OrderController extends Controller
     // Tambah Produk by Modal by Sales
     //-------------------------------------------------------------------------------------------------------------
 
-    public function makeAntrian(){
-        return view ('page.antrian-workshop.create');
-    }
-
-    //-------------------------------------------------------------------------------------------------------------
-    // Tambah Produk by Modal by Sales
-    //-------------------------------------------------------------------------------------------------------------
-
     public function tambahProdukByModal(Request $request){
 
         $job = new Job;

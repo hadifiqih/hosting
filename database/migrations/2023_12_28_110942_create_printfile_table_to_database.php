@@ -14,9 +14,6 @@ return new class extends Migration
         Schema::create('printfile', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('ticket_order');
-            $table->unsignedBigInteger('order_id');
-            $table->unsignedBigInteger('kategori_id');
-            $table->unsignedBigInteger('barang_id');
             $table->string('nama_file');
             $table->timestamps();
             $table->softDeletes();
