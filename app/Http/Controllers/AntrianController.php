@@ -81,7 +81,7 @@ class AntrianController extends Controller
                         ->get();
 
     }elseif(auth()->user()->role == 'estimator'){
-        
+
         $antrians = Antrian::with('payment','sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
         ->where('status', '1')
         ->orderByDesc('created_at')
@@ -115,7 +115,7 @@ class AntrianController extends Controller
             ->orderByDesc('created_at')
             ->where('status', '1')
             ->get();
-        
+
         if(request()->has('kategori')){
             $jobType = $request->input('kategori');
             $antrians = Antrian::with('payment','sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
@@ -180,7 +180,7 @@ class AntrianController extends Controller
             ->addColumn('desainer', function($row){
                 //explode string menjadi array
                 $desainer = $row->order->employee_id;
-                
+
                 $desainerSolo = Employee::where('id', $desainer)->first();
                 if($desainerSolo){
                     return $desainerSolo->name;
@@ -239,7 +239,7 @@ class AntrianController extends Controller
             ->addColumn('quality', function($row){
                 //explode string menjadi array
                 $quality = $row->qc_id;
-                
+
                 $qc = Employee::where('id', $quality)->first();
                 if($qc){
                     return $qc->name;
@@ -487,7 +487,7 @@ class AntrianController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        //simpan antrian 
+        //simpan antrian
         $antrian = new DataAntrian();
         $antrian->ticket_order = $request->input('ticket_order');
         $antrian->sales_id = $request->input('sales_id');
@@ -496,21 +496,16 @@ class AntrianController extends Controller
         $antrian->status = 1;
         $antrian->save();
 
-        //jika antrian berhasil disimpan, customer frekuensi order ditambah 1
-        $customer = Customer::where('id', $request->input('customer_id'))->first();
-        $customer->frekuensi_order += 1;
-        $customer->save();
-
         //simpan pembayaran
         $payment = new Pembayaran();
         $payment->ticket_order = $request->input('ticket_order');
-        $payment->metode_pembayaran = $request->input('metode_pembayaran');
-        $payment->biaya_packing = $request->input('biaya_packing');
-        $payment->biaya_pasang = $request->input('biaya_pasang');
+        $payment->metode_pembayaran = $request->input('metodePembayaran');
+        $payment->biaya_packing = $request->input('biayaPacking');
+        $payment->biaya_pasang = $request->input('biayaPasang');
         $payment->diskon = $request->input('diskon');
-        $payment->total_harga = $request->input('total_harga');
-        $payment->dibayarkan = $request->input('dibayarkan');
-        $payment->status_pembayaran = $request->input('status_pembayaran');
+        $payment->total_harga = $request->input('totalAllInput');
+        $payment->dibayarkan = $request->input('jumlahPembayaran');
+        $payment->status_pembayaran = $request->input('statusPembayaran');
         $payment->save();
 
         //simpan pengiriman
@@ -537,6 +532,11 @@ class AntrianController extends Controller
         $bukti->ticket_order = $request->input('ticket_order');
         $bukti->gambar = $namaBuktiPembayaran;
         $bukti->save();
+
+        //jika antrian berhasil disimpan, customer frekuensi order ditambah 1
+        $customer = Customer::where('id', $request->input('customer_id'))->first();
+        $customer->frekuensi_order += 1;
+        $customer->save();
 
         return redirect()->route('antrian.index')->with('success', 'Data antrian berhasil ditambahkan!');
     }
@@ -601,7 +601,7 @@ class AntrianController extends Controller
 
             // menyimpan inputan sisa pembayaran
             $sisaPembayaran = str_replace(['Rp ', '.'], '', $request->input('sisaPembayaran'));
-            
+
             // Menyimpan file purcase order
             $namaPurchaseOrder = null;
             if($request->file('filePO')){
@@ -822,7 +822,7 @@ class AntrianController extends Controller
         foreach($bahan as $b){
             $totalBahan += $b->harga;
         }
-        
+
         return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'payment', 'bahan', 'totalBahan'));
     }
 
@@ -837,7 +837,7 @@ class AntrianController extends Controller
 
         return response()->json(['message' => 'Success'], 200);
     }
-    
+
     public function destroy($id)
     {
         // Melakukan pengecekan otorisasi sebelum menghapus antrian

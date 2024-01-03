@@ -63,13 +63,13 @@
                                 <th>Nama Produk</th>
                                 <th>Qty</th>
                                 <th>Harga (satuan)</th>
-                                <th>Harga Total</th> 
+                                <th>Harga Total</th>
                                 <th>Keterangan Spesifikasi</th>
                                 <th>Acc Desain</th>
                                 <th>Aksi</th>
                             </thead>
                             <tbody>
-                                
+
                             </tbody>
                             <tfoot>
                                 <tr>
@@ -78,15 +78,15 @@
                                 </tr>
                             </tfoot>
                         </table>
-                
+
                             <div class="form-group mt-3">
                                 <label for="packing">Biaya Packing</label>
-                                <input type="text" class="form-control maskRupiah" id="packing" placeholder="Contoh : Rp 100.000" name="packing" value="{{ old('packing') }}">
+                                <input type="text" class="form-control maskRupiah" id="packing" placeholder="Contoh : Rp 100.000" name="biayaPacking" value="{{ old('packing') }}">
                             </div>
 
                             <div class="form-group">
                                 <label for="pasang">Biaya Pasang</label>
-                                <input type="text" class="form-control maskRupiah" id="pasang" placeholder="Contoh : Rp 100.000" name="pasang" value="{{ old('pasang') }}">
+                                <input type="text" class="form-control maskRupiah" id="pasang" placeholder="Contoh : Rp 100.000" name="biayaPasang" value="{{ old('pasang') }}">
                             </div>
 
                             <div class="form-group">
@@ -150,6 +150,8 @@
                                 <div class="col">
                                     <span>Total : </span><h4 class="font-weight-bold text-danger" id="totalAll"></h4>
                                 </div>
+                                {{-- Hidden input untuk mengambil nilai dari id totalAll --}}
+                                <input type="text" name="totalAllInput" id="totalAllInput" hidden>
                             </div>
                     </div>
                 </div>
@@ -209,6 +211,7 @@
                     <div class="row">
                         <div class="col">
                             <span>Sisa Pembayaran : </span><h4 class="font-weight-bold text-danger" id="sisaPembayaran"></h4>
+                            <input type="text" name="sisaPembayaranInput" id="sisaPembayaranInput" hidden>
                         </div>
                     </div>
                 </div>
@@ -278,7 +281,9 @@
             success: function(data){
                 $('#subtotal').html(data.totalBarang);
                 $('#totalAll').html(data.totalBarang);
+                $('#totalAllInput').val(data.totalBarang);
                 $('#sisaPembayaran').html(data.totalBarang);
+                $('#sisaPembayaranInput').val(data.totalBarang);
             },
             error: function(xhr, status, error){
                 var err = eval("(" + xhr.responseText + ")");
@@ -443,7 +448,9 @@
             var totalAll = totalAll + packing + ongkir + pasang - diskon;
             totalAll = totalAll.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
             $('#totalAll').html('Rp ' + totalAll);
+            $('#totalAllInput').val(totalAll);
             $('#sisaPembayaran').html('Rp ' + totalAll);
+            $('#sisaPembayaranInput').val(totalAll);
         });
 
         // sisaPembayaran akan berubah saat ada perubahan pada inputan jumlahPembayaran - totalAll
@@ -470,6 +477,7 @@
             }
             sisaPembayaran = sisaPembayaran.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
             $('#sisaPembayaran').html('Rp ' + sisaPembayaran);
+            $('#sisaPembayaranInput').val(sisaPembayaran);
         });
 
         //nama produk select2
@@ -492,7 +500,7 @@
                     processResults: function (data) {
                         return {
                             results:  $.map(data, function (item) {
-                            return { 
+                            return {
                                 id: item.id,
                                 text: item.job_name
                             };
@@ -500,7 +508,7 @@
                         };
                     },
                     cache: true
-                    }   
+                    }
                 });
         });
 
@@ -634,7 +642,7 @@
                 $('#ekspedisi').val('');
                 $('#namaEkspedisi').val('');
                 $('#noResi').val('');
-                
+
                 $('.divAlamatKirim').show();
                 $('.divOngkir').show();
                 $('.divEkspedisi').show();
@@ -708,7 +716,7 @@
                                             }
                                         }else{
                                             return {
-                                                text: item.nama + ' - ' + item.telepon, 
+                                                text: item.nama + ' - ' + item.telepon,
                                                 id: item.id,
                                             }
                                         }
