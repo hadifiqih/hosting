@@ -185,8 +185,8 @@
                         <label for="statusPembayaran">Status Pembayaran</label>
                         <select name="statusPembayaran" id="statusPembayaran" class="form-control" required>
                             <option value="" selected disabled>Pilih Status Pembayaran</option>
-                            <option value="Lunas">Lunas</option>
-                            <option value="Belum Lunas">Belum Lunas</option>
+                            <option value="2">Lunas</option>
+                            <option value="1">Belum Lunas</option>
                         </select>
                         <p class="text-muted font-italic text-sm mb-0 mt-1">*Jika order dari marketplace, bisa ditandai sebagai lunas.</p>
                     </div>
@@ -658,6 +658,13 @@
                 $('.divEkspedisi').hide();
                 $('.divEksLain').hide();
                 $('.divResi').hide();
+
+                $('#alamatKirim').val('');
+                $('#ongkir').val('');
+                $('#ekspedisi').val('');
+                $('#namaEkspedisi').val('');
+                $('#noResi').val('');
+
                 //remove required
                 $('#alamatKirim').removeAttr('required');
                 $('#ongkir').removeAttr('required');

@@ -110,8 +110,6 @@
                                             <th scope="col">Ticket Order</th>
                                             <th scope="col">Sales</th>
                                             <th scope="col">Nama Customer</th>
-                                            <th scope="col">Jenis Produk</th>
-                                            <th scope="col">Qty</th>
                                             <th scope="col">Deadline</th>
                                             <th scope="col">File Desain</th>
                                             <th scope="col">Desainer</th>
@@ -198,14 +196,12 @@
                     {data: 'ticket_order', name: 'ticket_order'},
                     {data: 'sales', name: 'sales'},
                     {data: 'customer', name: 'customer'},
-                    {data: 'job', name: 'job'},
-                    {data: 'qty', name: 'qty'},
-                    {data: 'endJob', name: 'end_job'},
+                    {data: 'endJob', name: 'endJob'},
                     {data: 'fileDesain', name: 'fileDesain'},
                     {data: 'desainer', name: 'desainer'},
                     {data: 'operator', name: 'operator'},
-                    {data: 'finisher', name: 'finisher'},
-                    {data: 'quality', name: 'qc'},
+                    {data: 'finishing', name: 'finishing'},
+                    {data: 'qc', name: 'qc'},
                     {data: 'tempat', name: 'tempat'},
                     {data: 'action', name: 'action'},
                 ],
