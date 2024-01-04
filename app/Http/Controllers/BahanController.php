@@ -6,6 +6,8 @@ use App\Models\Bahan;
 
 use App\Models\Antrian;
 
+use App\Models\Pembayaran;
+use App\Models\DataAntrian;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -65,7 +67,7 @@ class BahanController extends Controller
     {
         $bahan = Bahan::where('ticket_order', $id)->get();
 
-        $antrian = Antrian::where('ticket_order', $id)->first();
+        $antrian = DataAntrian::where('ticket_order', $id)->first();
 
         $done = $antrian->done_production_at;
 
@@ -142,9 +144,9 @@ class BahanController extends Controller
 
     public function totalBahan(string $id)
     {
-        $antrian = Antrian::where('ticket_order', $id)->first();
+        $antrian = DataAntrian::where('ticket_order', $id)->first();
 
-        $omset = intval($antrian->omset);
+        $omset = Pembayaran::where('ticket_order', $id)->first()->total_harga;
 
         $bahanTotal = Bahan::where('ticket_order', $id)->sum('harga');
 

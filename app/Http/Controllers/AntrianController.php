@@ -120,7 +120,7 @@ class AntrianController extends Controller
         
         if(request()->has('kategori')){
             $jobType = $request->input('kategori');
-            $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'data_kerja', 'printfile')
+            $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile')
             ->whereHas('job', function ($query) use ($jobType) {
                 $query->where('job_type', $jobType);
             })
@@ -357,7 +357,7 @@ class AntrianController extends Controller
 
     public function downloadPrintFile($id){
         $antrian = Antrian::where('id', $id)->first();
-        $file = $antrian->order->file_cetak;
+        $file = $antrian->printfile->nama_file;
         $path = storage_path('app/public/file-cetak/' . $file);
         return response()->download($path);
     }
@@ -717,11 +717,11 @@ class AntrianController extends Controller
 
     public function show($id)
     {
-        $antrian = Antrian::where('ticket_order', $id)->with('job', 'barang', 'sales', 'order', 'customer', 'payment', 'design', 'operator', 'finishing', 'dokumproses','estimator')->first();
+        $antrian = DataAntrian::where('ticket_order', $id)->with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile', 'pembayaran')->first();
 
         $items = Barang::where('ticket_order', $id)->get();
 
-        $payment = Payment::where('ticket_order', $id)->first();
+        $pembayaran = Pembayaran::where('ticket_order', $id)->first();
 
         $total = 0;
 
@@ -738,7 +738,7 @@ class AntrianController extends Controller
             $totalBahan += $b->harga;
         }
 
-        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'payment', 'bahan', 'totalBahan'));
+        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'pembayaran' , 'bahan', 'totalBahan'));
     }
 
     public function updateDeadline(Request $request)

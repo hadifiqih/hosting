@@ -20,13 +20,18 @@
         <div class="card-body">
             <div class="row ml-1">
                 @php
-                    $batas = $antrian->end_job;
-                    $batas = date_create($batas);
+                    $batas = $antrian->dataKerja->tgl_selesai != null ? date_create($antrian->dataKerja->tgl_selesai) : null;
                 @endphp
-                <p class="text-primary"><i class="fas fa-circle"></i> <span class="ml-2">Sedang Diproses</span></p>
+                @if($batas == null && $antrian->finish_date == null)
+                    <p class="text-danger"><i class="fas fa-circle"></i> <span class="ml-2">Belum Diantrikan</span></p>
+                @elseif($batas != null && $antrian->finish_date == null)
+                    <p class="text-primary"><i class="fas fa-circle"></i> <span class="ml-2">Sedang Dikerjakan</span></p>
+                @else
+                    <p class="text-success"><i class="fas fa-circle"></i> <span class="ml-2">Selesai</span></p>
+                @endif
             </div>
             <div class="row ml-1">
-                <p class="text-danger"><i class="fas fa-circle"></i> <span class="ml-2">Deadline Pengerjaan : <strong>{{ date_format($batas, 'd F Y - H:i') }}</strong></span></p>
+                <p class="text-danger"><i class="fas fa-circle"></i> <span class="ml-2">Deadline Pengerjaan : <strong>{{ $batas != null ? date_format($batas, 'd F Y - H:i') : '-' }}</strong></span></p>
             </div>
         </div>
     </div>
@@ -111,28 +116,6 @@
                         <th colspan="5" class="text-right">Total</th>
                         <th>{{ 'Rp '.number_format($total, 0, ',', '.') }}</th>
                     </tr>
-                    <tr>
-                        <th colspan="5" class="text-right">Diskon</th>
-                        <th>{{ 'Rp '.number_format($payment->diskon, 0, ',', '.') }}</th>
-                    </tr>
-                    <tr>
-                        @php
-                            $subtotal = $total - $payment->diskon;
-                        @endphp
-                        <th colspan="5" class="text-right">Subtotal</th>
-                        <th>{{ 'Rp '.number_format($subtotal, 0, ',', '.') }}</th>
-                    </tr>
-                    <tr>
-                        <th colspan="5" class="text-right">Dibayarkan</th>
-                        <th>{{ 'Rp '.number_format($payment->payment_amount, 0, ',', '.') }}</th>
-                    </tr>
-                    <tr>
-                        @php
-                            $sisa = $total - $payment->diskon - $payment->payment_amount;
-                        @endphp
-                        <th colspan="5" class="text-right">Sisa Pembayaran</th>
-                        <th>{{ 'Rp '.number_format($sisa, 0, ',', '.') }}</th>
-                    </tr>
                 </tfoot>
             </table>            
         </div>
@@ -141,7 +124,7 @@
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-clipboard mr-2"></i> <strong>Catatan / Spesifikasi</strong></h3>
+            <h3 class="card-title"><i class="fas fa-clipboard mr-2"></i> <strong>Catatan Admin Workshop</strong></h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                     <i class="fas fa-minus"></i>
@@ -150,7 +133,7 @@
         </div>
         <div class="card-body">
             <div class="row ml-1">
-                <p class="text-dark keterangan">{{ $antrian->note }}</p>
+                <p class="text-dark keterangan">{{ $antrian->admin_note }}</p>
             </div>
         </div>
     </div>
@@ -171,7 +154,7 @@
                         <div class="col">
                             <div class="row">
                                 <div class="col-2 mt-2">
-                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->order->file_cetak, -3)) }}</div>
+                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->printfile->nama_file, -3)) }}</div>
                                 </div>
                                 <div class="col-4 my-auto">
                                     <a href="{{ route('design.download', $antrian->id) }}" class="font-weight-bold my-0">File Cetak</a>
@@ -182,11 +165,11 @@
                         <div class="col">
                             <div class="row">
                                 <div class="col-2 mt-2">
-                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->payment->payment_proof, -3)) }}</div>
+                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->buktiBayar->gambar, -3)) }}</div>
                                 </div>
                                 <div class="col-4 my-auto">
                                     <a class="font-weight-bold my-0" onclick="modalBuktiPembayaran()">Bukti Pembayaran</a>
-                                    <p class="text-muted">{{ date_format($antrian->payment->updated_at, 'd F Y - H:i') }}</p>
+                                    <p class="text-muted">{{ date_format($antrian->pembayaran->updated_at, 'd F Y - H:i') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -298,6 +281,12 @@
 
     <div class="card">
         <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-clipboard mr-2"></i> <strong>Informasi </strong></h3>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
             <h3 class="card-title"><i class="fas fa-money-check mr-2"></i> <strong>Biaya Produksi</strong></h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -309,12 +298,10 @@
             <div class="row">
                 <div class="col">
                     @php
-                        $omset = $antrian->omset;
+                        $omset = $antrian->pembayaran->total_harga;
                     @endphp
-                    <h5 class="font-weight-bold">Nominal Omset : <span class="text-danger" id="omset">Rp{{ number_format($antrian->omset, 0, ',', '.') }}</span></h5>
                 </div>
             </div>
-            <hr>
             <div class="row">
                 <div class="col-md table-responsive">
                     <h5><strong>Biaya Bahan</strong></h5>
@@ -342,7 +329,6 @@
                                 <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>
-                        
                         @endforeach
                     </tbody>
                     <tfoot>
@@ -351,7 +337,6 @@
                         </tr>
                     </tfoot>
                 </table>
-                
                 <hr>
                 <h5><strong>Biaya Lainnya</strong></h5>
                 <table id="tableBahan" class="table table-responsive table-bordered table-hover mt-3" style="width: 100%">
