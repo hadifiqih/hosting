@@ -7,6 +7,7 @@ use App\Models\Bahan;
 use App\Models\Antrian;
 
 use App\Models\Pembayaran;
+use App\Models\Pengiriman;
 use App\Models\DataAntrian;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -148,6 +149,10 @@ class BahanController extends Controller
 
         $omset = Pembayaran::where('ticket_order', $id)->first()->total_harga;
 
+        $pembayaran = Pembayaran::where('ticket_order', $id)->first();
+
+        $pengiriman = Pengiriman::where('ticket_order', $id)->first();
+
         $bahanTotal = Bahan::where('ticket_order', $id)->sum('harga');
 
         $bahanLain = ($omset * 0.03) + ($omset * 0.02) + ($omset * 0.03) + ($omset * 0.05) + ($omset * 0.025) + ($omset * 0.01) + ($omset * 0.025) + ($omset * 0.02);
@@ -156,16 +161,29 @@ class BahanController extends Controller
 
         $profit = $omset - $totalProduksi;
 
+        $totalPembayaran = $pembayaran->total_harga;
+
+        $persenProduksi = round($totalProduksi / $totalPembayaran * 100, 2) . '%';
+        
+        $persenProfit = round($profit / $totalPembayaran * 100, 2) . '%';
+
         //format menjadi rupiah dengan number_format
         $bahanTotal = 'Rp'.number_format($bahanTotal, 0, ',', '.');
 
         $profit = 'Rp'.number_format($profit, 0, ',', '.');
+
+        $totalProduksi = 'Rp'.number_format($totalProduksi, 0, ',', '.');
+
+        $totalPembayaran = 'Rp'.number_format($pembayaran->total_harga, 0, ',', '.');
 
         return response()->json([
             'success' => true,
             'message' => 'Bahan berhasil dihapus',
             'total' => $bahanTotal,
             'profit' => $profit,
+            'totalProduksi' => $totalProduksi,
+            'persenProduksi' => $persenProduksi,
+            'persenProfit' => $persenProfit,
         ]);
     }
 

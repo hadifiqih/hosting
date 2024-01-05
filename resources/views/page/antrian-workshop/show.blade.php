@@ -97,6 +97,7 @@
                 <h6 class="mb-3 ml-2"><strong><i class="fas fa-circle"></i> <span class="ml-2">Sales : {{ $antrian->sales->sales_name }}</span></strong></h6>
             </div>
             <div class="row table-responsive">
+                <div class="col">
             <table id="tableItems" class="table table-bordered table-responsive">
                 <thead>
                     <tr>
@@ -117,7 +118,33 @@
                         <th>{{ 'Rp '.number_format($total, 0, ',', '.') }}</th>
                     </tr>
                 </tfoot>
-            </table>            
+            </table>
+            </div>            
+        </div>
+        <div class="row">
+            <div class="col pr-4 mt-3">
+                <h5><strong>Total Penjualan : </strong><span class="float-right font-weight-bold text-danger">Rp{{ number_format($total, 0, ',', '.') }}</span></h5>
+                <h6>Ongkos Kirim<span class="float-right text-danger">Rp{{ number_format($antrian->pengiriman->ongkir, 0, ',', '.') }}</span></h6>
+                <h6>Biaya Pasang<span class="float-right text-danger">Rp{{ number_format($antrian->pembayaran->biaya_pasang, 0, ',', '.') }}</span></h6>
+                <h6>Biaya Packing<span class="float-right text-danger">Rp{{ number_format($antrian->pembayaran->biaya_packing, 0, ',', '.') }}</span></h6>
+                @php
+                    $ongkir = $antrian->pengiriman->ongkir;
+                    $biayaPasang = $antrian->pembayaran->biaya_pasang;
+                    $biayaPacking = $antrian->pembayaran->biaya_packing;
+                    $totalKeseluruhan = $total + $ongkir + $biayaPasang + $biayaPacking;
+                @endphp
+                <h5><strong>Total Keseluruhan : </strong><span class="float-right font-weight-bold text-danger">Rp{{ number_format($totalKeseluruhan, 0, ',', '.') }}</span></h5>
+                <h6>Diskon<span class="float-right text-danger">-Rp{{ number_format($antrian->pembayaran->diskon, 0, ',', '.') }}</span></h6>
+                @php
+                    $diskon = $antrian->pembayaran->diskon;
+                    $nominal = $antrian->pembayaran->dibayarkan;
+                    $totalPendapatan = $totalKeseluruhan - $diskon;
+                    $sisaBayar = $totalPendapatan - $nominal;
+                @endphp
+                <h5><strong>Total Pendapatan : </strong><span class="float-right font-weight-bold text-danger">Rp{{ number_format($totalPendapatan, 0, ',', '.') }}</span></h5>
+                <h6>Dibayarkan<span class="float-right text-danger">-Rp{{ number_format($nominal, 0, ',', '.') }}</span></h6>
+                <h5><strong>Sisa Pembayaran : </strong><span class="float-right font-weight-bold text-danger">Rp{{ number_format($sisaBayar, 0, ',', '.') }}</span></h5>
+            </div>
         </div>
     </div>
     </div>
@@ -281,12 +308,6 @@
 
     <div class="card">
         <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-clipboard mr-2"></i> <strong>Informasi </strong></h3>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
             <h3 class="card-title"><i class="fas fa-money-check mr-2"></i> <strong>Biaya Produksi</strong></h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -342,6 +363,16 @@
                 <table id="tableBahan" class="table table-responsive table-bordered table-hover mt-3" style="width: 100%">
                     <thead>
                         <tr>
+                            @php
+                                $biayaSales = $omset * 0.03;
+                                $biayaDesain = $omset * 0.02;
+                                $biayaPenanggungJawab = $omset * 0.03;
+                                $biayaPekerjaan = $omset * 0.05;
+                                $biayaBPJS = $omset * 0.025;
+                                $biayaTransportasi = $omset * 0.01;
+                                $biayaOverhead = $omset * 0.025;
+                                $biayaAlatListrik = $omset * 0.02;
+                            @endphp
                             <th>Biaya Sales (3%)</th>
                             <th>Biaya Desain (2%)</th>
                             <th>Biaya Penanggung Jawab (3%)</th>
@@ -354,14 +385,14 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <th>Rp{{ number_format($omset * 0.03, 0, ',', '.') }}</th>
-                            <th>Rp{{ number_format($omset * 0.02, 0, ',', '.') }}</th>
-                            <th>Rp{{ number_format($omset * 0.03, 0, ',', '.') }}</th>
-                            <th>Rp{{ number_format($omset * 0.05, 0, ',', '.') }}</th>
-                            <th>Rp{{ number_format($omset * 0.025, 0, ',', '.') }}</th>
-                            <th>Rp{{ number_format($omset * 0.01, 0, ',', '.') }}</th>
-                            <th>Rp{{ number_format($omset * 0.025, 0, ',', '.') }}</th>
-                            <th>Rp{{ number_format($omset * 0.02, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($biayaSales, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($biayaDesain, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($biayaPenanggungJawab, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($biayaPekerjaan, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($biayaBPJS, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($biayaTransportasi, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($biayaOverhead, 0, ',', '.') }}</th>
+                            <th>Rp{{ number_format($biayaAlatListrik, 0, ',', '.') }}</th>
                         </tr>
                     </tbody>
                     <tfoot>
@@ -374,12 +405,16 @@
                 <div class="row">
                     <div class="col">
                         @php
-                            $totalBiaya = ($omset * 0.03 + $omset * 0.02 + $omset * 0.03 + $omset * 0.05 + $omset * 0.025 + $omset * 0.01 + $omset * 0.025 + $omset * 0.02) + $totalBahan;
+                            $totalBiaya = ($biayaSales + $biayaDesain + $biayaPenanggungJawab + $biayaPekerjaan + $biayaBPJS + $biayaTransportasi + $biayaOverhead + $biayaAlatListrik) + $totalBahan;
                             $profit = $omset - $totalBiaya;
                         @endphp
-                        <h5 class="font-weight-bold">Profit Perusahaan : <span class="text-danger" id="profit">Rp{{ number_format($profit, 0, ',', '.') }}</span></h5>
+                        <h5 class="font-weight-bold">Profit Perusahaan : <span class="text-danger float-right" id="profit">Rp{{ number_format($profit, 0, ',', '.') }}</span></h5>
+                        <h6>Omset : <span class="text-danger float-right" id="profit">Rp{{ number_format($totalKeseluruhan, 0, ',', '.') }}</span></h6>
+                        <h6>Total Biaya Produksi : <span class="text-danger float-right" id="totalProduksi">-Rp{{ number_format($totalBiaya, 0, ',', '.')}}</span></h6>
                         <h6>Dihitung oleh : <span class="text-danger">{{ $antrian->estimator_id ? $antrian->estimator->name : '-' }}</span></h6>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col">
                         <div class="text-right">
                             @if($antrian->done_production_at == null)
@@ -453,8 +488,9 @@
                                 url: "{{ route('bahan.total', $antrian->ticket_order) }}",
                                 type: "GET",
                                 success: function(response) {
+                                    $('#totalProduksi').html(response.totalProduksi + ' (' + response.persenProduksi + ')');
                                     $('#bahanTotal').html(response.total);
-                                    $('#profit').html(response.profit);
+                                    $('#profit').html(response.profit + ' (' + response.persenProfit + ')');
                                 },
                                 error: function(xhr) {
                                     console.log(xhr.responseText);
@@ -530,8 +566,9 @@
                                 url: "{{ route('bahan.total', $antrian->ticket_order) }}",
                                 type: "GET",
                                 success: function(response) {
+                                    $('#totalProduksi').html(response.totalProduksi + ' (' + response.persenProduksi + ')');
                                     $('#bahanTotal').html(response.total);
-                                    $('#profit').html(response.profit);
+                                    $('#profit').html(response.profit + ' (' + response.persenProfit + ')');
                                 },
                                 error: function(xhr) {
                                     console.log(xhr.responseText);
@@ -549,12 +586,14 @@
 
         $(document).ready(function() {
             //ajax untuk menampilkan total biaya bahan
+
             $.ajax({
                 url: "{{ route('bahan.total', $antrian->ticket_order) }}",
                 type: "GET",
                 success: function(response) {
+                    $('#totalProduksi').html(response.totalProduksi + ' (' + response.persenProduksi + ')');
                     $('#bahanTotal').html(response.total);
-                    $('#profit').html(response.profit);
+                    $('#profit').html(response.profit + ' (' + response.persenProfit + ')');
                 },
                 error: function(xhr) {
                     console.log(xhr.responseText);
@@ -608,8 +647,9 @@
                                 url: "{{ route('bahan.total', $antrian->ticket_order) }}",
                                 type: "GET",
                                 success: function(response) {
+                                    $('#totalProduksi').html(response.totalProduksi + ' (' + response.persenProduksi + ')');
                                     $('#bahanTotal').html(response.total);
-                                    $('#profit').html(response.profit);
+                                    $('#profit').html(response.profit + ' (' + response.persenProfit + ')');
                                 },
                                 error: function(xhr) {
                                     console.log(xhr.responseText);

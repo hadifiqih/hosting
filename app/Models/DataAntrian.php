@@ -7,7 +7,9 @@ use App\Models\Sales;
 use App\Models\Barang;
 use App\Models\Customer;
 use App\Models\DataKerja;
+use App\Models\PrintFile;
 use App\Models\Pembayaran;
+use App\Models\Pengiriman;
 use App\Models\BuktiPembayaran;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -66,5 +68,10 @@ class DataAntrian extends Model
     public function pembayaran()
     {
         return $this->belongsTo(Pembayaran::class, 'ticket_order', 'ticket_order');
+    }
+
+    public function pengiriman()
+    {
+        return $this->belongsTo(Pengiriman::class, 'ticket_order', 'ticket_order');
     }
 }

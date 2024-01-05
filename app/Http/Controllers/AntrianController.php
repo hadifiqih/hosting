@@ -356,7 +356,7 @@ class AntrianController extends Controller
     }
 
     public function downloadPrintFile($id){
-        $antrian = Antrian::where('id', $id)->first();
+        $antrian = DataAntrian::where('id', $id)->first();
         $file = $antrian->printfile->nama_file;
         $path = storage_path('app/public/file-cetak/' . $file);
         return response()->download($path);
