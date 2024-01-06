@@ -189,6 +189,7 @@
                                 </div>
                             </div>
                         </div>
+                        @if(isset($antrian->buktiBayar->gambar))
                         <div class="col">
                             <div class="row">
                                 <div class="col-2 mt-2">
@@ -200,8 +201,8 @@
                                 </div>
                             </div>
                         </div>
-
-                        @if($antrian->filePendukung->nama_file != null)
+                        @endif
+                        @if(isset($antrian->filePendukung->nama_file))
                         <div class="col">
                             <div class="row">
                                 <div class="col-2 mt-2">
@@ -214,7 +215,6 @@
                             </div>
                         </div>
                         @endif
-
                     </div>
                 </div>
             </div>
@@ -238,9 +238,9 @@
                 </div>
                 <div class="col">
                     <h5><strong>Operator</strong></h5>
-                    @if($antrian->operator_id != null)
+                    @if(isset($antrian->dataKerja->operator_id))
                         @php
-                            $operatorId = explode(',', $antrian->operator_id);
+                            $operatorId = explode(',', $antrian->dataKerja->operator_id);
                             foreach ($operatorId as $item) {
                                 if($item == 'rekanan'){
                                     echo '- Rekanan';
