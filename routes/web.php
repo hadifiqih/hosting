@@ -233,6 +233,7 @@ Route::controller(AntrianController::class)->group(function(){
     Route::get('/antrian/dokumentasi/{id}', 'showDokumentasi')->middleware('auth')->name('antrian.showDokumentasi');
     Route::post('/antrian/storeDokumentasi', 'storeDokumentasi')->middleware('auth')->name('antrian.storeDokumentasi');
     Route::get('/design/download/{id}', 'downloadPrintFile')->name('design.download');
+    Route::get('/design/download-file-pendukung/{id}', 'downloadFilePendukung')->name('design.downloadFilePendukung');
     Route::get('/design/download-create/{id}', 'downloadPrintFileCreate')->name('design.download.create');
     Route::post('/list-machines', 'getMachine')->name('antrian.getMachine');
 

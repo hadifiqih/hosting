@@ -113,7 +113,7 @@ class AntrianController extends Controller
 
     public function indexData(Request $request)
     {
-        $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile')
+        $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile', 'cabang', 'buktiBayar')
             ->orderByDesc('created_at')
             ->where('status', '1')
             ->get();
@@ -376,6 +376,13 @@ class AntrianController extends Controller
         return response()->download($path);
     }
 
+    public function downloadFilePendukung($id){
+        $antrian = DataAntrian::where('id', $id)->first();
+        $file = $antrian->filePendukung->nama_file;
+        $path = storage_path('app/public/file-pendukung/' . $file);
+        return response()->download($path);
+    }
+
     public function simpanAntrian(Request $request)
     {
         //Validasi inputan
@@ -434,7 +441,7 @@ class AntrianController extends Controller
             $buktiPembayaran = $request->file('paymentImage');
             $namaBuktiPembayaran = $buktiPembayaran->getClientOriginalName();
             $namaBaru = time() . '_' . $namaBuktiPembayaran;
-            $path = 'bukti-pembayaran/' . $namaBuktiPembayaran;
+            $path = 'bukti-pembayaran/' . $namaBaru;
             Storage::disk('public')->put($path, file_get_contents($buktiPembayaran));
         }
 

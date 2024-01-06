@@ -20,6 +20,11 @@ class DataAntrian extends Model
 
     protected $table = 'data_antrian';
 
+    public function filePendukung()
+    {
+        return $this->belongsTo(FilePendukung::class, 'ticket_order', 'ticket_order');
+    }
+
     public function buktiBayar()
     {
         return $this->belongsTo(BuktiPembayaran::class, 'ticket_order', 'ticket_order');

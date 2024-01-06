@@ -200,17 +200,21 @@
                                 </div>
                             </div>
                         </div>
-                        @if($antrian->file_po != null)
+
+                        @if($antrian->filePendukung->nama_file != null)
                         <div class="col">
-                            <div class="col-2 mt-2">
-                                <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->file_po, -3)) }}</div>
-                            </div>
-                            <div class="col-4 my-auto">
-                                <a href="{{ route('antrian.downloadPO', $antrian->id) }}" class="font-weight-bold my-0">File Purchase Order(PO)</a>
-                                <p class="text-muted">{{ date_format($antrian->updated_at, 'd F Y - H:i') }}</p>
+                            <div class="row">
+                                <div class="col-2 mt-2">
+                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->filePendukung->nama_file, -3)) }}</div>
+                                </div>
+                                <div class="col-4 my-auto">
+                                    <a href="{{ route('design.downloadFilePendukung', $antrian->id) }}" class="font-weight-bold my-0">File Pendukung</a>
+                                    <p class="text-muted">{{ date_format($antrian->filePendukung->updated_at, 'd F Y - H:i') }}</p>
+                                </div>
                             </div>
                         </div>
                         @endif
+
                     </div>
                 </div>
             </div>
@@ -430,6 +434,7 @@
     </div>
     @includeIf('page.antrian-workshop.modal.modal-ref-acc')
     @includeIf('page.antrian-workshop.modal.modal-tambah-bahan')
+    @includeIf('page.antrian-workshop.modal.modal-bukti-pembayaran')
 </div>
 
 @endsection
@@ -441,6 +446,10 @@
         //menampilkan modal gambar acc desain
         function modalRefACC() {
             $('#modalRefACC').modal('show');
+        }
+
+        function modalBuktiPembayaran() {
+            $('#modalBuktiPembayaran').modal('show');
         }
 
         //menampilkan form modal tambah bahan
