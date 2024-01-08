@@ -9,14 +9,15 @@ use App\Models\Bahan;
 use App\Models\Order;
 use App\Models\Sales;
 use App\Models\Barang;
+use App\Models\Cabang;
 use App\Models\Design;
 use App\Models\Antrian;
 use App\Models\Machine;
 use App\Models\Payment;
 use App\Models\Customer;
 use App\Models\Employee;
-use App\Models\Anservice;
 
+use App\Models\Anservice;
 use App\Models\DataKerja;
 use App\Models\Pembayaran;
 use App\Models\Pengiriman;
@@ -51,64 +52,7 @@ class AntrianController extends Controller
 
     public function index()
     {
-
-    if(auth()->user()->role == 'sales') {
-
-        $sales = Sales::where('user_id', auth()->user()->id)->first();
-        $salesId = $sales->id;
-
-        $antrians = Antrian::with('order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
-        ->orderByDesc('created_at')
-        ->where('status', '1')
-        ->where('sales_id', $salesId)
-        ->get();
-
-        $antrianSelesai = Antrian::with('sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
-                        ->orderByDesc('created_at')
-                        ->where('status', '2')
-                        ->where('sales_id', $salesId)
-                        ->get();
-
-    }elseif(auth()->user()->role == 'admin' || auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising') {
-
-        $antrians = Antrian::with('order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
-        ->orderByDesc('created_at')
-        ->where('status', '1')
-        ->get();
-
-        $antrianSelesai = Antrian::with('sales', 'customer', 'job', 'design', 'operator', 'finishing', 'order')
-                        ->orderByDesc('created_at')
-                        ->where('status', '2')
-                        ->take(25)
-                        ->get();
-
-    }elseif(auth()->user()->role == 'estimator'){
-
-        $antrians = Antrian::with('sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
-        ->where('status', '1')
-        ->orderByDesc('created_at')
-        ->get();
-
-        $antrianSelesai = Antrian::with('sales', 'customer', 'job', 'design', 'operator', 'finishing', 'dokumproses')
-        ->where('status', '2')
-        ->orderByDesc('created_at')
-        ->whereBetween('created_at', [now()->subMonth(1), now()])
-        ->get();
-
-    }else{
-
-            $antrians = Antrian::with('order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
-            ->orderByDesc('created_at')
-            ->where('status', '1')
-            ->get();
-
-            $antrianSelesai = Antrian::with('customer', 'job', 'design', 'operator', 'finishing', 'order')
-                            ->orderByDesc('created_at')
-                            ->where('status', '2')
-                            ->get();
-        }
-
-        return view('page.antrian-workshop.index', compact('antrians', 'antrianSelesai'));
+        return view('page.antrian-workshop.index');
     }
 
     public function indexData(Request $request)
@@ -164,28 +108,52 @@ class AntrianController extends Controller
                 if($antrian->dataKerja->operator_id == null){
                     return '<span class="text-danger">OPERATOR KOSONG</span>';
                 }else{
-                    return $antrian->dataKerja->operator->name;
+                    //explode string operator
+                    $operator = explode(',', $antrian->dataKerja->operator_id);
+                    $namaOperator = [];
+                    foreach($operator as $o){
+                        $namaOperator[] = Employee::where('id', $o)->first()->name;
+                    }
+                    return implode(', ', $namaOperator);
                 }
             })
             ->addColumn('finishing', function ($antrian) {
                 if($antrian->dataKerja->finishing_id == null){
                     return '<span class="text-danger">FINISHING KOSONG</span>';
                 }else{
-                    return $antrian->dataKerja->finishing->name;
+                    //explode string finishing
+                    $finishing = explode(',', $antrian->dataKerja->finishing_id);
+                    $namaFinishing = [];
+                    foreach($finishing as $f){
+                        $namaFinishing[] = Employee::where('id', $f)->first()->name;
+                    }
+                    return implode(', ', $namaFinishing);
                 }
             })
             ->addColumn('qc', function ($antrian) {
                 if($antrian->dataKerja->qc_id == null){
                     return '<span class="text-danger">QC KOSONG</span>';
                 }else{
-                    return $antrian->dataKerja->qc->name;
+                    //explode string qc
+                    $qc = explode(',', $antrian->dataKerja->qc_id);
+                    $namaQc = [];
+                    foreach($qc as $q){
+                        $namaQc[] = Employee::where('id', $q)->first()->name;
+                    }
+                    return implode(', ', $namaQc);
                 }
             })
             ->addColumn('tempat', function ($antrian) {
                 if($antrian->cabang_id == null){
                     return '<span class="text-danger">TEMPAT KOSONG</span>';
                 }else{
-                    return $antrian->cabang->nama_cabang;
+                    //explode string cabang
+                    $cabang = explode(',', $antrian->cabang_id);
+                    $namaCabang = [];
+                    foreach($cabang as $c){
+                        $namaCabang[] = Cabang::where('id', $c)->first()->nama_cabang;
+                    }
+                    return implode(', ', $namaCabang);
                 }
             })
             ->addColumn('action', function ($antrian) {
@@ -207,14 +175,14 @@ class AntrianController extends Controller
 
     public function indexSelesai(Request $request)
     {
-        $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'data_kerja', 'printfile')
+        $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile')
             ->orderByDesc('created_at')
             ->where('status', '2')
             ->get();
 
         if(request()->has('kategori')){
             $jobType = $request->input('kategori');
-            $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'data_kerja', 'printfile')
+            $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile')
             ->whereHas('job', function ($query) use ($jobType) {
                 $query->where('job_type', $jobType);
             })
@@ -224,13 +192,42 @@ class AntrianController extends Controller
 
         return DataTables::of($antrians)
             ->addIndexColumn()
+            ->addColumn('tanggal_order', function ($antrian) {
+                return $antrian->created_at->format('d-m-Y');
+            })
             ->addColumn('ticket_order', function ($antrian) {
                 return '<a href="' . route('antrian.show', $antrian->ticket_order) . '">' . $antrian->ticket_order . '</a>';
             })
-            ->addColumn('action', function ($antrian) {
-                return view('page.antrian-workshop.action', compact('antrian'));
+            ->addColumn('sales', function ($antrian) {
+                return $antrian->sales->sales_name;
             })
-            ->rawColumns(['action'])
+            ->addColumn('customer', function ($antrian) {
+                return $antrian->customer->nama;
+            })
+            ->addColumn('keyword', function ($antrian) {
+                return $antrian->order->title;
+            })
+            ->addColumn('desain', function ($antrian) {
+                if($antrian->printfile->nama_file == null){
+                    return '<span class="text-danger">!!FILE CETAK KOSONG!!</span>';
+                }else{
+                    return '<a class="btn btn-sm btn-primary" href="'. route('design.download', $antrian->id) .'">Download</a>';
+                }
+            })
+            ->addColumn('desainer', function ($antrian) {
+                if($antrian->printfile->desainer_id == null){
+                    return '<span class="text-danger">DESAINER KOSONG</span>';
+                }else{
+                    return $antrian->printfile->desainer->name;
+                }
+            })
+            ->addColumn('action', function ($antrian) {
+                $btn = '<div class="btn-group">';
+                $btn .= '<a href="'.route('antrian.show', $antrian->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
+                $btn .= '</div>';
+                return $btn;
+            })
+            ->rawColumns(['action','ticket_order', 'desain', 'desainer'])
             ->make(true);
         
     }
@@ -597,28 +594,27 @@ class AntrianController extends Controller
 
     public function edit($id)
     {
-        $antrian = Antrian::where('id', $id)->first();
+        $antrian = DataAntrian::where('id', $id)->first();
 
-        $jenis = strtolower($antrian->job->job_type);
-
-        if($jenis == 'non stempel'){
-            $operators = User::where('role', 'stempel')->orWhere('role', 'advertising')->with('employee')->get();
-        }elseif($jenis == 'digital printing'){
-            $operators = 'rekanan';
-        }else{
-            $operators = User::where('role', $jenis)->with('employee')->get();
-        }
+        $operators = Employee::where('can_stempel', 1)->orWhere('can_adv', 1)->get();
+        $qualitys = Employee::where('can_qc', 1)->get();
 
         //Melakukan explode pada operator_id, finisher_id, dan qc_id
-        $operatorId = explode(',', $antrian->operator_id);
-        $finisherId = explode(',', $antrian->finisher_id);
-        $qualityId = explode(',', $antrian->qc_id);
+        $operatorId = explode(',', $antrian->dataKerja->operator_id);
+        $finishingId = explode(',', $antrian->dataKerja->finishing_id);
+        $qualityId = explode(',', $antrian->dataKerja->qc_id);
+        $cabangId = explode(',', $antrian->cabang_id);
 
         $machines = Machine::get();
 
-        $qualitys = Employee::where('can_qc', 1)->get();
+        $totalHargaBarang = 0;
+        $barangs = Barang::where('ticket_order', $antrian->ticket_order)->get();
+        foreach($barangs as $barang){
+            $totalHargaBarang += $barang->price * $barang->qty;
+        }
+        $totalHargaBarang = number_format($totalHargaBarang, 0, ',', '.');
 
-        $tempat = explode(',', $antrian->working_at);
+        $tempatCabang = Cabang::pluck('nama_cabang', 'id');
 
         if($antrian->end_job == null){
             $isEdited = 0;
@@ -626,39 +622,43 @@ class AntrianController extends Controller
             $isEdited = 1;
         }
 
-        return view('page.antrian-workshop.edit', compact('antrian', 'operatorId', 'finisherId', 'qualityId', 'operators', 'qualitys', 'machines', 'tempat', 'isEdited'));
+        return view('page.antrian-workshop.edit', compact('antrian', 'operatorId', 'finishingId', 'qualityId', 'cabangId', 'operators', 'qualitys', 'machines', 'tempatCabang', 'isEdited', 'totalHargaBarang'));
     }
 
     public function update(Request $request, $id)
     {
-        $antrian = Antrian::find($id);
+
+        $antrian = DataAntrian::find($id);
+        $dataKerja = DataKerja::where('ticket_order', $antrian->ticket_order)->first();
 
         //Jika input operator adalah array, lakukan implode lalu simpan ke database
-        $operator = implode(',', $request->input('operator'));
-        $antrian->operator_id = $operator;
+        $operator = implode(',', $request->input('operator_id'));
+        $dataKerja->operator_id = $operator;
 
         //Jika input finisher adalah array, lakukan implode lalu simpan ke database
-        $finisher = implode(',', $request->input('finisher'));
-        $antrian->finisher_id = $finisher;
+        $finisher = implode(',', $request->input('finishing_id'));
+        $dataKerja->finishing_id = $finisher;
 
         //Jika input quality adalah array, lakukan implode lalu simpan ke database
-        $quality = implode(',', $request->input('quality'));
-        $antrian->qc_id = $quality;
-
-        //Jika input tempat adalah array, lakukan implode lalu simpan ke database
-        $tempat = implode(',', $request->input('tempat'));
-        $antrian->working_at = $tempat;
+        $quality = implode(',', $request->input('qc_id'));
+        $dataKerja->qc_id = $quality;
 
         //start_job diisi dengan waktu sekarang
-        $antrian->start_job = $request->input('start_job');
-        $antrian->end_job = $request->input('deadline');
+        $dataKerja->tgl_mulai = $request->input('start_job');
+        $dataKerja->tgl_selesai = $request->input('end_job');
 
         //Jika input mesin adalah array, lakukan implode lalu simpan ke database
         if($request->input('jenisMesin')){
-        $mesin = implode(',', $request->input('jenisMesin'));
-        $antrian->machine_code = $mesin;
+            $mesin = implode(',', $request->input('jenisMesin'));
+            $dataKerja->machine_id = $mesin;
         }
-        $antrian->admin_note = $request->input('catatan');
+        $dataKerja->save();
+
+        //Jika input tempat adalah array, lakukan implode lalu simpan ke database
+        $tempat = implode(',', $request->input('cabang_id'));
+        $antrian->cabang_id = $tempat;
+
+        $antrian->admin_note = $request->input('admin_note');
         $antrian->save();
 
         // Menampilkan push notifikasi saat selesai
@@ -669,55 +669,55 @@ class AntrianController extends Controller
 
         $users = [];
 
-        foreach($request->input('operator') as $operator){
+        foreach($request->input('operator_id') as $operator){
             $user = 'user-' . $operator;
             $users[] = $user;
         }
 
-        foreach($request->input('finisher') as $finisher){
+        foreach($request->input('finishing_id') as $finisher){
             $user = 'user-' . $finisher;
             $users[] = $user;
         }
 
-        foreach($request->input('quality') as $quality){
+        foreach($request->input('qc_id') as $quality){
             $user = 'user-' . $quality;
             $users[] = $user;
         }
-        if($request->isEdited == 0){
-            foreach($users as $user){
-                $publishResponse = $beamsClient->publishToUsers(
-                    array($user),
-                    array("web" => array("notification" => array(
-                    "title" => "📣 Cek sekarang, ada antrian baru !",
-                    "body" => "Cek pekerjaan baru sekarang, cepat kerjakan biar cepet pulang !",
-                    )),
-                ));
+        // if($request->isEdited == 0){
+        //     foreach($users as $user){
+        //         $publishResponse = $beamsClient->publishToUsers(
+        //             array($user),
+        //             array("web" => array("notification" => array(
+        //             "title" => "📣 Cek sekarang, ada pekerjaan baru !",
+        //             "body" => "Cek pekerjaan baru sekarang, semangattt !",
+        //             )),
+        //         ));
 
-                $user = str_replace('user-', '', $user);
-                $user = User::find($user);
-                if($user != 'rekanan'){
-                    $user->notify(new AntrianDiantrikan($antrian));
-                }
-            }
-        }else{
-            foreach($users as $user){
-                if($user != 'user-rekananSBY' || $user != 'user-rekananKDR' || $user != 'user-rekananMLG'){
-                    $publishResponse = $beamsClient->publishToUsers(
-                        array($user),
-                        array("web" => array("notification" => array(
-                        "title" => "📣 Hai, ada update antrian!",
-                        "body" => "Ada perubahan pada antrian " . $antrian->ticket_order . " (" . $antrian->order->title ."), cek sekarang !",
-                        )),
-                    ));
-                }
+        //         $user = str_replace('user-', '', $user);
+        //         $user = User::find($user);
+        //         if($user != 'rekananSBY' || $user != 'rekananKDR' || $user != 'rekananMLG'){
+        //             $user->notify(new AntrianDiantrikan($antrian));
+        //         }
+        //     }
+        // }else{
+        //     foreach($users as $user){
+        //         if($user != 'user-rekananSBY' || $user != 'user-rekananKDR' || $user != 'user-rekananMLG'){
+        //             $publishResponse = $beamsClient->publishToUsers(
+        //                 array($user),
+        //                 array("web" => array("notification" => array(
+        //                 "title" => "📣 Hai, ada update antrian!",
+        //                 "body" => "Ada perubahan pada antrian " . $antrian->ticket_order . " (" . $antrian->order->title ."), cek sekarang !",
+        //                 )),
+        //             ));
+        //         }
 
-                $user = str_replace('user-', '', $user);
-                $user = User::find($user);
-                if($user != 'rekanan'){
-                    $user->notify(new AntrianDiantrikan($antrian));
-                }
-            }
-        }
+        //         $user = str_replace('user-', '', $user);
+        //         $user = User::find($user);
+        //         if($user != 'rekananSBY' || $user != 'rekananKDR' || $user != 'rekananMLG'){
+        //             $user->notify(new AntrianDiantrikan($antrian));
+        //         }
+        //     }
+        // }
 
         return redirect()->route('antrian.index')->with('success-update', 'Data antrian berhasil diupdate!');
     }
@@ -825,21 +825,22 @@ class AntrianController extends Controller
 
     public function getMachine(Request $request){
         //Menampilkan data mesin pada tabel Machines
-        $search = $request->search;
+        $search = $request->input('search');
 
         if($search == ''){
             $machines = Machine::get();
         }else{
-            $machines = Machine::orderby('machine_code','asc')->select('machine_code', 'machine_name')->where('machine_name', 'like', '%' .$search . '%')->get();
+            $machines = Machine::where('machine_name', 'like', '%'.$search.'%')->get();
         }
 
         $response = array();
         foreach($machines as $machine){
             $response[] = array(
-                "id" => $machine->machine_code,
+                "id" => $machine->id,
                 "text" => $machine->machine_name
             );
         }
+
         return response()->json($response);
     }
 

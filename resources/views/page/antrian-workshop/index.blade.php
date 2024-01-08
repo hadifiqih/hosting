@@ -148,9 +148,9 @@
                                             <th scope="col">Sales</th>
                                             <th scope="col">Nama Customer</th>
                                             <th scope="col">Keyword Project</th>
-                                            <th scope="col">Jenis Produk</th>
                                             <th scope="col">Desain</th>
-                                            <th scope="col">Detail</th>
+                                            <th scope="col">Desainer</th>
+                                            <th scope="col">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -217,13 +217,13 @@
                 },
                 columns: [
                     {data: 'DT_RowIndex', name: 'id'},
-                    {data: 'created_at', name: 'created_at'},
+                    {data: 'tanggal_order', name: 'tanggal_order'},
                     {data: 'ticket_order', name: 'ticket_order'},
                     {data: 'sales', name: 'sales'},
                     {data: 'customer', name: 'customer'},
                     {data: 'keyword', name: 'keyword'},
-                    {data: 'job', name: 'job'},
-                    {data: 'fileDesain', name: 'fileDesain'},
+                    {data: 'desain', name: 'desain'},
+                    {data: 'desainer', name: 'desainer'},
                     {data: 'action', name: 'action'},
                 ],
             });

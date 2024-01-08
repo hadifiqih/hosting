@@ -101,14 +101,14 @@ class ReportController extends Controller
         $tanggalAkhir = date('Y-m-d 23:59:59');
 
         //Mengambil data antrian dengan relasi customer, sales, payment, operator, finishing, job, order pada tanggal yang dipilih dan menghitung total omset dan total order
-        $antrianStempel = Antrian::with('customer', 'sales', 'payment', 'operator', 'finishing', 'job', 'order')
+        $antrianStempel = DataAntrian::with('customer', 'sales', 'payment', 'operator', 'finishing', 'job', 'order')
             ->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir])
             ->where(function ($query) use ($tempat) {
                 $query->whereHas('sales', function ($subquery) use ($tempat) {
                     $subquery->where('sales_name', 'like', '%' . $tempat . '%');
                 })
                 ->whereHas('job', function ($subquery) {
-                    $subquery->where('job_type', 'Stempel');
+                    $subquery->where('kategori_id', '1');
                 });
             })
             ->where(function ($query) {

@@ -227,6 +227,7 @@
                         <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">
                         <input type="hidden" name="sales_id" id="sales_id" value="{{ $order->sales_id }}">
                         <input type="hidden" name="order_id" id="order_id" value="{{ $order->id }}">
+                        <input type="hidden" name="desainer_id" id="desainer_id" value="{{ $order->printFile->desainer_id }}">
 
                         <div class="d-flex align-items-center">
                             <button id="submitToAntrian" type="submit" class="btn btn-primary">Submit<div id="loader" class="loader" style="display: none;">

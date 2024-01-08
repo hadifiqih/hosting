@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Job;
 use App\Models\Sales;
 use App\Models\Barang;
+use App\Models\Cabang;
 use App\Models\Customer;
 use App\Models\DataKerja;
 use App\Models\PrintFile;

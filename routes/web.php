@@ -235,7 +235,7 @@ Route::controller(AntrianController::class)->group(function(){
     Route::get('/design/download/{id}', 'downloadPrintFile')->name('design.download');
     Route::get('/design/download-file-pendukung/{id}', 'downloadFilePendukung')->name('design.downloadFilePendukung');
     Route::get('/design/download-create/{id}', 'downloadPrintFileCreate')->name('design.download.create');
-    Route::post('/list-machines', 'getMachine')->name('antrian.getMachine');
+    Route::get('/list-machines', 'getMachine')->name('mesin.search');
 
     Route::get('/estimator/index', 'estimatorIndex')->middleware('auth')->name('estimator.index');
 

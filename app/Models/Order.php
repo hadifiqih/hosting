@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Kategori;
+use App\Models\PrintFile;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -11,6 +12,10 @@ class Order extends Model
     use HasFactory;
 
     protected $table ='orders';
+
+    public function printFile(){
+        return $this->belongsTo(PrintFile::class, 'ticket_order', 'ticket_order');
+    }
 
     public function employee(){
         return $this->belongsTo(Employee::class);
