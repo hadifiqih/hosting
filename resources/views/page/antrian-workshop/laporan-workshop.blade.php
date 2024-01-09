@@ -98,15 +98,15 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td class="text-center">{{ $antrian->ticket_order }}</td>
-                <td>{{ $antrian->sales->sales_name }}</td>
+                <td>{{ $antrian->user->sales->sales_name }}</td>
                 <td>{{ $antrian->job->job_name }}</td>
                 <td class="text-center">{{ $antrian->qty }}</td>
-                <td>{{ $antrian->start_job }}</td>
-                <td>{{ $antrian->timer_stop ? $antrian->timer_stop : 'Dalam Proses' }}</td>
+                <td>{{ $antrian->dataKerja->tgl_mulai }}</td>
+                <td>{{ $antrian->dataKerja->tgl_selesai ? $antrian->dataKerja->tgl_selesai : 'Dalam Proses' }}</td>
                 <td>{{ $antrian->order->employee->name }}</td>
                 <td>
                     @php
-                        $operatorId = explode(',', $antrian->operator_id);
+                        $operatorId = explode(',', $antrian->dataKerja->operator_id);
                         foreach ($operatorId as $item) {
                             if($item == 'rekanan'){
                                 echo '- Rekanan';
@@ -128,7 +128,7 @@
                 </td>
                 <td>
                     @php
-                        $finisherId = explode(',', $antrian->finisher_id);
+                        $finisherId = explode(',', $antrian->dataKerja->finishing_id);
                         foreach ($finisherId as $item) {
                             if($item == 'rekanan'){
                                 echo '- Rekanan';
@@ -150,7 +150,7 @@
                 </td>
                 <td>
                     @php
-                        $qcId = explode(',', $antrian->qc_id);
+                        $qcId = explode(',', $antrian->dataKerja->qc_id);
                         foreach ($qcId as $item) {
                                 $antriann = App\Models\Employee::find($item);
                                 //tampilkan name dari tabel employees, jika nama terakhir tidak perlu koma
@@ -166,23 +166,21 @@
                     @endphp
                 </td>
                 <td class="text-center">
-                    @if ($antrian->deadline_status == "1" && $antrian->end_job != null)
-                        <span class="badge bg-success">Tepat Waktu</span>
-                        <br>
-                        <span class="badge bg-dark">{{ $antrian->end_job }}</span>
-                    @elseif ($antrian->deadline_status == "2" && $antrian->end_job != null)
-                        <span class="badge bg-danger">Terlambat</span>
-                        <br>
-                        <span class="badge bg-dark">{{ $antrian->end_job }}</span>
-                    @elseif ($antrian->deadline_status == "0" && $antrian->end_job == null)
-                        <span class="badge bg-danger">Belum Diantrikan</span>
-                    @elseif ($antrian->deadline_status == "0" && $antrian->end_job != null)
-                        <span class="badge bg-warning">Diproses</span>
-                        <br>
-                        <span class="badge bg-dark">{{ $antrian->end_job }}</span>
+                    @if($antrian->antrian->finish_date != null)
+                        @if ($antrian->antrian->deadline_status == "1")
+                            <span class="badge bg-success">Tepat Waktu</span>
+                            <br>
+                            <span class="badge bg-dark">{{ $antrian->antrian->finish_date }}</span>
+                        @elseif ($antrian->antrian->deadline_status == "2")
+                            <span class="badge bg-danger">Terlambat</span>
+                            <br>
+                            <span class="badge bg-dark">{{ $antrian->antrian->finish_date }}</span>
+                        @endif
+                    @else
+                        <span class="badge bg-danger">Dalam Proses</span>
                     @endif
                 </td>
-                <td class="text-center"> {{ number_format($antrian->omset, 0, ',', '.'); }} </td>
+                <td class="text-center"> {{ number_format($antrian->price * $antrian->qty, 0, ',', '.'); }} </td>
             </tr>
             @endforeach
         </tbody>
@@ -219,8 +217,8 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td class="text-center">{{ $antrian->ticket_order }}</td>
-                <td>{{ $antrian->sales->sales_name }}</td>
-                <td>{{ $antrian->job->job_name }}</td>
+                <td>{{ $antrian->user->sales->sales_name }}</td>
+                <td>{{ $antrian->barang->job->job_name }}</td>
                 <td class="text-center">{{ $antrian->qty }}</td>
                 <td>{{ $antrian->start_job }}</td>
                 <td>{{ $antrian->timer_stop ? $antrian->timer_stop : 'Dalam Proses' }}</td>
@@ -340,8 +338,8 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td class="text-center">{{ $antrian->ticket_order }}</td>
-                <td>{{ $antrian->sales->sales_name }}</td>
-                <td>{{ $antrian->job->job_name }}</td>
+                <td>{{ $antrian->user->sales->sales_name }}</td>
+                <td>{{ $antrian->barang->job->job_name }}</td>
                 <td class="text-center">{{ $antrian->qty }}</td>
                 <td>{{ $antrian->start_job }}</td>
                 <td>{{ $antrian->timer_stop ? $antrian->timer_stop : 'Dalam Proses' }}</td>
@@ -460,8 +458,8 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td class="text-center">{{ $antrian->ticket_order }}</td>
-                <td>{{ $antrian->sales->sales_name }}</td>
-                <td>{{ $antrian->job->job_name }}</td>
+                <td>{{ $antrian->user->sales->sales_name }}</td>
+                <td>{{ $antrian->barang->job->job_name }}</td>
                 <td class="text-center">{{ $antrian->qty }}</td>
                 <td>{{ $antrian->start_job }}</td>
                 <td>{{ $antrian->timer_stop ? $antrian->timer_stop : 'Dalam Proses' }}</td>

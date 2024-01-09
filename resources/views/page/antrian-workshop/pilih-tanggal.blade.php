@@ -27,9 +27,10 @@
                                     <label for="tempat_workshop">Pilih Tempat Workshop</label>
                                     <select class="form-control" id="tempat_workshop" name="tempat_workshop" required>
                                         <option value="" selected disabled>Pilih Tempat Workshop</option>
-                                        <option value="Surabaya">Surabaya</option>
-                                        <option value="Malang">Malang</option>
-                                        <option value="Kediri">Kediri</option>
+                                        <option value="1">Surabaya</option>
+                                        <option value="2">Malang</option>
+                                        <option value="3">Kediri</option>
+                                        <option value="4">Sidoarjo</option>
                                     </select>
                                 </div>
                             </div>

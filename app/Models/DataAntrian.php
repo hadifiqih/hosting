@@ -7,6 +7,7 @@ use App\Models\Sales;
 use App\Models\Barang;
 use App\Models\Cabang;
 use App\Models\Customer;
+use App\Models\Employee;
 use App\Models\DataKerja;
 use App\Models\PrintFile;
 use App\Models\Pembayaran;
@@ -20,6 +21,21 @@ class DataAntrian extends Model
     use HasFactory;
 
     protected $table = 'data_antrian';
+
+    public function operator()
+    {
+        return $this->belongsTo(Employee::class, 'operator_id', 'id');
+    }
+
+    public function finishing()
+    {
+        return $this->belongsTo(Employee::class, 'finishing_id', 'id');
+    }
+
+    public function quality()
+    {
+        return $this->belongsTo(Employee::class, 'qc_id', 'id');
+    }
 
     public function filePendukung()
     {

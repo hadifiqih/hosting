@@ -38,26 +38,12 @@
       <input type="hidden" name="sales" value="{{ $sales->id }}">
 
       <div class="mb-3">
-        <label for="kategori" class="form-label">Kategori <span class="text-danger">*</span></label>
-        <select class="custom-select rounded-2" name="kategori" id="kategori" required>
-            <option selected disabled>--Pilih Kategori--</option>
-            <option value="Stempel">Stempel</option>
-            <option value="Non Stempel">Non Stempel</option>
-            <option value="Advertising">Advertising</option>
-            <option value="Digital Printing">Digital Printing</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
         <label for="job" class="form-label">Jenis Produk <span class="text-danger">*</span></label>
         <br>
-        <select class="custom-select rounded-2" name="job" id="job" required>
+        <select multiple="multiple" class="custom-select rounded-2" name="job[]" id="job" required style="width: 100%">
 
         </select>
       </div>
-      <button type="button" class="btn btn-sm btn-outline-primary mb-3" data-toggle="modal" data-target="#exampleModalProduk">
-        Tambah Produk
-      </button>
 
       <div class="mb-3">
         <label for="description" class="form-label">Keterangan</label>
@@ -151,33 +137,28 @@
   $(document).ready(function() {
     bsCustomFileInput.init();
 
-    $('#kategori').on('change', function() {
-      $('#job').empty();
-      $('#job').append('<option selected disabled>--Pilih Jenis Produk--</option>');
-
-      $('#job').select2({
-        placeholder: 'Pilih Jenis Produk',
-        ajax : {
-          url: "{{ route('getJobsByCategory') }}",
-          type: "GET",
-          dataType: 'json',
-          delay: 250,
-          data: {
-            kategori: $(this).val()
+    $('#job').select2({
+      placeholder: 'Pilih Jenis Produk',
+      ajax : {
+        url: "{{ route('getJobsByCategory') }}",
+        type: "GET",
+        dataType: 'json',
+        delay: 250,
+        data: {
+          kategori: $(this).val()
+        },
+          processResults: function (data) {
+            return {
+              results:  $.map(data, function (item) {
+                return {
+                  text: item.job_name,
+                  id: item.id
+                }
+              })
+            };
           },
-            processResults: function (data) {
-              return {
-                results:  $.map(data, function (item) {
-                  return {
-                    text: item.job_name,
-                    id: item.id
-                  }
-                })
-              };
-            },
-            cache: true
-          }
-        });
+          cache: true
+        }
       });
 
     $('#formOrder').on('submit', function(e) {

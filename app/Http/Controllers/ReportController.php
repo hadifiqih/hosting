@@ -7,8 +7,10 @@ use Dompdf\Dompdf;
 
 use App\Models\Order;
 use App\Models\Sales;
+use App\Models\Barang;
 use App\Models\Antrian;
 use App\Models\Machine;
+use App\Models\DataAntrian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -94,73 +96,59 @@ class ReportController extends Controller
 
     public function exportLaporanWorkshopPDF(Request $request)
     {
-        $tempat = $request->tempat_workshop;
+        $tempat = $request->input('tempat_workshop');
         // $tanggalAwal adalah selalu tanggal 1 dari bulan yang dipilih
         $tanggalAwal = date('Y-m-01 00:00:00');
         // $tanggalAkhir adalah selalu tanggal sekarang dari bulan yang dipilih
         $tanggalAkhir = date('Y-m-d 23:59:59');
 
-        //Mengambil data antrian dengan relasi customer, sales, payment, operator, finishing, job, order pada tanggal yang dipilih dan menghitung total omset dan total order
-        $antrianStempel = DataAntrian::with('customer', 'sales', 'payment', 'operator', 'finishing', 'job', 'order')
-            ->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir])
-            ->where(function ($query) use ($tempat) {
-                $query->whereHas('sales', function ($subquery) use ($tempat) {
-                    $subquery->where('sales_name', 'like', '%' . $tempat . '%');
-                })
-                ->whereHas('job', function ($subquery) {
-                    $subquery->where('kategori_id', '1');
-                });
+        $antrianStempel = Barang::where('kategori_id', '1')
+        ->whereHas('antrian', function ($query) use ($tempat, $tanggalAwal, $tanggalAkhir) {
+            $query->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir])
+            ->whereHas('sales', function ($subquery) use ($tempat) {
+                $subquery->where('cabang_id', $tempat);
             })
             ->where(function ($query) {
                 $query->where('status', '1')->orWhere('status', '2');
-            })
-            ->get();
+            });
+        })
+        ->get();
 
-        $antrianAdvertising = Antrian::with('customer', 'sales', 'payment', 'operator', 'finishing', 'job', 'order')
-            ->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir])
-            ->where(function ($query) use ($tempat) {
-                $query->whereHas('sales', function ($subquery) use ($tempat) {
-                    $subquery->where('sales_name', 'like', '%' . $tempat . '%');
-                })
-                ->whereHas('job', function ($subquery) {
-                    $subquery->where('job_type', 'Advertising');
-                });
+        $antrianAdvertising = Barang::where('kategori_id', '3')
+        ->whereHas('antrian', function ($query) use ($tempat, $tanggalAwal, $tanggalAkhir) {
+            $query->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir])
+            ->whereHas('sales', function ($subquery) use ($tempat) {
+                $subquery->where('cabang_id', $tempat);
             })
             ->where(function ($query) {
                 $query->where('status', '1')->orWhere('status', '2');
-            })
-            ->get();
+            });
+        })
+        ->get();
 
-
-        $antrianNonStempel = Antrian::with('customer', 'sales', 'payment', 'operator', 'finishing', 'job', 'order')
-            ->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir])
-            ->where(function ($query) use ($tempat) {
-                $query->whereHas('sales', function ($subquery) use ($tempat) {
-                    $subquery->where('sales_name', 'like', '%' . $tempat . '%');
-                })
-                ->whereHas('job', function ($subquery) {
-                    $subquery->where('job_type', 'Non Stempel');
-                });
+        $antrianNonStempel = Barang::where('kategori_id', '2')
+        ->whereHas('antrian', function ($query) use ($tempat, $tanggalAwal, $tanggalAkhir) {
+            $query->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir])
+            ->whereHas('sales', function ($subquery) use ($tempat) {
+                $subquery->where('cabang_id', $tempat);
             })
             ->where(function ($query) {
                 $query->where('status', '1')->orWhere('status', '2');
-            })
-            ->get();
+            });
+        })
+        ->get();
 
-        $antrianDigiPrint = Antrian::with('customer', 'sales', 'payment', 'operator', 'finishing', 'job', 'order')
-            ->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir])
-            ->where(function ($query) use ($tempat) {
-                $query->whereHas('sales', function ($subquery) use ($tempat) {
-                    $subquery->where('sales_name', 'like', '%' . $tempat . '%');
-                })
-                ->whereHas('job', function ($subquery) {
-                    $subquery->where('job_type', 'Digital Printing');
-                });
+        $antrianDigiPrint = Barang::where('kategori_id', '4')
+        ->whereHas('antrian', function ($query) use ($tempat, $tanggalAwal, $tanggalAkhir) {
+            $query->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir])
+            ->whereHas('sales', function ($subquery) use ($tempat) {
+                $subquery->where('cabang_id', $tempat);
             })
             ->where(function ($query) {
                 $query->where('status', '1')->orWhere('status', '2');
-            })
-            ->get();
+            });
+        })
+        ->get();
 
         //buat beberapa variabel dengan nilai 0 untuk menampung total omset dan total order
         $totalOmsetStempel = 0;
@@ -177,22 +165,22 @@ class ReportController extends Controller
 
         //looping untuk menghitung total omset dan total order
         foreach ($antrianStempel as $antrian) {
-            $totalOmsetStempel += $antrian->omset;
+            $totalOmsetStempel += $antrian->price * $antrian->qty;
             $totalQtyStempel += $antrian->qty;
         }
 
         foreach ($antrianAdvertising as $antrian) {
-            $totalOmsetAdvertising += $antrian->omset;
+            $totalOmsetAdvertising += $antrian->price * $antrian->qty;
             $totalQtyAdvertising += $antrian->qty;
         }
 
         foreach ($antrianNonStempel as $antrian) {
-            $totalOmsetNonStempel += $antrian->omset;
+            $totalOmsetNonStempel += $antrian->price * $antrian->qty;
             $totalQtyNonStempel += $antrian->qty;
         }
 
         foreach ($antrianDigiPrint as $antrian) {
-            $totalOmsetDigiPrint += $antrian->omset;
+            $totalOmsetDigiPrint += $antrian->price * $antrian->qty;
             $totalQtyDigiPrint += $antrian->qty;
         }
 

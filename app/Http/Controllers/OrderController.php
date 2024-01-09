@@ -86,8 +86,16 @@ class OrderController extends Controller
             }
         })
         ->addColumn('job_name', function($data){
-            $produk = $data->job_id == 0 ? "Belum Dipilih" : $data->job->job_name;
-            return $produk;
+            //explode string to array
+            $job = explode(',', $data->job_id);
+            $jenisProduk = '';
+            foreach($job as $j){
+                $jobName = Job::where('id', $j)->first();
+                $jobName = $jobName->job_name . ', ';
+                $jenisProduk .= $jobName;
+            }
+            return $jenisProduk;
+            
         })
         ->addColumn('status', function($data){
             return $data->status == 0 ? '<span class="badge badge-primary">Menunggu</span>' : '<span class="badge badge-success">Dikerjakan</span>';
@@ -109,7 +117,7 @@ class OrderController extends Controller
             $button .= '</div>';
             return $button;
         })
-        ->rawColumns(['action', 'ref_desain', 'status'])
+        ->rawColumns(['action', 'ref_desain', 'status', 'job_name'])
         ->make(true);
     }
 
@@ -377,7 +385,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi form add.blade.php
+
         $rules = [
             'title' => 'required',
             'sales' => 'required',
@@ -416,12 +424,16 @@ class OrderController extends Controller
             $fileName = '-';
         }
 
+        //hasil input job from array to string
+        $job = $request->job;
+        $job = implode(',', $job);
+
         // Jika validasi berhasil, simpan data ke database
         $order = new Order;
         $order->ticket_order = $ticketOrder;
         $order->title = $request->title;
         $order->sales_id = $request->sales;
-        $order->job_id = $request->job;
+        $order->job_id = $job;
         $order->description = $request->description != null ? $request->description : '-';
         $order->type_work = $request->jenisPekerjaan;
         $order->desain = $fileName;

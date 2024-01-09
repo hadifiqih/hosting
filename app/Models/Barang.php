@@ -12,6 +12,16 @@ class Barang extends Model
 
     protected $table = 'barang';
 
+    public function dataKerja()
+    {
+        return $this->belongsTo(DataKerja::class, 'ticket_order', 'ticket_order');
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'ticket_order', 'ticket_order');
+    }
+
     public function job()
     {
         return $this->belongsTo(Job::class);
@@ -24,7 +34,7 @@ class Barang extends Model
 
     public function antrian()
     {
-        return $this->hasMany(Antrian::class, 'ticket_order', 'ticket_order');
+        return $this->belongsTo(DataAntrian::class, 'ticket_order', 'ticket_order');
     }
 
     public function user()
