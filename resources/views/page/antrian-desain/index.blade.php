@@ -38,7 +38,7 @@
                 </li>
                 @endif
                 <li class="nav-item">
-                    <a class="nav-link {{ Auth::user()->role != 'sales' || Auth::user()->role != 'supervisor' ? '' : 'active'}}" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Progress Desain</a>
+                    <a class="nav-link {{Auth::user()->role == 'stempel' || Auth::user()->role == 'sales' || Auth::user()->role == 'supervisor' ? 'active' : ''}}" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Progress Desain</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="custom-content-below-messages-tab" data-toggle="pill" href="#custom-content-below-messages" role="tab" aria-controls="custom-content-below-messages" aria-selected="false">Selesai Desain</a>
@@ -85,7 +85,7 @@
             </div>
             @endif
 
-            <div class="tab-pane fade {{ Auth::user()->role != 'sales' || Auth::user()->role != 'supervisor' ? '' : 'show active'}}" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
+            <div class="tab-pane fade {{ Auth::user()->role == 'stempel' || Auth::user()->role == 'sales' || Auth::user()->role == 'supervisor' ? 'show active' : ''}}" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
                 <div class="card">
                     <div class="card-header">
                       <h2 class="card-title">Antrian Desain</h2>
@@ -154,6 +154,38 @@
                   </div>
                 </div>
             </div>
+            <div class="tab-pane fade" id="revisi-desain" role="tabpanel" aria-labelledby="revisi-desain-tab">
+                <div class="card">
+                    <div class="card-header">
+                      <h2 class="card-title">Revisi Desain</h2>
+                      {{-- Tombol tambah order --}}
+                        @if(Auth::user()->role == 'sales')
+                            <a href="{{ url('order/create') }}" class="btn btn-sm btn-warning float-right"><strong>Tambah Desain</strong></a>
+                        @endif
+                    </div>
+                    <div class="card-body">
+                    {{-- Menampilkan Antrian Desain --}}
+                    <table id="tableRevisiDesain" class="table table-bordered table-hover table-responsive">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Ticket Order</th>
+                                <th>Sales</th>
+                                <th>Judul Desain</th>
+                                <th>Produk</th>
+                                <th>Status</th>
+                                <th>File Cetak</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                        </tbody>
+                    </table>
+                    {{-- End Menampilkan Antrian Desain --}}
+                  </div>
+                </div>
+            </div>
         </div>
         </div>
     </div>
@@ -175,7 +207,7 @@
                 url: "/order/"+ id +"/show",
                 type: "GET",
                 dataType: "JSON",
-                success: function(data) {
+                success: function(response) {
                     //membersihkan isi dari seluruh element modal
                     $('#ticketDetail').empty();
                     $('#createdAtWorking').empty();
@@ -186,11 +218,11 @@
                     $('#keteranganWorking').empty();
                     $('#refgambar').empty();
 
-                    var dibuat = new Date(data.created_at);
+                    var dibuat = new Date(response.data.created_at);
                     var tanggalDibuat = dibuat.getFullYear() + '-' + (dibuat.getMonth() + 1) + '-' + dibuat.getDate();
                     var waktuDibuat = dibuat.getHours() + ":" + dibuat.getMinutes() + ":" + dibuat.getSeconds();
 
-                    var perbarui = new Date(data.updated_at);
+                    var perbarui = new Date(response.data.updated_at);
                     var tanggalUpdate = perbarui.getFullYear() + '-' + (perbarui.getMonth() + 1) + '-' + perbarui.getDate();
                     var waktuUpdate = perbarui.getHours() + ":" + perbarui.getMinutes() + ":" + perbarui.getSeconds();
 
@@ -198,12 +230,12 @@
                     $("#createdAtWorking").val(tanggalDibuat + " " + waktuDibuat);
                     $("#lastUpdateWorking").val(tanggalUpdate + " " + waktuUpdate);
 
-                    $('#ticketDetail').text(data.ticket_order);
-                    $('#namaSalesWorking').val(data.sales.sales_name);
-                    $('#judulDesainWorking').val(data.title);
-                    $('#jenisProdukWorking').val(data.job.job_name);
-                    $('#keteranganWorking').val(data.description);
-                    $('#refgambar').attr('src', "{{ asset('storage/ref-desain') }}/" + data.desain);
+                    $('#ticketDetail').text(response.data.ticket_order);
+                    $('#namaSalesWorking').val(response.data.sales.sales_name);
+                    $('#judulDesainWorking').val(response.data.title);
+                    $('#jenisProdukWorking').val(response.jenisProduk);
+                    $('#keteranganWorking').val(response.data.description);
+                    $('#refgambar').attr('src', "{{ asset('storage/ref-desain') }}/" + response.data.desain);
                 },
                 error: function() {
                     Swal.fire({
@@ -372,6 +404,21 @@
         $("#tableRevisiDesain").DataTable({
             responsive: true,
             autoWidth: false,
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('list.revisi') }}",
+            },
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                {data: 'ticket_order', name: 'ticket_order'},
+                {data: 'sales', name: 'sales'},
+                {data: 'title', name: 'title'},
+                {data: 'produk', name: 'produk'},
+                {data: 'status', name: 'status'},
+                {data: 'file_cetak', name: 'file_cetak'},
+                {data: 'action', name: 'action'},
+            ],
         });
 
         $("#tableDesainer").DataTable({

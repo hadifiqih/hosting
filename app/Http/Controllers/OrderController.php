@@ -30,9 +30,26 @@ class OrderController extends Controller
     }
 
     public function show($id){
-        $order = Order::with('sales', 'user', 'employee', 'job')->where('id', $id)->first();
+        $order = Order::with('sales', 'user', 'employee', 'job', 'barang')->where('id', $id)->first();
 
-        return response()->json($order);
+        $jenisProduk = '';
+        if($order->job_id != 0){
+            //explode string to array
+            $job = explode(',', $order->job_id);
+            foreach($job as $j){
+                $jobName = Job::where('id', $j)->first();
+                $jobName = $jobName->job_name . ', ';
+                $jenisProduk .= $jobName;
+            }
+        }else{
+            $jenisProduk = 'Belum dipilih';
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => $order,
+            'jenisProduk' => $jenisProduk
+        ]);
     }
 
     public function cobaPush()
@@ -91,7 +108,11 @@ class OrderController extends Controller
             $jenisProduk = '';
             foreach($job as $j){
                 $jobName = Job::where('id', $j)->first();
-                $jobName = $jobName->job_name . ', ';
+                if(end($job) == $j){
+                    $jobName = $jobName->job_name;
+                }else{
+                    $jobName = $jobName->job_name . ', ';
+                }
                 $jenisProduk .= $jobName;
             }
             return $jenisProduk;
