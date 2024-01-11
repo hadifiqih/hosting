@@ -38,12 +38,12 @@
                 </li>
                 @endif
                 <li class="nav-item">
-                    <a class="nav-link {{Auth::user()->role == 'stempel' || Auth::user()->role == 'sales' || Auth::user()->role == 'supervisor' ? 'active' : ''}}" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Progress Desain</a>
+                    <a class="nav-link {{Auth::user()->role == 'stempel' ? 'active' : ''}}" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Progress Desain</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="custom-content-below-messages-tab" data-toggle="pill" href="#custom-content-below-messages" role="tab" aria-controls="custom-content-below-messages" aria-selected="false">Selesai Desain</a>
                 </li>
-                @if(auth()->user()->role == 'desain' || auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising')
+                @if(auth()->user()->role == 'desain' || auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising' || auth()->user()->role == 'supervisor')
                 <li class="nav-item">
                     <a class="nav-link" id="revisi-desain-tab" data-toggle="pill" href="#revisi-desain" role="tab" aria-controls="revisi-desain" aria-selected="false">Revisi Desain</a>
                 </li>
@@ -172,9 +172,6 @@
                                 <th>Ticket Order</th>
                                 <th>Sales</th>
                                 <th>Judul Desain</th>
-                                <th>Produk</th>
-                                <th>Status</th>
-                                <th>File Cetak</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -192,6 +189,7 @@
     @includeIf('page.antrian-desain.modal.modal-bagiDesain')
     @includeIf('page.antrian-desain.modal.modal-detail-desain')
     @includeIf('page.antrian-desain.modal.modal-upload')
+    @includeIf('page.antrian-desain.modal.modal-upload-revisi')
 </div>
 @endsection
 
@@ -336,6 +334,12 @@
             });
         }
 
+        function uploadRevisi(id) {
+            $('#modalUploadRevisi').modal('show');
+            $('#ticketModalRevisi').val(id);
+            $('')
+        }
+
         $("#tableAntrianDesain").DataTable({
             responsive: true,
             autoWidth: false,
@@ -414,9 +418,6 @@
                 {data: 'ticket_order', name: 'ticket_order'},
                 {data: 'sales', name: 'sales'},
                 {data: 'title', name: 'title'},
-                {data: 'produk', name: 'produk'},
-                {data: 'status', name: 'status'},
-                {data: 'file_cetak', name: 'file_cetak'},
                 {data: 'action', name: 'action'},
             ],
         });

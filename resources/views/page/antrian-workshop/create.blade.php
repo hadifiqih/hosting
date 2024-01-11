@@ -186,7 +186,7 @@
                         <select name="statusPembayaran" id="statusPembayaran" class="form-control" required>
                             <option value="" selected disabled>Pilih Status Pembayaran</option>
                             <option value="2">Lunas</option>
-                            <option value="1">Belum Lunas</option>
+                            <option value="1">DP(Down Payment)</option>
                         </select>
                         <p class="text-muted font-italic text-sm mb-0 mt-1">*Jika order dari marketplace, bisa ditandai sebagai lunas.</p>
                     </div>
@@ -450,8 +450,28 @@
             totalAll = totalAll.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
             $('#totalAll').html('Rp ' + totalAll);
             $('#totalAllInput').val(totalAll);
-            $('#sisaPembayaran').html('Rp ' + totalAll);
-            $('#sisaPembayaranInput').val(totalAll);
+            if(totalAll == 0){
+                $('#jumlahPembayaran').val(totalAll);
+                $('#jumlahPembayaran').attr('readonly', true);
+                $('#sisaPembayaran').html('Rp 0');
+            }else{
+                $('#jumlahPembayaran').val('');
+                $('#jumlahPembayaran').attr('readonly', false);
+                $('#sisaPembayaran').html(totalAll + ' (Belum Lunas)');
+            }
+        });
+
+        $('#statusPembayaran').on('click', function(){
+            var statusPembayaran = $('#statusPembayaran').val();
+            if(statusPembayaran == 2){
+                $('#jumlahPembayaran').val($('#totalAllInput').val());
+                $('#jumlahPembayaran').attr('readonly', true);
+                $('#sisaPembayaran').html('Rp 0');
+            }else{
+                $('#jumlahPembayaran').val('');
+                $('#jumlahPembayaran').attr('readonly', false);
+                $('#sisaPembayaran').html($('#totalAllInput').val() + ' (Belum Lunas)');
+            }
         });
 
         // sisaPembayaran akan berubah saat ada perubahan pada inputan jumlahPembayaran - totalAll
@@ -477,8 +497,11 @@
                 sisaPembayaran = "Melebihi Total Pembayaran";
             }
             sisaPembayaran = sisaPembayaran.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-            $('#sisaPembayaran').html('Rp ' + sisaPembayaran);
-            $('#sisaPembayaranInput').val(sisaPembayaran);
+            if(sisaPembayaran == 0){
+                $('#sisaPembayaran').html('Rp 0');
+            }else{
+                $('#sisaPembayaran').html('Rp ' + sisaPembayaran + ' (Belum Lunas)');
+            }
         });
 
         //nama produk select2

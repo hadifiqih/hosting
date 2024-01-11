@@ -12,8 +12,9 @@ use App\Models\Design;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\GambarAcc;
-use Illuminate\Http\Request;
+use App\Models\DataAntrian;
 
+use Illuminate\Http\Request;
 use App\Notifications\AntrianDesain;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
@@ -496,6 +497,11 @@ class OrderController extends Controller
         }
     }
 
+    public function revisiUpload(Request $request)
+    {
+        dd($request->all());
+    }
+
     //Untuk submit dengan link file cetak
     public function submitLinkUpload(Request $request)
     {
@@ -660,6 +666,35 @@ class OrderController extends Controller
         $jobs = Job::all();
 
         return view('page.order.revisi-desain', compact('order', 'sales', 'job', 'jobs'));
+    }
+
+    public function listRevisi()
+    {
+        $listrevisi = DataAntrian::where('is_revision', 1)->get();
+
+        return Datatables()->of($listrevisi)
+        ->addIndexColumn()
+        ->addColumn('ticket_order', function($data){
+            return $data->ticket_order;
+        })
+        ->addColumn('sales', function($data){
+            return $data->sales->sales_name;
+        })
+        ->addColumn('title', function($data){
+            return $data->order->title;
+        })
+        ->addColumn('action', function($data){
+            $button = '<div class="btn-group">';
+            if($data->order->employee_id == auth()->user()->employee->id){
+                $button .= '<a href="javascript:void(0)" onclick="uploadRevisi('. $data->id .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Unggah File Revisi</a>';
+            }else{
+                $button .= '<a href="javascript:void(0)" class="btn btn-sm btn-dark disabled"><i class="fas fa-user"></i> Unggah File Revisi</a>';
+            }
+            $button .= '</div>';
+            return $button;
+        })
+        ->rawColumns(['acc_desain', 'action'])
+        ->make(true);
     }
 
     //Update revisi desain by sales

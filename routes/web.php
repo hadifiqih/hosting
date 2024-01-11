@@ -177,10 +177,12 @@ Route::controller(EmployeeController::class)->group(function(){
 });
 
 Route::controller(OrderController::class)->group(function(){
+    Route::get('/list-revisi', 'listRevisi')->name('list.revisi');
     Route::get('/list-desain/menunggu', 'listMenunggu')->name('list.menunggu');
     Route::get('/list-desain/dalam-proses', 'listDalamProses')->name('list.dalamProses');
     Route::get('/list-desain/selesai', 'listSelesai')->name('list.selesai');
     Route::get('/list-desain/desainer', 'listDesainer')->name('list.desainer');
+    Route::post('/revisi-desain', 'revisiUpload')->name('revisi.upload');
 
     Route::get('/order/create', 'create')->name('order.create');
     Route::post('/order', 'store')->name('order.store');
