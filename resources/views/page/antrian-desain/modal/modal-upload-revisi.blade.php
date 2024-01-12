@@ -8,19 +8,22 @@
                 </button>
             </div>
             <div class="modal-body">
+                <h6 class="text-sm">Upload File Revisi</h6>
                 {{-- Dropzone JS --}}
-                <form action="{{ route('revisi.upload') }}" class="dropzone" id="my-dropzone" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('revisi.upload') }}" class="dropzone" id="my-dropzone-revisi" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" class="idOrder" value="">
-                    <input type="hidden" name="linkFile" value="">
-                    <a href="" class="btn btn-primary btn-sm submitButtonUpload">Unggah</a>
+                    <input type="hidden" class="idOrder" name="idOrder" value="">
+                    <input type="hidden" class="linkFile" name="linkFile" value="">
                 </form>
+                <div class="row mt-2 mr-2 float-right">
+                    <button id="submitRevisi" href="javascript:void(0)" class="btn btn-primary btn-sm">Unggah</button>
+                </div>
 
-                <div class="form-group mt-2">
+                <div class="form-group mt-4">
                     <form action="{{ route('submitLinkUpload') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <label for="linkFileUpload">Link File <span class="text-muted font-italic text-sm">*Opsional</span></label>
-                        <input type="text" class="form-control" id="linkFileUpload" name="linkFileUpload" placeholder="https://drive.google.com/xxxxx">
+                        <label for="linkFileRevisi">Link File <span class="text-muted font-italic text-sm">*Opsional</span></label>
+                        <input type="text" class="form-control" id="linkFileRevisi" name="linkFileUpload" placeholder="https://drive.google.com/xxxxx">
                         <input type="hidden" class="idOrder" value="">
                         <input type="submit" class="btn btn-primary btn-sm mt-2 submitLink disabled" value="Simpan">
                     </form>

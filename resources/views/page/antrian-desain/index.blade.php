@@ -337,7 +337,7 @@
         function uploadRevisi(id) {
             $('#modalUploadRevisi').modal('show');
             $('#ticketModalRevisi').val(id);
-            $('')
+            $('.idOrder').val(id);
         }
 
         $("#tableAntrianDesain").DataTable({
@@ -446,16 +446,50 @@
                 addRemoveLinks: true,
                 dictRemoveFile: "Hapus file",
                 maxFileSize: 50,
+                autoProcessQueue: false,
+                init:function() {
+                    var myDropzone = this;
+                    //saat submit di klik, maka jalankan fungsi ini
+                    $('#submitCetak').click(function(){
+                        myDropzone.processQueue();
+                    });
+
+                    this.on('complete', function(){
+                        if(this.getQueuedFiles().length == 0 && this.getUploadingFiles().length == 0) {
+                            var _this = this;
+                            _this.removeAllFiles();
+                        }
+                        $('#modalUpload').modal('hide');
+                        location.reload();
+                    });
+                }
         };
 
         Dropzone.options.myDropzoneRevisi = { // camelized version of the `id`
-                paramName: "fileRevisi", // The name that will be used to transfer the file
-                clickable: true,
-                acceptedFiles: ".jpeg, .jpg, .png, .pdf, .cdr, .ai, .psd",
-                dictInvalidFileType: "Type file ini tidak dizinkan",
-                addRemoveLinks: true,
-                dictRemoveFile: "Hapus file",
-                maxFileSize: 50,
+            paramName: "fileRevisi", // The name that will be used to transfer the file
+            clickable: true,
+            acceptedFiles: ".jpeg, .jpg, .png, .pdf, .cdr, .ai, .psd",
+            dictInvalidFileType: "Type file ini tidak dizinkan",
+            addRemoveLinks: true,
+            dictRemoveFile: "Hapus file",
+            maxFileSize: 50,
+            autoProcessQueue: false,
+            init:function() {
+                var myDropzone = this;
+                //saat submitRevisi di klik, maka jalankan fungsi ini
+                $('#submitRevisi').click(function(){
+                    myDropzone.processQueue();
+                });
+
+                this.on('complete', function(){
+                    if(this.getQueuedFiles().length == 0 && this.getUploadingFiles().length == 0) {
+                        var _this = this;
+                        _this.removeAllFiles();
+                    }
+                    $('#modalUploadRevisi').modal('hide');
+                    location.reload();
+                });
+            }
         };
 
         Dropzone.options.myDropzoneReupload = { // camelized version of the `id`
@@ -474,34 +508,45 @@
             $('.submitButton').prop('disabled', true);
         });
 
-        // saat form upload di submit, maka tampilkan loader dan disable button submitnya
-        $('#submitUploadDesain').click(function() {
+        // saat form upload revisi di submit, maka tampilkan loader dan disable button submitnya
+        $('#submitRevisiDesain').click(function() {
             $(this).addClass('disabled');
             $('#loader').show();
         });
 
-        $('#submitRevisiDesain').click(function() {
-            $(this).addClass('disabled');
-            $('#loader').show();
+        $('#linkFileUpload').on('keyup', function() {
+            if($(this).val() != '') {
+                $('.submitLink').removeClass('disabled');
+            } else {
+                $('.submitLink').addClass('disabled');
+            }
+        });
+
+        $('#linkFileRevisi').on('keyup', function() {
+            if($(this).val() != '') {
+                $('.submitLink').removeClass('disabled');
+            } else {
+                $('.submitLink').addClass('disabled');
+            }
         });
     });
 </script>
 
 @if(session('success-submit'))
-<script>
-$(function() {
-    var Toast = Swal.mixin({
-        toast: true,
-        position: 'top-right',
-        showConfirmButton: false,
-        timer: 5000
-    });
-        Toast.fire({
-        icon: 'success',
-        title: '{{ session('success-submit') }}'
+    <script>
+        $(function() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-right',
+                showConfirmButton: false,
+                timer: 5000
+            });
+                Toast.fire({
+                icon: 'success',
+                title: '{{ session('success-submit') }}'
+                });
         });
-});
-</script>
+    </script>
 @endif
 
 @if(session('error-filecetak'))
