@@ -85,7 +85,7 @@
             </div>
             @endif
 
-            <div class="tab-pane fade {{ Auth::user()->role == 'stempel' || Auth::user()->role == 'sales' || Auth::user()->role == 'supervisor' ? 'show active' : ''}}" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
+            <div class="tab-pane fade {{ Auth::user()->role == 'stempel' || Auth::user()->role == 'supervisor' ? 'show active' : ''}}" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
                 <div class="card">
                     <div class="card-header">
                       <h2 class="card-title">Antrian Desain</h2>
@@ -252,7 +252,7 @@
 
         function showUploadCetak(id) {
             $('#modalUpload').modal('show');
-            $('#ticketModal').val(id);
+            $('#modalUpload #idOrder').val(id);
         }
 
         function deleteOrder(id) {
@@ -385,7 +385,6 @@
             responsive: true,
             autoWidth: false,
             processing: true,
-            searching: false,
             serverSide: true,
             ajax: {
                 url: "{{ route('list.selesai') }}",
@@ -460,7 +459,8 @@
                             _this.removeAllFiles();
                         }
                         $('#modalUpload').modal('hide');
-                        location.reload();
+                        $('#tableAntrianDikerjakan').DataTable().ajax.reload();
+                        $('#tableAntrianSelesai').DataTable().ajax.reload();
                     });
                 }
         };
@@ -532,7 +532,7 @@
     });
 </script>
 
-@if(session('success-submit'))
+@if(session('success'))
     <script>
         $(function() {
             var Toast = Swal.mixin({
@@ -549,7 +549,7 @@
     </script>
 @endif
 
-@if(session('error-filecetak'))
+@if(session('error'))
     <script>
     $(function() {
         var Toast = Swal.mixin({

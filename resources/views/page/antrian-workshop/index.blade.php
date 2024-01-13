@@ -61,18 +61,18 @@
                     @if(isset($filtered))
                     <select id="kategori" name="kategori" class="custom-select rounded-1" disabled>
                         <option value="Semua">Semua</option>
-                        <option value="Stempel" {{ $filtered == "Stempel" ? "selected" : "" }}>Stempel</option>
-                        <option value="Advertising" {{ $filtered == "Advertising" ? "selected" : "" }}>Advertising</option>
-                        <option value="Non Stempel" {{ $filtered == "Non Stempel" ? "selected" : "" }}>Non Stempel</option>
-                        <option value="Digital Printing" {{ $filtered == "Digital Printing" ? "selected" : "" }}>Digital Printing</option>
+                        <option value="1" {{ $filtered == "1" ? "selected" : "" }}>Stempel</option>
+                        <option value="3" {{ $filtered == "3" ? "selected" : "" }}>Advertising</option>
+                        <option value="2" {{ $filtered == "2" ? "selected" : "" }}>Non Stempel</option>
+                        <option value="4" {{ $filtered == "4" ? "selected" : "" }}>Digital Printing</option>
                     </select>
                     @else
                     <select id="kategori" name="kategori" class="custom-select rounded-1">
                         <option value="Semua">Semua</option>
-                        <option value="Stempel">Stempel</option>
-                        <option value="Advertising">Advertising</option>
-                        <option value="Non Stempel">Non Stempel</option>
-                        <option value="Digital Printing">Digital Printing</option>
+                        <option value="1">Stempel</option>
+                        <option value="3">Advertising</option>
+                        <option value="2">Non Stempel</option>
+                        <option value="4">Digital Printing</option>
                     </select>
                     @endif
             </div>

@@ -65,8 +65,8 @@ class AntrianController extends Controller
         if(request()->has('kategori')){
             $jobType = $request->input('kategori');
             $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile')
-            ->whereHas('job', function ($query) use ($jobType) {
-                $query->where('job_type', $jobType);
+            ->whereHas('barang', function ($query) use ($jobType) {
+                $query->where('kategori_id', $jobType);
             })
             ->where('status', '1')
             ->get();
@@ -183,8 +183,8 @@ class AntrianController extends Controller
         if(request()->has('kategori')){
             $jobType = $request->input('kategori');
             $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile')
-            ->whereHas('job', function ($query) use ($jobType) {
-                $query->where('job_type', $jobType);
+            ->whereHas('barang', function ($query) use ($jobType) {
+                $query->where('kategori_id', $jobType);
             })
             ->where('status', '2')
             ->get();

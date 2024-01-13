@@ -11,19 +11,18 @@
                 {{-- Dropzone JS --}}
                 <form action="{{ route('design.upload') }}" class="dropzone" id="my-dropzone" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" name="idOrder" value="">
-                    <input type="hidden" name="linkFile" value="">
+                    <input type="hidden" id="idOrder" name="idOrder" class="idOrder" value="">
                 </form>
                 <div class="row mt-2 mr-2 float-right">
                     <button id="submitCetak" href="javascript:void(0)" class="btn btn-primary btn-sm">Unggah</button>
                 </div>
 
-                <div class="form-group mt-2">
+                <div class="form-group mt-4">
                     <form action="{{ route('submitLinkUpload') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <label for="linkFileUpload">Link File <span class="text-muted font-italic text-sm">*Opsional</span></label>
                         <input type="text" class="form-control" id="linkFileUpload" name="linkFileUpload" placeholder="https://drive.google.com/xxxxx">
-                        <input type="hidden" name="idOrder" value="">
+                        <input type="hidden" name="idOrder" class="" value="">
                         <input type="submit" class="btn btn-primary btn-sm mt-2 submitLink disabled" value="Simpan">
                     </form>
                 </div>

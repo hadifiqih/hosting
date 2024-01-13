@@ -186,8 +186,8 @@ class OrderController extends Controller
             if(auth()->user()->role == 'sales'){
                 $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
             }
-            if(auth()->user()->employee->can_design == 1){
-                $button .= '<a href="javascript:void(0)" onclick="showUploadCetak('. $data->id .')" class="btn btn-sm btn-dark"><i class="fas fa-upload"></i> File Cetak </a>';
+            if(auth()->user()->employee->can_design == 1 && $data->employee_id == auth()->user()->employee->id){
+                $button .= '<a href="javascript:void(0)" onclick="showUploadCetak('. $data->ticket_order .')" class="btn btn-sm btn-dark"><i class="fas fa-upload"></i> File Cetak </a>';
             }
             $button .= '<a href="javascript:void(0)" onclick="deleteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
             $button .= '</div>';
@@ -246,10 +246,10 @@ class OrderController extends Controller
             return '<span class="badge badge-success">Selesai</span>';
         })
         ->addColumn('file_cetak', function($data){
-            if($data->file_cetak == null){
+            if(!isset($data->printfile->nama_file)){
                 return '-';
             }else{
-                return '<a href="'. asset('storage/file-cetak/' . $data->file_cetak) .'" target="_blank" class="btn btn-sm btn-primary">'. $data->file_cetak .' <i class="fas fa-download"></i></a>';
+                return '<a href="'. asset('storage/file-cetak/' . $data->printfile->nama_file) .'" target="_blank" class="btn btn-sm btn-primary">'. $data->printfile->nama_file .' <i class="fas fa-download"></i></a>';
             }
         })
         ->addColumn('action', function($data){
@@ -475,44 +475,63 @@ class OrderController extends Controller
     //Dropzone untuk upload file cetak
     public function uploadPrintFile(Request $request)
     {
-        $orderLama = Order::find($request->id);
-        if($orderLama->file_cetak != null){
-            Storage::disk('public')->delete('file-cetak/' . $orderLama->file_cetak);
-        }
+        try {
+            $id = $request->idOrder;
+            $order = Order::where('ticket_order', $id)->first();
+            $order->status = 2;
+            $order->time_end = now();
+            $order->save();
 
-        try{
-            //Menyimpan file cetak dari form dropzone
             $file = $request->file('fileCetak');
-            $fileName = time() . '_' . $orderLama->title . $file->getClientOriginalExtension();
+            $fileName = time() . '_' . $order->title . '.' . $file->getClientOriginalExtension();
             $path = 'file-cetak/' . $fileName;
             Storage::disk('public')->put($path, file_get_contents($file));
 
-            //Menyimpan nama file cetak ke database
-            $order = Order::where('id', $request->id)->first();
-            $order->file_cetak = $fileName;
-            $order->save();
+            $file = PrintFile::where('ticket_order', $id)->first();
+            if(!$file){
+                $file = new PrintFile;
+                $file->ticket_order = $id;
+                $file->nama_file = $fileName;
+                $file->desainer_id = $order->employee_id;
+                $file->save();
+            }else{
+                $file->nama_file = $fileName;
+                $file->save();
+            }
 
-            return response()->json(['success' => $fileName]);
-        }catch(\Exception $e){
-            return redirect()->back()->with('error-filecetak', 'File cetak belum diupload, silahkan ulangi proses upload file cetak');
+            return response()->json(['success' => $fileName, 'message' => 'File berhasil diupload !']);
+        } catch (\Throwable $th) {
+            return redirect()->route('design.index')->with('error', 'Terjadi Kesalahan'. $th->getMessage());
         }
     }
 
     public function revisiUpload(Request $request)
     {
-        $id = $request->idOrder;
-        $order = Order::where('ticket_order', $id)->first();
+        try {
+            $id = $request->idOrder;
+            $order = Order::where('ticket_order', $id)->first();
 
-        $file = $request->file('fileRevisi');
-        $fileName = time() . '_' . $order->title . '.' . $file->getClientOriginalExtension();
-        $path = 'file-cetak/' . $fileName;
-        Storage::disk('public')->put($path, file_get_contents($file));
+            $file = $request->file('fileRevisi');
+            $fileName = time() . '_' . $order->title . '.' . $file->getClientOriginalExtension();
+            $path = 'file-cetak/' . $fileName;
+            Storage::disk('public')->put($path, file_get_contents($file));
 
-        $printFile = PrintFile::where('ticket_order', $id)->first();
-        $printFile->nama_file = $fileName;
-        $printFile->save();
+            $printFile = PrintFile::where('ticket_order', $id)->first();
+            if($printFile == null){
+                $printFile = new PrintFile;
+                $printFile->ticket_order = $id;
+            }
+            $printFile->nama_file = $fileName;
+            $printFile->save();
 
-        return response()->json(['success' => $fileName, 'message' => 'File berhasil diupload !']);
+            $antrian = DataAntrian::where('ticket_order', $id)->first();
+            $antrian->is_revision = 2;
+            $antrian->save();
+
+            return response()->json(['success' => $fileName, 'message' => 'File berhasil diupload !']);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Terjadi kesalahan: ' . $th->getMessage()]);
+        }
     }
 
     //Untuk submit dengan link file cetak
@@ -699,9 +718,9 @@ class OrderController extends Controller
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
             if($data->order->employee_id == auth()->user()->employee->id){
-                $button .= '<a href="javascript:void(0)" onclick="uploadRevisi('. $data->ticket_order .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Unggah File Revisi</a>';
+                $button .= '<a href="javascript:void(0)" onclick="uploadRevisi('. $data->ticket_order .')" class="btn btn-sm btn-dark"><i class="fas fa-upload"></i> Unggah File Revisi</a>';
             }else{
-                $button .= '<a href="javascript:void(0)" class="btn btn-sm btn-dark disabled"><i class="fas fa-user"></i> Unggah File Revisi</a>';
+                $button .= '<a href="javascript:void(0)" class="btn btn-sm btn-dark disabled"><i class="fas fa-upload"></i> Unggah File Revisi</a>';
             }
             $button .= '</div>';
             return $button;

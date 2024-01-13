@@ -14,7 +14,7 @@ class Order extends Model
 
     protected $table ='orders';
 
-    public function printFile(){
+    public function printfile(){
         return $this->belongsTo(PrintFile::class, 'ticket_order', 'ticket_order');
     }
 
