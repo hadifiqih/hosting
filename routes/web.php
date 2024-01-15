@@ -162,6 +162,9 @@ Route::controller(ReportController::class)->group(function(){
     Route::get('/antrian/ringkasan-omset-sales/data', 'ringkasanOmsetSales')->name('ringkasan.omsetSales');
     Route::post('/antrian/ringkasan-omset-sales/filter', 'ringkasanFilter')->name('ringkasan.omsetSalesFilter');
     Route::get('/antrian/filter/{sales}/{date}', 'dataFilter')->name('ringkasan.dataFilter');
+    // Route Nota Order
+    //--------------------------------------------
+    Route::get('/order/{id}/nota-order', 'notaOrder')->name('order.notaOrder');
 });
 
 Route::controller(DesignController::class)->group(function(){
@@ -222,6 +225,7 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/design/submit-reupload-file/{id}', 'submitReuploadFile')->name('submit.reupload');
     Route::post('/design/submit-reupload-link', 'submitLinkReupload')->name('submitLinkReupload');
     //--------------------------------------------
+    
 });
 
 Route::controller(AntrianController::class)->group(function(){

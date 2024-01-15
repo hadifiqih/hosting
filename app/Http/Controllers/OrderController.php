@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use PDF;
 use App\Models\Job;
 use App\Models\User;
 use App\Models\Order;
@@ -256,7 +257,10 @@ class OrderController extends Controller
             $button = '<div class="btn-group">';
             if(auth()->user()->role == 'sales' && $data->toWorkshop == 0){
                 $button .= '<a href="'. route('order.toAntrian', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-fire"></i> Antrikan</a>';
-            }else{
+            }elseif(auth()->user()->role == 'sales' && $data->toWorkshop == 1){
+                $button .= '<a href="'. route('order.notaOrder', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-download"></i> Nota Order</a>';
+            }
+            else{
                 $button .= '<a href="javascript:void(0)" onclick="showDetailDesain('. $data->id .')" class="btn btn-sm btn-warning"><i class="fas fa-eye"></i> Detail</a>';
             }
             $button .= '</div>';

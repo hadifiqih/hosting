@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use PDF;
 use Dompdf\Dompdf;
+use Carbon\Carbon;
+use QrCode;
 
 use App\Models\Order;
 use App\Models\Sales;
@@ -24,6 +26,14 @@ class ReportController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+    }
+
+    public function notaOrder($id)
+    {
+        $order = Order::with('employee', 'sales', 'job', 'user', 'kategori')->where('id', $id)->first();
+        $qrCode = QrCode::size(100)->generate($order->ticket_order);
+
+        return view('page.report.nota-order', compact('order', 'qrCode'));
     }
 
     public function index()

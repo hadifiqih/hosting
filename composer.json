@@ -16,6 +16,7 @@
         "maatwebsite/excel": "^3.1.48",
         "pusher/pusher-php-server": "^7.2",
         "pusher/pusher-push-notifications": "^2.0",
+        "simplesoftwareio/simple-qrcode": "^4",
         "yajra/laravel-datatables": "^10.1"
     },
     "require-dev": {
