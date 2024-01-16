@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use PDF;
-use Dompdf\Dompdf;
-use Carbon\Carbon;
 use QrCode;
+use Carbon\Carbon;
+use Dompdf\Dompdf;
 
 use App\Models\Order;
 use App\Models\Sales;
 use App\Models\Barang;
 use App\Models\Antrian;
 use App\Models\Machine;
+use App\Models\Pembayaran;
+use App\Models\Pengiriman;
 use App\Models\DataAntrian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,10 +32,33 @@ class ReportController extends Controller
 
     public function notaOrder($id)
     {
-        $order = Order::with('employee', 'sales', 'job', 'user', 'kategori')->where('id', $id)->first();
-        $qrCode = QrCode::size(100)->generate($order->ticket_order);
+        $order = DataAntrian::where('ticket_order', $id)->first();
 
-        return view('page.report.nota-order', compact('order', 'qrCode'));
+        $items = Barang::where('ticket_order', $id)->get();
+        //HITUNG TOTAL HARGA
+        $totalHarga = 0;
+        $totalPacking = 0;
+        $totalOngkir = 0;
+        $totalPasang = 0;
+        $diskon = 0;
+        foreach ($items as $item) {
+            $totalHarga += $item->price * $item->qty;
+        }
+
+        $infoBayar = Pembayaran::where('ticket_order', $id)->first();
+        $totalPacking = $infoBayar->biaya_packing;
+        $totalPasang = $infoBayar->biaya_pasang;
+        $diskon = $infoBayar->diskon;
+        
+        $infoPengiriman = Pengiriman::where('ticket_order', $id)->first();
+        $totalOngkir = $infoPengiriman->ongkir;
+
+        $grandTotal = $totalHarga + $totalPacking + $totalOngkir + $totalPasang - $diskon;
+        $sisaTagihan = $grandTotal - $infoBayar->dibayarkan;
+
+        $qrCode = QrCode::size(70)->generate($order->ticket_order);
+
+        return view('page.report.nota-order', compact('order', 'items', 'totalHarga', 'totalPacking', 'totalOngkir', 'totalPasang', 'diskon', 'grandTotal', 'sisaTagihan', 'infoBayar', 'qrCode'));
     }
 
     public function index()

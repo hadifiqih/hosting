@@ -53,4 +53,8 @@ class Order extends Model
     public function kategori(){
         return $this->belongsTo(Kategori::class);
     }
+
+    public function dataAntrian(){
+        return $this->hasOne(DataAntrian::class, 'ticket_order', 'ticket_order');
+    }
 }

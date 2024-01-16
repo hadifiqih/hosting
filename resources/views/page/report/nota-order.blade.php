@@ -12,37 +12,54 @@
         body {
             font-family: 'Roboto Mono', monospace;
         }
+        #printContents {
+            max-width: 284px;
+            font-size: 14px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+        #printContents h6 {
+            margin: 0;
+        }
     </style>
+
+    
 </head>
 <body>
-
-  <div class="container my-2">
-    <div class="row justify-content-center">
+  <div class="container">
+  <div id="printContents" class="text-sm">
+    <div class="row">
         <div class="col-12">
             <h6 class="text-center">Bahan Stempel Malang</h6>
             <h6 class="text-center">Jl. Candi Jago No. 1, Blimbing, Kota Malang, Jawa Timur, 65125</h6>
+            <h6 class="text-center">Telp/WA: 0813-3467-3331</h6>
             <h6 class="text-center">--------------------</h6>
         </div>
     </div>
 
-    <div class="row justify-content-center px-2">
-        <div class="col-3">
-            <h6>No</h6>
-            <h6>Kasir</h6>
-            <h6>Tanggal</h6>
-            <h6>Pelanggan</h6>
+    <div class="row">
+        <table class="table table-borderless">
+          <tr>
+            <td>No</td>
+            <td>: {{ $order->ticket_order }}</td>
+          </tr>
+          <tr>
+            <td>Kasir</td>
+            <td>: {{ $order->sales->sales_name }}</td>
+          </tr>
+          <tr>
+            <td>Tanggal</td>
+            <td>: {{ $order->created_at }}</td>
+          </tr>
+          <tr>
+            <td>Pelanggan</td>
+            <td>: {{ $order->customer->nama }}</td>
+          </tr>
         </div>
-        <div class="col-9">
-            <h6>: 2023010720283</h6>
-            <h6>: Sandya</h6>
-            <h6>: 2021-08-01 10:10</h6>
-            <h6>: Unggul ADV</h6>
-        </div>
-        <h6 class="text-center">--------------------</h6>
+      </table>
     </div>
 
-
-      <div class="col-12">
+    <div class="row">
         <table class="table table-borderless">
           <thead>
             <tr>
@@ -52,39 +69,67 @@
             </tr>
           </thead>
           <tbody>
+            @foreach ($items as $item)
             <tr>
-              <td>Tas Ransel</td>
-              <td>200.000 X 1</td>         
-              <td class="text-end"><strong>400.000</strong></td>
+              <td>{{ $item->job->job_name }}</td>
+              <td>{{ number_format($item->price, 0, ',', '.') }} X {{ $item->qty }}</td>         
+              <td class="text-end"><strong>{{ number_format($item->price * $item->qty, 0, ',', '.') }}</strong></td>
             </tr>
-            <tr>
-              <td>Sepatu Olahraga</td>
-              <td>350.000 X 1</td>
-              <td class="text-end"><strong>350.000</strong></td>
-            </tr>            
+            @endforeach          
           </tbody>
         </table>
+      </div>
 
-        <h6 class="text-end">--------------------</h6>
-
-        <div class="row">
-          <div class="col text-end">
-            <p class="pe-2">Subtotal: <strong>Rp 750.000</strong></p>
-            <p class="pe-2">Diskon: <strong>Rp 750.000</strong></p>
+        <div class="row d-flex justify-content-end">
+          <div class="text-end">
             <h6 class="text-end">--------------------</h6>
-            <p class="pe-2">Grand Total: <strong>Rp 750.000</strong></p>
-            <p class="pe-2">Tunai/Transfer: <strong>Rp 300.000</strong></p>
-            <p class="pe-2">Sisa DP: <strong>Rp 450.000</strong></p>
-            <p class="pe-2">Metode: <strong>BCA</strong></p>
+            <p>Subtotal: <strong>Rp {{ number_format($totalHarga, 0, ',', '.') }}</strong></p>
+            <p>Diskon: <strong>Rp {{ number_format($diskon, 0, ',', '.') }}</strong></p>
+            <p>Biaya Pasang: <strong>Rp {{ number_format($totalPasang, 0, ',', '.') }}</strong></p>
+            <p>Biaya Pengiriman: <strong>Rp {{ number_format($totalOngkir, 0, ',', '.') }}</strong></p>
+            <p>Biaya Packing: <strong>Rp {{ number_format($totalPacking, 0, ',', '.') }}</strong></p>
+            <h6 class="text-end">--------------------</h6>
+            <p>Grand Total: <strong>Rp {{ number_format($grandTotal, 0, ',', '.') }}</strong></p>
+            <p>Tunai/Transfer: <strong>Rp {{ number_format($infoBayar->dibayarkan, 0, ',', '.') }}</strong></p>
+            <p>Sisa Tagihan: <strong>Rp {{ number_format($sisaTagihan, 0, ',', '.') }}</strong></p>
+            <p>Metode: <strong>{{ $infoBayar->metode_pembayaran }}</strong></p>
           </div>
         </div>
 
         <div class="d-flex justify-content-center">
-          <p class="fw-bold text-center"> - Terima kasih, selamat berbelanja kembali - </p>
+          <div class="row">
+            <p class="fw-bold text-center">Terima kasih, selamat berbelanja kembali !</p>
+          </div>
+        </div>
+          <div class="row">{{ $qrCode }}</div>
+        </div>
+      </div>
 
+      <div class="row">
+        {{-- Tombol Cetak --}}
+        <div class="col-6 text-center">
+          <button id="btnCetak" class="btn btn-primary" onclick="printDiv('printContents')">Cetak</button>
+        </div>
+
+        <div class="col-6 text-center">
+          <button id="btnJpg" class="btn btn-primary" onclick="screenshot()">Cetak JPG</button>
         </div>
       </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      function screenshot() {
+        html2canvas(document.querySelector("#printContents")).then(canvas => {
+          // document.body.appendChild(canvas)
+          var link = document.createElement('a');
+          link.download = 'Struk Belanja.jpg';
+          link.href = canvas.toDataURL()
+          link.click();
+        });
+        
+      }
+    </script>
 </body>
+  
 </html>

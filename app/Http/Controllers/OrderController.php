@@ -258,7 +258,7 @@ class OrderController extends Controller
             if(auth()->user()->role == 'sales' && $data->toWorkshop == 0){
                 $button .= '<a href="'. route('order.toAntrian', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-fire"></i> Antrikan</a>';
             }elseif(auth()->user()->role == 'sales' && $data->toWorkshop == 1){
-                $button .= '<a href="'. route('order.notaOrder', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-download"></i> Nota Order</a>';
+                $button .= '<a href="'. route('order.notaOrder', $data->ticket_order) .'" class="btn btn-sm btn-warning"><i class="fas fa-download"></i> Nota Order</a>';
             }
             else{
                 $button .= '<a href="javascript:void(0)" onclick="showDetailDesain('. $data->id .')" class="btn btn-sm btn-warning"><i class="fas fa-eye"></i> Detail</a>';
