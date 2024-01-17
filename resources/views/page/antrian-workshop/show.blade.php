@@ -20,13 +20,13 @@
         <div class="card-body">
             <div class="row ml-1">
                 @php
-                    $batas = $antrian->dataKerja->tgl_selesai != null ? date_create($antrian->dataKerja->tgl_selesai) : null;
+                    $batas = $antrian->dataKerja->tgl_selesai;
                 @endphp
-                @if($batas == null && $antrian->finish_date == null)
+                @if($antrian->status == 0)
                     <p class="text-danger"><i class="fas fa-circle"></i> <span class="ml-2">Belum Diantrikan</span></p>
-                @elseif($batas != null && $antrian->finish_date == null)
+                @elseif($antrian->status == 1)
                     <p class="text-primary"><i class="fas fa-circle"></i> <span class="ml-2">Sedang Dikerjakan</span></p>
-                @else
+                @elseif($antrian->status == 2)
                     <p class="text-success"><i class="fas fa-circle"></i> <span class="ml-2">Selesai</span></p>
                 @endif
             </div>

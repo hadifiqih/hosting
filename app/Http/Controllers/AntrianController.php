@@ -163,6 +163,9 @@ class AntrianController extends Controller
                     $btn .= '<a href="'.route('antrian.show', $antrian->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
                     $btn .= '<a href="' . route('antrian.destroy', $antrian->id) . '" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>';
                 }
+                elseif(auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising') {
+                    $btn .= '<a href="' . route('antrian.updateProses', $antrian->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-upload"></i> Proses</a>';
+                }
                 else{
                     $btn .= '<a href="'.route('antrian.show', $antrian->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
                 }
