@@ -10,7 +10,11 @@
         <div class="modal-body">
             <h5>ACC Desain</h5>
             @foreach($items as $item)
-                <img src="{{ asset('storage/acc-desain/'. $item->acc_desain) }}" id="acc{{ $item->id }}" class="img-fluid m-2" alt="Gambar Referensi / ACC Desain">
+                @if($item->accdesain == null)
+                    <p class="text-danger">Tidak ada gambar referensi / ACC Desain</p>
+                @else
+                    <img src="{{ asset($item->accdesain) }}" id="acc{{ $item->id }}" class="img-fluid m-2" alt="Gambar Referensi / ACC Desain">
+                @endif
             @endforeach
         </div>
         <div class="modal-footer justify-content-between">

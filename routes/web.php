@@ -254,7 +254,6 @@ Route::controller(AntrianController::class)->group(function(){
     Route::post('/antrian/filterByCategory', 'filterProcess')->middleware('auth')->name('antrian.filterByCategory');
 
     Route::put('/biaya-produksi/selesai/{id}', 'biayaProduksiSelesai')->middleware('auth')->name('biaya.produksi.update');
-    Route::get('/update-proses/{id}', 'updateProses')->middleware('auth')->name('update.proses');
 });
 
 Route::controller(PaymentController::class)->group(function(){

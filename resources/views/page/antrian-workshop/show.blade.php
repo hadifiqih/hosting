@@ -20,14 +20,15 @@
         <div class="card-body">
             <div class="row ml-1">
                 @php
-                    $batas = $antrian->dataKerja->tgl_selesai;
+                    $batas = new DateTime($antrian->dataKerja->tgl_selesai);
+                    $selesai = new DateTime($antrian->finish_date);
                 @endphp
                 @if($antrian->status == 0)
                     <p class="text-danger"><i class="fas fa-circle"></i> <span class="ml-2">Belum Diantrikan</span></p>
                 @elseif($antrian->status == 1)
                     <p class="text-primary"><i class="fas fa-circle"></i> <span class="ml-2">Sedang Dikerjakan</span></p>
                 @elseif($antrian->status == 2)
-                    <p class="text-success"><i class="fas fa-circle"></i> <span class="ml-2">Selesai</span></p>
+                    <p class="text-success"><i class="fas fa-circle"></i> <span class="ml-2">Selesai : <strong>{{ date_format($selesai , 'd F Y - H:i')}}</strong></span></p>
                 @endif
             </div>
             <div class="row ml-1">
@@ -263,9 +264,9 @@
                 </div>
                 <div class="col">
                     <h5><strong>Finishing</strong></h5>
-                    @if($antrian->finisher_id != null)
+                    @if(isset($antrian->dataKerja->finishing_id))
                         @php
-                            $finisherId = explode(',', $antrian->finisher_id);
+                            $finisherId = explode(',', $antrian->dataKerja->finishing_id);
                             foreach ($finisherId as $item) {
                                 if($item == 'rekanan'){
                                     echo '- Rekanan';
@@ -288,9 +289,9 @@
                 </div>
                 <div class="col">
                     <h5><strong>Quality Control</strong></h5>
-                    @if($antrian->qc_id)
+                    @if(isset($antrian->dataKerja->qc_id))
                         @php
-                            $qcId = explode(',', $antrian->qc_id);
+                            $qcId = explode(',', $antrian->dataKerja->qc_id);
                             foreach ($qcId as $item) {
                                     $antriann = App\Models\Employee::find($item);
                                     //tampilkan name dari tabel employees, jika nama terakhir tidak perlu koma
@@ -435,6 +436,7 @@
     @includeIf('page.antrian-workshop.modal.modal-ref-acc')
     @includeIf('page.antrian-workshop.modal.modal-tambah-bahan')
     @includeIf('page.antrian-workshop.modal.modal-bukti-pembayaran')
+    @includeIf('page.antrian-workshop.modal.modal-form-spk')
 </div>
 
 @endsection

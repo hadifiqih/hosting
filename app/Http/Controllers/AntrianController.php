@@ -164,7 +164,7 @@ class AntrianController extends Controller
                     $btn .= '<a href="' . route('antrian.destroy', $antrian->id) . '" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>';
                 }
                 elseif(auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising') {
-                    $btn .= '<a href="' . route('antrian.updateProses', $antrian->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-upload"></i> Proses</a>';
+                    $btn .= '<a href="' . route('antrian.showDokumentasi', $antrian->ticket_order) . '" class="btn btn-warning btn-sm"><i class="fas fa-upload"></i> Proses</a>';
                 }
                 else{
                     $btn .= '<a href="'.route('antrian.show', $antrian->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
@@ -801,7 +801,7 @@ class AntrianController extends Controller
 
 //fungsi untuk menggunggah & menyimpan file gambar dokumentasi
     public function showDokumentasi($id){
-        $antrian = Antrian::find($id);
+        $antrian = DataAntrian::where('ticket_order', $id)->first();
         return view ('page.antrian-workshop.dokumentasi' , compact('antrian'));
     }
 
@@ -896,15 +896,8 @@ class AntrianController extends Controller
 
     public function markSelesai($id){
         //cek apakah waktu sekarang sudah melebihi waktu deadline
-        $antrian = Antrian::where('id', $id)->with('job', 'sales', 'order')->first();
-        $antrian->timer_stop = Carbon::now();
-
-        if($antrian->deadline_status = 1){
-            $antrian->deadline_status = 1;
-        }
-        elseif($antrian->deadline_status = 0){
-            $antrian->deadline_status = 2;
-        }
+        $antrian = DataAntrian::where('id', $id)->first();
+        $antrian->finish_date = Carbon::now();
         $antrian->status = 2;
         $antrian->save();
 
@@ -918,7 +911,7 @@ class AntrianController extends Controller
             array("sales"),
             array("web" => array("notification" => array(
               "title" => "Antree",
-              "body" => "Yuhuu! Pekerjaan " . $antrian->job->job_name . " dengan tiket " . $antrian->ticket_order . " (" . $antrian->order->title ."), dari sales ". $antrian->sales->sales_name ." udah selesai !",
+              "body" => "Yuhuu! Pekerjaan dengan tiket " . $antrian->ticket_order . " (" . $antrian->order->title ."), dari sales ". $antrian->sales->sales_name ." udah selesai !",
               "deep_link" => "https://interatama.my.id/",
             )),
         ));
