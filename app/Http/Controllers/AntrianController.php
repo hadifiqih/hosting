@@ -159,9 +159,15 @@ class AntrianController extends Controller
             ->addColumn('action', function ($antrian) {
                 $btn = '<div class="btn-group">';
                 if(auth()->user()->role == 'admin') {
-                    $btn .= '<a href="' . route('antrian.edit', $antrian->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
-                    $btn .= '<a href="'.route('antrian.show', $antrian->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
-                    $btn .= '<a href="' . route('antrian.destroy', $antrian->id) . '" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>';
+                    if($antrian->dataKerja->tgl_selesai == null){
+                        $btn .= '<a href="javascript:void(0)" class="btn btn-success btn-sm disabled"><i class="fas fa-download"></i> e-SPK</a>';
+                    }else{
+                        $btn .= '<a href="'.route('antrian.form-espk', $antrian->ticket_order).'"  class="btn btn-success btn-sm"><i class="fas fa-download"></i> e-SPK</a>';
+                    }
+                    $btn .= '<a href="' . route('antrian.edit', $antrian->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Penugasan</a>';
+                    $btn .= '<a href="'.route('antrian.show', $antrian->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</a>';
+                    $btn .= '<a href="javascript:void(0)" onclick="deleteAntrian('.$antrian->ticket_order.')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</a>';
+                    
                 }
                 elseif(auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising') {
                     $btn .= '<a href="' . route('antrian.showDokumentasi', $antrian->ticket_order) . '" class="btn btn-warning btn-sm"><i class="fas fa-upload"></i> Proses</a>';
@@ -233,6 +239,19 @@ class AntrianController extends Controller
             ->rawColumns(['action','ticket_order', 'desain', 'desainer'])
             ->make(true);
         
+    }
+
+    public function printeSpk($id){
+        $antrian = DataAntrian::where('ticket_order', $id)->first();
+        $dataKerja = DataKerja::where('ticket_order', $id)->first();
+        $order = Order::where('ticket_order', $id)->first();
+        $customer = Customer::where('id', $antrian->customer_id)->first();
+        $sales = Sales::where('id', $antrian->sales_id)->first();
+        $job = Job::where('id', $antrian->job_id)->first();
+        $barang = Barang::where('ticket_order', $id)->get();
+        $cabang = Cabang::where('id', $antrian->cabang_id)->first();
+
+        return view('page.antrian-workshop.modal.modal-form-spk', compact('antrian', 'dataKerja', 'order', 'customer', 'sales', 'job', 'barang', 'cabang'));
     }
 
     //--------------------------------------------------------------------------
@@ -766,16 +785,15 @@ class AntrianController extends Controller
     public function destroy($id)
     {
         // Melakukan pengecekan otorisasi sebelum menghapus antrian
-        $this->authorize('delete', Antrian::class);
+        $this->authorize('delete', DataAntrian::class);
 
-        $antrian = Antrian::find($id);
+        $antrian = DataAntrian::where('ticket_order', $id)->first();
 
-        $order = Order::where('id', $antrian->order_id)->first();
+        $order = Order::where('ticket', $id)->first();
         $order->toWorkshop = 0;
         $order->save();
 
         if ($antrian) {
-
             $antrian->delete();
             return redirect()->route('antrian.index')->with('success-delete', 'Data antrian berhasil dihapus!');
         } else {

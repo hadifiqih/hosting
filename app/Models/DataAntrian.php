@@ -14,11 +14,12 @@ use App\Models\Pembayaran;
 use App\Models\Pengiriman;
 use App\Models\BuktiPembayaran;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DataAntrian extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'data_antrian';
 

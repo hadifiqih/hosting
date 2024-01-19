@@ -7,13 +7,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Victor+Mono&display=swap');
+    </style>
     <style>
         body {
-            font-family: 'Roboto Mono', monospace;
+            font-family: 'Victor Mono', monospace;
+            font-size: 10px;
         }
         #printContents {
-            max-width: 284px;
+            max-width: 200px;
             font-size: 14px;
             margin: 0 auto;
             padding: 0 10px;
@@ -21,6 +24,18 @@
         #printContents h6 {
             margin: 0;
         }
+        /* Set margin y 0 */
+        h6, p, td, th, th, table {
+            margin: 0;
+            font-size: 12px;
+            padding: 0;
+        }
+
+        /* Set padding y 0 */
+        .table-borderless td, .table-borderless th {
+            padding: 3px;
+        }
+        
     </style>
 
     
@@ -46,7 +61,7 @@
           </div>
       
           <div class="row">
-              <table class="table table-borderless">
+              <table class="table-borderless">
                 <tr>
                   <td>No</td>
                   <td>: {{ $order->ticket_order }}</td>
@@ -102,7 +117,7 @@
                 </div>
               </div>
       
-              <div class="d-flex justify-content-center mb-3">
+              <div class="d-flex justify-content-center my-3">
                 <div class="row">
                   <p class="fw-bold text-center">Terima kasih, selamat berbelanja kembali !</p>
                 </div>

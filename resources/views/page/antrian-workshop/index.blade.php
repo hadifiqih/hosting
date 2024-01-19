@@ -171,12 +171,53 @@
 @endsection
 
 @section('script')
-<script>
-
-</script>
-
 <script src="{{ asset('adminlte/dist/js/maskMoney.min.js') }}"></script>
     <script>
+        function deleteAntrian(id){
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: "Anda tidak dapat mengembalikan data yang telah dihapus!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('antrian.destroy', "+id+") }}",
+                        type: "POST",
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            "ticket_order": id
+                        },
+                        success: function(response){
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    ajax.reload();
+                                }
+                            })
+                        },
+                        error: function(response){
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: response.message,
+                                icon: 'error',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'OK'
+                            })
+                        }
+                    });
+                }
+            })
+        }
 
         $(document).ready(function() {
             var kategori = $('#kategori').val();

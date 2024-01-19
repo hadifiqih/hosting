@@ -436,7 +436,6 @@
     @includeIf('page.antrian-workshop.modal.modal-ref-acc')
     @includeIf('page.antrian-workshop.modal.modal-tambah-bahan')
     @includeIf('page.antrian-workshop.modal.modal-bukti-pembayaran')
-    @includeIf('page.antrian-workshop.modal.modal-form-spk')
 </div>
 
 @endsection
