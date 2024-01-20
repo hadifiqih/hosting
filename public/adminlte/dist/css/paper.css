@@ -1,0 +1,161 @@
+@font-face {
+  font-family: 'Telidon-Hv';
+  src: url('Telidon-Hv.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+@page {
+	margin: 0mm;
+}
+
+@media screen {
+  body { background: #e0e0e0 }
+  body { margin: 5mm; }
+  .sheet {
+    background: white;
+    box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
+    margin: 5mm;
+  }
+  .sheet.padding-5mm  { padding: 5mm }
+  .sheet.padding-10mm { padding: 10mm }
+  .sheet.padding-7mm { padding: 7mm }
+  
+.sheet {
+  margin: 0;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  page-break-after: always;
+}
+
+.sheet.padding-7mm { padding: 3mm 7mm 7mm 5mm }
+.sheet.padding-10mm { padding: 3mm 10mm 10mm 5mm }
+.sheet.padding-15mm { padding: 15mm }
+.sheet.padding-20mm { padding: 20mm }
+.sheet.padding-25mm { padding: 25mm }
+
+  body.M58          .sheet { width: 58mm; min-height: 50mm }
+body.A14           .sheet { width: 210mm; height: 74mm }
+body.A4           .sheet { width: 210mm; height: 99mm }
+body.F4           .sheet { width: 210mm; height: 100% }
+
+.spacer{
+	clear: both;
+	display: block;
+	overflow: hidden;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+	font-size:0px;
+	line-height:0;
+}
+
+.text-m58{
+    font-family: 'Trebuchet MS';
+    font-size: 12px;
+    color: #000;
+    line-height: 14px;
+    overflow-x: hidden;
+    display: inline;
+    white-space: nowrap;
+}
+.text-m58x{
+    font-family: 'Courier New', Courier,'Trebuchet MS', 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace;;
+    font-size: 12px;
+    color: #000;
+    line-height: 14px;
+    overflow-x: hidden;
+    display: inline;
+    white-space: nowrap;
+}
+
+.text-all{
+    font-family: 'Courier New', Courier,'Trebuchet MS', 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace;;
+    font-size: 12px;
+	color: #000;
+    line-height: 16px;
+    overflow-x: hidden;
+    display: inline;
+    
+}
+.text-all2{
+    font-family: 'Courier New', Courier,'Trebuchet MS', 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace;;
+    font-size: 12px;
+	color: #646464;
+    line-height: 14px;
+    overflow-x: hidden;
+    display: inline;
+    
+}
+.text-m58-normal{
+    font-family: 'Courier New', Courier,'Trebuchet MS', 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace;;
+    font-size: 12px;
+    color: #000;
+    line-height: 14px;
+}
+
+
+
+}
+
+@media print {
+  body.M58                   { width: 58mm; max-width: 58mm; min-height: 50mm; }
+  body.A14                   { width: 210mm; height: 74mm }
+  body.A4                   { width: 210mm; height: 99mm }
+  body.F4                   { width: 210mm; height: 82mm }
+  html.M58                   { width: 58mm; max-width: 58mm; min-height: 50mm; }
+  html.A14                   { width: 210mm; height: 199mm }
+  html.A4                   { width: 210mm; height: 99mm }
+  html.F4                   { width: 210mm; height: 82mm }
+  #header, #footer, #nav {
+    display: none !important;
+  }
+    html, body {
+	margin: 2.5mm;
+    height: auto; }
+.sheet.padding-7mm { padding: 5mm 7mm 7mm 5mm }
+.sheet.padding-10mm { padding: 1mm 2mm 2mm 2mm }
+.sheet.padding-15mm { padding: 15mm }
+.sheet.padding-20mm { padding: 20mm }
+.sheet.padding-25mm { padding: 25mm }
+	
+.spacer{
+	clear: both;
+	display: block;
+	overflow: hidden;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+	font-size:0px;
+	line-height:0;
+}
+.text-m58{
+    font-family: 'Trebuchet MS';
+    font-size: 12px;
+    color: #000;
+    line-height: 14px;
+    overflow-x: hidden;
+    display: inline;
+    white-space: nowrap;
+}
+.text-m58x{
+    font-family: 'Courier New', Courier,'Trebuchet MS', 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace;;
+    font-size: 12px;
+    color: #000;
+    line-height: 14px;
+    overflow-x: hidden;
+    display: inline;
+    white-space: nowrap;
+}
+.text-all{
+    font-family: 'Courier New', Courier,'Trebuchet MS', 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace;;
+    font-size: 12px;
+    
+}
+.text-m58-normal{
+    font-family: 'Courier New', Courier,'Trebuchet MS', 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace;;
+    font-size: 12px;
+    color: #000;
+    line-height: 14px;
+}
+}

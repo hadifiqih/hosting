@@ -4,5 +4,12 @@
         "bold_italic": "D:\\Laravel\\darigit\\antree-apps\\vendor\\dompdf\\dompdf\/lib\/fonts\/DejaVuSans-BoldOblique",
         "italic": "D:\\Laravel\\darigit\\antree-apps\\vendor\\dompdf\\dompdf\/lib\/fonts\/DejaVuSans-Oblique",
         "normal": "dejavu_sans_normal_ab1b8fe3ab889c25d933d5d5584d4571"
+    },
+    "roboto mono": {
+        "normal": "C:\\xampp\\htdocs\\hosting\\storage\\fonts\/roboto_mono_normal_4bc0b0c44b32a9f9b9f76564b2c6afa1",
+        "bold": "roboto_mono_bold_19c1cc1175205657777002ccb3023a27"
+    },
+    "victor mono": {
+        "normal": "victor_mono_normal_7d684cecd8cbdb0d657e3ff16a604223"
     }
 }

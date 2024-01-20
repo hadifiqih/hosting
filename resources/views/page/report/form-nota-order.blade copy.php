@@ -16,24 +16,9 @@
             font-size: 10px;
         }
         #printContents {
-            max-width: 200px;
+            width: 100%;
             font-size: 14px;
-            margin: 0 auto;
-            padding: 0 10px;
-        }
-        #printContents h6 {
-            margin: 0;
-        }
-        /* Set margin y 0 */
-        h6, p, td, th, th, table {
-            margin: 0;
-            font-size: 12px;
-            padding: 0;
-        }
-
-        /* Set padding y 0 */
-        .table-borderless td, .table-borderless th {
-            padding: 3px;
+            padding: 20px 40px;
         }
         
     </style>
@@ -42,14 +27,7 @@
 </head>
 <body>
   <!-- Modal -->
-<div class="modal fade" id="modalInvoice" tabindex="-1" aria-labelledby="modalInvoiceLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Invoice Order</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
+<div class="container">
         <div id="printContents" class="text-sm">
           <div class="row">
               <div class="col-12">
@@ -80,7 +58,7 @@
                 </tr>
               </div>
             </table>
-      
+            <h6 class="text-center">--------------------</h6>
           <div class="row">
               <table class="table table-borderless pe-0">
                 <thead>
@@ -124,8 +102,8 @@
               </div>
               <div class="row">{{ $qrCode }}</div>
       </div>
-      <div class="modal-footer mt-3">
-        <button type="button" onclick="screenshot()" class="btn btn-primary">Download</button>
+      <div class="my-3 text-center">
+        <button type="button" onclick="downloadpdf()" class="btn btn-primary">Download</button>
       </div>
     </div>
   </div>
@@ -133,7 +111,24 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+      function downloadpdf(){
+        var element = document.getElementById('printContents');
+        var opt = {
+          margin: 0.1,
+          filename: 'Invoice-Order.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'envelope', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+        // html2pdf().set(opt).from(element).outputPdf('datauristring').then(function(pdfAsString){
+        //   console.log(pdfAsString);
+        // });
+      }
+
       function screenshot() {
         html2canvas(document.querySelector("#printContents")).then(canvas => {
           // document.body.appendChild(canvas)

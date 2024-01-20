@@ -68,6 +68,7 @@ return array(
     'NunoMaduro\\Collision\\' => array($vendorDir . '/nunomaduro/collision/src'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Mockery\\' => array($vendorDir . '/mockery/mockery/library/Mockery'),
+    'Mike42\\' => array($vendorDir . '/mike42/escpos-php/src/Mike42'),
     'Matrix\\' => array($vendorDir . '/markbaker/matrix/classes/src'),
     'Masterminds\\' => array($vendorDir . '/masterminds/html5/src'),
     'Maatwebsite\\Excel\\' => array($vendorDir . '/maatwebsite/excel/src'),

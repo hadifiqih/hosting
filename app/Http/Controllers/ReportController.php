@@ -14,12 +14,17 @@ use App\Models\Antrian;
 use App\Models\Machine;
 use App\Models\Pembayaran;
 use App\Models\Pengiriman;
+use Mike42\Escpos\Printer;
 use App\Models\DataAntrian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ReportResource;
+
 use Yajra\DataTables\Facades\DataTables;
+use Mike42\Escpos\PrintConnectors\UriPrintConnector;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 
 
 
@@ -58,8 +63,85 @@ class ReportController extends Controller
 
         $qrCode = QrCode::size(70)->generate($order->ticket_order);
 
-        return view('page.report.nota-order', compact('order', 'items', 'totalHarga', 'totalPacking', 'totalOngkir', 'totalPasang', 'diskon', 'grandTotal', 'sisaTagihan', 'infoBayar', 'qrCode'));
+        return view('page.report.form-nota-order', compact('order', 'items', 'totalHarga', 'totalPacking', 'totalOngkir', 'totalPasang', 'diskon', 'grandTotal', 'sisaTagihan', 'infoBayar', 'qrCode'));
     }
+
+    // public function notaOrder($id)
+    // {
+    //     //print nota order dengan menggunakan printer thermal
+    //     $connector = new FilePrintConnector('USB003');
+    //     $printer = new Printer($connector);
+
+    //     $order = DataAntrian::where('ticket_order', $id)->first();
+
+    //     $items = Barang::where('ticket_order', $id)->get();
+
+    //     //HITUNG TOTAL HARGA
+    //     $totalHarga = 0;
+    //     $totalPacking = 0;
+    //     $totalOngkir = 0;
+    //     $totalPasang = 0;
+    //     $diskon = 0;
+    //     foreach ($items as $item) {
+    //         $totalHarga += $item->price * $item->qty;
+    //     }
+
+    //     $infoBayar = Pembayaran::where('ticket_order', $id)->first();
+    //     $totalPacking = $infoBayar->biaya_packing;
+    //     $totalPasang = $infoBayar->biaya_pasang;
+    //     $diskon = $infoBayar->diskon;
+
+    //     $infoPengiriman = Pengiriman::where('ticket_order', $id)->first();
+    //     $totalOngkir = $infoPengiriman->ongkir;
+
+    //     $grandTotal = $totalHarga + $totalPacking + $totalOngkir + $totalPasang - $diskon;
+    //     $sisaTagihan = $grandTotal - $infoBayar->dibayarkan;
+
+    //     $qrCode = QrCode::size(70)->generate($order->ticket_order);
+
+    //     $printer->setJustification(Printer::JUSTIFY_CENTER);
+    //     $printer->text("NOTA ORDER\n");
+    //     $printer->text("BAHAN STEMPEL MALANG\n");
+    //     $printer->text("Jl. Candi Jago No. 1, Blimbing, Kota Malang, 65125\n");
+    //     $printer->text("Telp. 0341-550 777\n");
+    //     $printer->text("WA. 0812-3456-7890\n");
+    //     $printer->text("================================\n");
+    //     $printer->setJustification(Printer::JUSTIFY_LEFT);
+    //     $printer->text("No. Order : " . $order->ticket_order . "\n");
+    //     $printer->text("Tanggal : " . $order->created_at->format('d-m-Y') . "\n");
+    //     $printer->text("Customer : " . $order->customer->nama . "\n");
+    //     $printer->text("Sales : " . $order->sales->sales_name . "\n");
+    //     $printer->text("================================\n");
+    //     $printer->text("Produk\n");
+    //     $printer->text("================================\n");
+    //     foreach ($items as $item) {
+    //         $printer->text($item->qty . " " . $item->product_name . " " . $item->price . "\n");
+    //     }
+    //     $printer->text("================================\n");
+    //     $printer->text("Total Harga : " . $totalHarga . "\n");
+    //     $printer->text("Biaya Packing : " . $totalPacking . "\n");
+    //     $printer->text("Biaya Ongkir : " . $totalOngkir . "\n");
+
+    //     if ($totalPasang != 0) {
+    //         $printer->text("Biaya Pasang : " . $totalPasang . "\n");
+    //     }
+
+    //     if ($diskon != 0) {
+    //         $printer->text("Diskon : " . $diskon . "\n");
+    //     }
+
+    //     $printer->text("================================\n");
+    //     $printer->text("Grand Total : " . $grandTotal . "\n");
+    //     $printer->text("Dibayarkan : " . $infoBayar->dibayarkan . "\n");
+    //     $printer->text("Sisa Tagihan : " . $sisaTagihan . "\n");
+    //     $printer->text("================================\n");
+    //     $printer->text("Terima Kasih\n");
+    //     $printer->text("================================\n");
+    //     $printer->text($qrCode . "\n");
+
+    //     $printer->cut();
+    //     $printer->close();
+    // }
 
     public function index()
     {
