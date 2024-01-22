@@ -22,9 +22,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ReportResource;
 
 use Yajra\DataTables\Facades\DataTables;
-use Mike42\Escpos\PrintConnectors\UriPrintConnector;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\CapabilityProfile;
 
 
 
@@ -35,7 +36,7 @@ class ReportController extends Controller
         $this->middleware('auth');
     }
 
-    public function notaOrder($id)
+    public function notaOrderPDF($id)
     {
         $order = DataAntrian::where('ticket_order', $id)->first();
 
@@ -63,85 +64,234 @@ class ReportController extends Controller
 
         $qrCode = QrCode::size(70)->generate($order->ticket_order);
 
-        return view('page.report.form-nota-order', compact('order', 'items', 'totalHarga', 'totalPacking', 'totalOngkir', 'totalPasang', 'diskon', 'grandTotal', 'sisaTagihan', 'infoBayar', 'qrCode'));
+        $pdf = PDF::loadview('page.report.form-nota-order', compact('order', 'items', 'totalHarga', 'totalPacking', 'totalOngkir', 'totalPasang', 'diskon', 'grandTotal', 'sisaTagihan', 'infoBayar', 'qrCode'))->setPaper('a4', 'portrait');
+        return $pdf->stream($order->ticket_order . "_" . $order->order->title . '_nota-order.pdf');
     }
 
-    // public function notaOrder($id)
-    // {
-    //     //print nota order dengan menggunakan printer thermal
-    //     $connector = new FilePrintConnector('USB003');
-    //     $printer = new Printer($connector);
+    public function notaOrderView($id)
+    {
+        $order = DataAntrian::where('ticket_order', $id)->first();
 
-    //     $order = DataAntrian::where('ticket_order', $id)->first();
+        $items = Barang::where('ticket_order', $id)->get();
+        //HITUNG TOTAL HARGA
+        $totalHarga = 0;
+        $totalPacking = 0;
+        $totalOngkir = 0;
+        $totalPasang = 0;
+        $diskon = 0;
+        foreach ($items as $item) {
+            $totalHarga += $item->price * $item->qty;
+        }
 
-    //     $items = Barang::where('ticket_order', $id)->get();
+        $infoBayar = Pembayaran::where('ticket_order', $id)->first();
+        $totalPacking = $infoBayar->biaya_packing;
+        $totalPasang = $infoBayar->biaya_pasang;
+        $diskon = $infoBayar->diskon;
+        
+        $infoPengiriman = Pengiriman::where('ticket_order', $id)->first();
+        $totalOngkir = $infoPengiriman->ongkir;
 
-    //     //HITUNG TOTAL HARGA
-    //     $totalHarga = 0;
-    //     $totalPacking = 0;
-    //     $totalOngkir = 0;
-    //     $totalPasang = 0;
-    //     $diskon = 0;
-    //     foreach ($items as $item) {
-    //         $totalHarga += $item->price * $item->qty;
-    //     }
+        $grandTotal = $totalHarga + $totalPacking + $totalOngkir + $totalPasang - $diskon;
+        $sisaTagihan = $grandTotal - $infoBayar->dibayarkan;
 
-    //     $infoBayar = Pembayaran::where('ticket_order', $id)->first();
-    //     $totalPacking = $infoBayar->biaya_packing;
-    //     $totalPasang = $infoBayar->biaya_pasang;
-    //     $diskon = $infoBayar->diskon;
+        $qrCode = QrCode::size(70)->generate($order->ticket_order);
 
-    //     $infoPengiriman = Pengiriman::where('ticket_order', $id)->first();
-    //     $totalOngkir = $infoPengiriman->ongkir;
+        return view('page.report.view-nota-order', compact('order', 'items', 'totalHarga', 'totalPacking', 'totalOngkir', 'totalPasang', 'diskon', 'grandTotal', 'sisaTagihan', 'infoBayar', 'qrCode'));
+    }
 
-    //     $grandTotal = $totalHarga + $totalPacking + $totalOngkir + $totalPasang - $diskon;
-    //     $sisaTagihan = $grandTotal - $infoBayar->dibayarkan;
+    public function notaOrder($id)
+    {
+        //function pembagian kolom
+        function buatBaris1Kolom($kolom1)
+        {
+            // Mengatur lebar setiap kolom (dalam satuan karakter)
+            $lebar_kolom_1 = 45;
 
-    //     $qrCode = QrCode::size(70)->generate($order->ticket_order);
+            // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n 
+            $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
 
-    //     $printer->setJustification(Printer::JUSTIFY_CENTER);
-    //     $printer->text("NOTA ORDER\n");
-    //     $printer->text("BAHAN STEMPEL MALANG\n");
-    //     $printer->text("Jl. Candi Jago No. 1, Blimbing, Kota Malang, 65125\n");
-    //     $printer->text("Telp. 0341-550 777\n");
-    //     $printer->text("WA. 0812-3456-7890\n");
-    //     $printer->text("================================\n");
-    //     $printer->setJustification(Printer::JUSTIFY_LEFT);
-    //     $printer->text("No. Order : " . $order->ticket_order . "\n");
-    //     $printer->text("Tanggal : " . $order->created_at->format('d-m-Y') . "\n");
-    //     $printer->text("Customer : " . $order->customer->nama . "\n");
-    //     $printer->text("Sales : " . $order->sales->sales_name . "\n");
-    //     $printer->text("================================\n");
-    //     $printer->text("Produk\n");
-    //     $printer->text("================================\n");
-    //     foreach ($items as $item) {
-    //         $printer->text($item->qty . " " . $item->product_name . " " . $item->price . "\n");
-    //     }
-    //     $printer->text("================================\n");
-    //     $printer->text("Total Harga : " . $totalHarga . "\n");
-    //     $printer->text("Biaya Packing : " . $totalPacking . "\n");
-    //     $printer->text("Biaya Ongkir : " . $totalOngkir . "\n");
+            // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
+            $kolom1Array = explode("\n", $kolom1);
 
-    //     if ($totalPasang != 0) {
-    //         $printer->text("Biaya Pasang : " . $totalPasang . "\n");
-    //     }
+            // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
+            $jmlBarisTerbanyak = count($kolom1Array);
 
-    //     if ($diskon != 0) {
-    //         $printer->text("Diskon : " . $diskon . "\n");
-    //     }
+            // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
+            $hasilBaris = array();
 
-    //     $printer->text("================================\n");
-    //     $printer->text("Grand Total : " . $grandTotal . "\n");
-    //     $printer->text("Dibayarkan : " . $infoBayar->dibayarkan . "\n");
-    //     $printer->text("Sisa Tagihan : " . $sisaTagihan . "\n");
-    //     $printer->text("================================\n");
-    //     $printer->text("Terima Kasih\n");
-    //     $printer->text("================================\n");
-    //     $printer->text($qrCode . "\n");
+            // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
+            for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
 
-    //     $printer->cut();
-    //     $printer->close();
-    // }
+                // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
+                $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
+
+                // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
+                $hasilBaris[] = $hasilKolom1;
+            }
+
+            // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
+            return implode("\n", $hasilBaris) . "\n";
+        }
+
+        function buatBaris3Kolom($kolom1, $kolom2, $kolom3)
+        {
+            // Mengatur lebar setiap kolom (dalam satuan karakter)
+            $lebar_kolom_1 = 15;
+            $lebar_kolom_2 = 15;
+            $lebar_kolom_3 = 15;
+
+            // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n 
+            $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
+            $kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
+            $kolom3 = wordwrap($kolom3, $lebar_kolom_3, "\n", true);
+
+            // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
+            $kolom1Array = explode("\n", $kolom1);
+            $kolom2Array = explode("\n", $kolom2);
+            $kolom3Array = explode("\n", $kolom3);
+
+            // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
+            $jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array), count($kolom3Array));
+
+            // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
+            $hasilBaris = array();
+
+            // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
+            for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
+
+                // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
+                $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ");
+                // memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
+                $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ", STR_PAD_LEFT);
+
+                $hasilKolom3 = str_pad((isset($kolom3Array[$i]) ? $kolom3Array[$i] : ""), $lebar_kolom_3, " ", STR_PAD_LEFT);
+
+                // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
+                $hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2 . " " . $hasilKolom3;
+            }
+
+            // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
+            return implode("\n", $hasilBaris) . "\n";
+        }
+
+        function buatBaris2Kolom($kolom1, $kolom2)
+        {
+            // Mengatur lebar setiap kolom (dalam satuan karakter)
+            $lebar_kolom_1 = 30;
+            $lebar_kolom_2 = 15;
+
+            // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n 
+            $kolom1 = wordwrap($kolom1, $lebar_kolom_1, "\n", true);
+            $kolom2 = wordwrap($kolom2, $lebar_kolom_2, "\n", true);
+
+            // Merubah hasil wordwrap menjadi array, kolom yang memiliki 2 index array berarti memiliki 2 baris (kena wordwrap)
+            $kolom1Array = explode("\n", $kolom1);
+            $kolom2Array = explode("\n", $kolom2);
+
+            // Mengambil jumlah baris terbanyak dari kolom-kolom untuk dijadikan titik akhir perulangan
+            $jmlBarisTerbanyak = max(count($kolom1Array), count($kolom2Array));
+
+            // Mendeklarasikan variabel untuk menampung kolom yang sudah di edit
+            $hasilBaris = array();
+
+            // Melakukan perulangan setiap baris (yang dibentuk wordwrap), untuk menggabungkan setiap kolom menjadi 1 baris 
+            for ($i = 0; $i < $jmlBarisTerbanyak; $i++) {
+
+                // memberikan spasi di setiap cell berdasarkan lebar kolom yang ditentukan, 
+                $hasilKolom1 = str_pad((isset($kolom1Array[$i]) ? $kolom1Array[$i] : ""), $lebar_kolom_1, " ", STR_PAD_LEFT);
+                // memberikan rata kanan pada kolom 3 dan 4 karena akan kita gunakan untuk harga dan total harga
+                $hasilKolom2 = str_pad((isset($kolom2Array[$i]) ? $kolom2Array[$i] : ""), $lebar_kolom_2, " ", STR_PAD_LEFT);
+
+                // Menggabungkan kolom tersebut menjadi 1 baris dan ditampung ke variabel hasil (ada 1 spasi disetiap kolom)
+                $hasilBaris[] = $hasilKolom1 . " " . $hasilKolom2;
+            }
+
+            // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
+            return implode("\n", $hasilBaris) . "\n";
+        }
+
+        $order = DataAntrian::where('ticket_order', $id)->first();
+        $items = Barang::where('ticket_order', $id)->get();
+        $sales = Sales::where('id', $order->sales_id)->first();
+
+        //HITUNG TOTAL HARGA
+        $totalHarga = 0;
+        $totalPacking = 0;
+        $totalOngkir = 0;
+        $totalPasang = 0;
+        $diskon = 0;
+        foreach ($items as $item) {
+            $totalHarga += $item->price * $item->qty;
+        }
+
+        $infoBayar = Pembayaran::where('ticket_order', $id)->first();
+        $totalPacking = $infoBayar->biaya_packing;
+        $totalPasang = $infoBayar->biaya_pasang;
+        $diskon = $infoBayar->diskon;
+
+        $infoPengiriman = Pengiriman::where('ticket_order', $id)->first();
+        $totalOngkir = $infoPengiriman->ongkir;
+
+        $grandTotal = $totalHarga + $totalPacking + $totalOngkir + $totalPasang - $diskon;
+        $sisaTagihan = $grandTotal - $infoBayar->dibayarkan;
+
+        //print nota order dengan menggunakan printer thermal
+        $profile = CapabilityProfile::load("simple");
+        $connector = new WindowsPrintConnector("POS-80");
+        $printer = new Printer($connector, $profile);
+
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text("NOTA ORDER\n");
+        $printer->text($sales->sales_name."\n");
+        $printer->text($sales->address."\n");
+        $printer->text("WA. ".$sales->sales_phone."\n");
+        $printer->text("=============================================\n");
+        $printer->setJustification(Printer::JUSTIFY_LEFT);
+        $printer->text("No. Order : " . $order->ticket_order . "\n");
+        $printer->text("Tanggal : " . $order->created_at->format('d-m-Y H:i') . "\n");
+        $printer->text("Customer : " . $order->customer->nama . "\n");
+        $printer->text("Sales : " . $order->sales->sales_name . "\n");
+        $printer->text("=============================================\n");
+        foreach ($items as $item) {
+            $printer->text(buatBaris1Kolom($item->job->job_name));
+            $printer->text(buatBaris3Kolom($item->qty . " PCS", number_format($item->price, 0, ',', '.') ,number_format($item->price * $item->qty, 0, ',', '.')));
+        }
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text("=============================================\n");
+        $printer->setJustification(Printer::JUSTIFY_RIGHT);
+        $printer->setPrintWidth(64);
+        $printer->setEmphasis(true);
+        $printer->text(buatBaris2Kolom("Total Harga : " , number_format($totalHarga, 0, ',', '.') . "\n"));
+        $printer->setEmphasis(false);
+        $printer->text(buatBaris2Kolom("Biaya Packing : " , number_format($totalPacking, 0, ',', '.') . "\n"));
+        $printer->text(buatBaris2Kolom("Biaya Ongkir : " , number_format($totalOngkir, 0, ',', '.') . "\n"));
+
+        if ($totalPasang != 0) {
+            $printer->text(buatBaris2Kolom("Biaya Pasang : " , number_format($totalPasang, 0, ',', '.') . "\n"));
+        }
+
+        if ($diskon != 0) {
+            $printer->text(buatBaris2Kolom("Diskon : " , number_format($diskon, 0, ',', '.') . "\n"));
+        }
+
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text("=============================================\n");
+        $printer->setJustification(Printer::JUSTIFY_RIGHT);
+        $printer->setTextSize(1, 4);
+        $printer->text(buatBaris2Kolom("Grand Total : " , number_format($grandTotal, 0, ',', '.') . "\n"));
+        $printer->setTextSize(1, 1);
+        $printer->text(buatBaris2Kolom("Dibayarkan : " , number_format($infoBayar->dibayarkan, 0, ',', '.') . "\n"));
+        $printer->text(buatBaris2Kolom("Sisa Tagihan : " , number_format($sisaTagihan, 0, ',', '.') . "\n"));
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text("=============================================\n");
+        $printer->text("-- Terima Kasih --\nSelamat Datang Kembali\n");
+        $printer->text("=============================================\n");
+        $printer->setBarcodeWidth(8);
+        $printer->barcode((string)$order->ticket_order, Printer::BARCODE_CODE39);
+
+        $printer->cut();
+        $printer->close();
+    }
 
     public function index()
     {

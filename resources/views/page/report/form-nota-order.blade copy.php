@@ -117,16 +117,13 @@
       function downloadpdf(){
         var element = document.getElementById('printContents');
         var opt = {
-          margin: 0.1,
+          margin: 0.5,
           filename: 'Invoice-Order.pdf',
           image: { type: 'jpeg', quality: 0.98 },
           html2canvas: { scale: 2 },
-          jsPDF: { unit: 'in', format: 'envelope', orientation: 'portrait' }
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
         html2pdf().set(opt).from(element).save();
-        // html2pdf().set(opt).from(element).outputPdf('datauristring').then(function(pdfAsString){
-        //   console.log(pdfAsString);
-        // });
       }
 
       function screenshot() {

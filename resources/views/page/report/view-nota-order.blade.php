@@ -10,6 +10,19 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Victor+Mono&display=swap');
     </style>
+    <style>
+        body {
+            font-family: 'Victor Mono', monospace;
+            font-size: 10px;
+        }
+        #printContents {
+            width: 100%;
+            font-size: 14px;
+            padding: 20px 40px;
+        }
+        
+    </style>
+
     
 </head>
 <body>
@@ -47,7 +60,7 @@
             </table>
             <h6 class="text-center">--------------------</h6>
           <div class="row">
-              <table class="table">
+              <table class="table table-borderless pe-0">
                 <thead>
                   <tr>
                     <th>Nama Barang</th>              
@@ -89,12 +102,42 @@
               </div>
               <div class="row">{{ $qrCode }}</div>
       </div>
-
+      <div class="my-3 text-center">
+        <a href="{{ route('order.notaOrderPDF', $order->ticket_order) }}" type="button" class="btn btn-primary">Download</a>
+        <button type="button" onclick="cetakstruk()" class="btn btn-success">Print Struk</button>
+      </div>
+    </div>
+  </div>
+</div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      function cetakstruk() {
+        //menggunakan ajax untuk mengirim data ke server
+        $.ajax({
+          url: "{{ route('order.notaOrder', $order->ticket_order) }}",
+          type: "GET",
+          success: function(response) {
+            //sweetalert2 untuk menampilkan pesan berhasil
+            Swal.fire({
+              icon: 'success',
+              title: 'Berhasil',
+              text: 'Struk berhasil dicetak',
+              showConfirmButton: false,
+              timer: 1500
+            });
+          }
+        });
+      }
+
+      //onload
+      $(document).ready(function() {
+        $('#modalInvoice').modal('show');
+      });
+    </script>
 </body>
   
 </html>

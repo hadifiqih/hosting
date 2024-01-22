@@ -165,6 +165,8 @@ Route::controller(ReportController::class)->group(function(){
     // Route Nota Order
     //--------------------------------------------
     Route::get('/order/{id}/nota-order', 'notaOrder')->name('order.notaOrder');
+    Route::get('/order/{id}/nota-order-pdf', 'notaOrderPDF')->name('order.notaOrderPDF');
+    Route::get('/order/{id}/nota-order-view', 'notaOrderView')->name('order.notaOrderView');
 });
 
 Route::controller(DesignController::class)->group(function(){
