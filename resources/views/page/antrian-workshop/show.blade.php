@@ -331,7 +331,7 @@
             <div class="row">
                 <div class="col-md table-responsive">
                     <h5><strong>Biaya Bahan</strong></h5>
-                @if($antrian->done_production_at == null)
+                @if($antrian->done_production_at == null && auth()->user()->role_id == 10)
                     <button class="btn btn-primary btn-sm m-0" onclick="modalBahan()"><i class="fas fa-plus-circle"></i> Tambah</button>
                 @endif
                 <table id="tabelBahan" class="table table-responsive table-bordered mt-3">
@@ -350,9 +350,13 @@
                             <th scope="row">{{ $loop->iteration }}</th>
                             <td>{{ $item->nama_bahan }}</td>
                             <td>{{ 'Rp '.number_format($item->harga, 0, ',', '.') }}</td>
-                            <td>{{ $item->note }}</td>
+                            <td class="spesifikasi" style="">{{ $item->note }}</td>
                             <td>
-                                <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                @if(auth()->user()->role_id == 10)
+                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                @else
+                                    <button class="btn btn-danger btn-sm disabled"><i class="fas fa-trash"></i></button>
+                                @endif
                             </td>
                         </tr>
                         @endforeach
@@ -422,10 +426,12 @@
                 <div class="row">
                     <div class="col">
                         <div class="text-right">
-                            @if($antrian->done_production_at == null)
-                            <button class="btn btn-success btn-sm" onclick="tandaiSelesaiHitungBP()">Tandai Selesai <i class="fas fa-check"></i></button>
-                            @else
-                            <button class="btn btn-warning btn-sm">Unduh BP <i class="fas fa-download"></i></button>
+                            @if(auth()->user()->role_id == 10)
+                                @if($antrian->done_production_at == null)
+                                <button class="btn btn-success btn-sm" onclick="tandaiSelesaiHitungBP()">Tandai Selesai <i class="fas fa-check"></i></button>
+                                @else
+                                <button class="btn btn-warning btn-sm">Unduh BP <i class="fas fa-download"></i></button>
+                                @endif
                             @endif
                         </div>
                     </div>
@@ -596,7 +602,6 @@
 
         $(document).ready(function() {
             //ajax untuk menampilkan total biaya bahan
-
             $.ajax({
                 url: "{{ route('bahan.total', $antrian->ticket_order) }}",
                 type: "GET",

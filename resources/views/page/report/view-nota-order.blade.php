@@ -21,13 +21,29 @@
             padding: 20px 40px;
         }
         
+        .background-lunas {
+          background-image: url('{{ asset("storage/img/lunas.png") }}');
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: 40%;
+        }
+
+        .background-belum-lunas {
+          background-image: url('{{ asset("storage/img/dp.png") }}');
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: 40%;
+        }
     </style>
 
     
 </head>
-<body>
+      @php
+        $isLunas = $infoBayar->status_pembayaran;
+      @endphp
+<body class="{{ $isLunas == 2 ? 'background-lunas' : 'background-belum-lunas' }}">
   <!-- Modal -->
-<div class="container">
+<div class="container ">
         <div id="printContents" class="text-sm">
           <div class="row">
               <div class="col-12">
