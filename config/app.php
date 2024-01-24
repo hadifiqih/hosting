@@ -172,6 +172,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
+        Barryvdh\Snappy\ServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -190,6 +191,8 @@ return [
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+        'PDFSnappy' => Barryvdh\Snappy\Facades\SnappyPdf::class,
+        'ImageSnappy' => Barryvdh\Snappy\Facades\SnappyImage::class,
     ])->toArray(),
 
 ];

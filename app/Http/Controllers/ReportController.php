@@ -6,6 +6,8 @@ use PDF;
 use QrCode;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
+use PDFSnappy;
+use ImageSnappy;
 
 use App\Models\Order;
 use App\Models\Sales;
@@ -36,6 +38,11 @@ class ReportController extends Controller
         $this->middleware('auth');
     }
 
+    public function cetakFormEspk($id)
+    {
+        
+    }
+
     public function notaOrderPDF($id)
     {
         $order = DataAntrian::where('ticket_order', $id)->first();
@@ -64,7 +71,7 @@ class ReportController extends Controller
 
         $qrCode = QrCode::size(70)->generate($order->ticket_order);
 
-        $pdf = PDF::loadview('page.report.form-nota-order', compact('order', 'items', 'totalHarga', 'totalPacking', 'totalOngkir', 'totalPasang', 'diskon', 'grandTotal', 'sisaTagihan', 'infoBayar', 'qrCode'))->setPaper('a4', 'portrait');
+        $pdf = PDF::loadview('page.report.form-nota-order2', compact('order', 'items', 'totalHarga', 'totalPacking', 'totalOngkir', 'totalPasang', 'diskon', 'grandTotal', 'sisaTagihan', 'infoBayar', 'qrCode'))->setPaper('a4', 'portrait');
         return $pdf->stream($order->ticket_order . "_" . $order->order->title . '_nota-order.pdf');
     }
 

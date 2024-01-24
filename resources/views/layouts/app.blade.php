@@ -190,7 +190,7 @@
                 @endif
                 @if(auth()->user()->role == 'sales')
                 <li class="nav-item">
-                    <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') ? 'active' : '' }}">
+                    <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') ? 'active' : '' }}">
                     <i class="far fa-circle nav-icon"></i>
                     <p>List Order</p>
                     </a>

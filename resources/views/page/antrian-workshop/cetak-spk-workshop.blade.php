@@ -3,299 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-SPK (Surat Perintah Kerja)</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Export PDF - Laporan Workshop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            margin: 20px;
-        }
-
-        .header {
-            text-align: center;
-            background-color: #343a40;
-            color: #fff;
-            padding: 10px;
-        }
-
-        .title {
-            font-size: 30px;
-            font-weight: bold;
-            margin: 0;
-        }
-
-        .info {
-            margin-top: 20px;
-        }
-
-        .info p {
-            margin: 5px 0;
-        }
-
-        .spesifikasi {
-            white-space: pre-line;
-        }
-
-        .job-details {
-            margin-top: 20px;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-
-        .job-details h2 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            margin-top: 3px;
-        }
-
-        .job-details p {
-            margin: 5px 0;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: grey;
-            font-style: italic;
-        }
-
-        .serial-number {
-            margin-top: 6px;
-            font-size: 18spx;
-            font-weight: bold;
-            color: #ffffff;
-        }
-
-        .text-danger {
-            color: #dc3545;
-        }
-
-        /* Align text left <tr></tr> */
-        .text-left {
-            text-align: left;
-        }
-
+        /* Memberi border pada tabel */
         table, th, td {
-            border: 1px solid rgb(216, 216, 216);
+            border: 1px solid black;
             border-collapse: collapse;
         }
 
-        .table {
-            margin-top: 10px;
+        /* Memberi padding pada tabel */
+        th, td {
+            padding: 5px;
         }
 
-        .table td {
-            padding: 5px 10px;
+        /* Font DejaVuSans */
+        @font-face {
+            font-family: 'DejaVu Sans';
+            font-style: normal;
+            font-weight: normal;
+            src: url({{ storage_path('fonts/DejaVuSans.ttf') }}) format('truetype');
         }
 
-        .table th {
-            padding: 10px;
+        .table-bordered {
+            border: 1px solid #dee2e6;
         }
 
-        .table-warning {
-            background-color: #fff3cd;
+        .table-bordered td, .table-bordered th {
+            border: 1px solid #dee2e6;
         }
 
-        .table-danger {
-            background-color: #f8d7da;
+        .table-bordered thead td, .table-bordered thead th {
+            border-bottom-width: 2px;
         }
 
-        .text-success {
-            color: #28a745;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .table-responsive {
-            width: 100%;
-        }
-
-        .ml-2 {
-            margin-left: 20px;
-        }
-
-        .bg-success {
-            background-color: #28a745;
-            color: #fff;
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.05);
         }
 
         .bg-danger {
-            background-color: #dc3545;
             color: #fff;
+            background-color: #dc3545;
         }
 
-        .bg-outline-success {
-            background-color: #cefad0;
-            color: #343a40;
+        .bg-success {
+            color: #fff;
+            background-color: #28a745;
         }
 
-        .bg-outline-danger {
-            background-color: #f8d7da;
-            color: #343a40;
+        .bg-dark {
+            color: #fff;
+            background-color: #343a40;
         }
 
-        .table-header {
-            width: 15%;
-            text-align: left;
-        }
-
-        .px-3 {
-            padding-left: 20px;
-            padding-right: 20px;
-            padding-top: 5px;
-            padding-bottom: 5px;
-        }
-
-        .signature {
-            text-align: right;
-            margin-top: 50px;
-            margin-right: 50px;
-        }
-
-        .signature p {
-            margin: 10px 0;
-            font-weight: bold;
+        .badge {
+            display: inline-block;
+            padding: .25em .4em;
+            font-size: 75%;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: .25rem;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="title">Surat Perintah Kerja (e-SPK)</div>
-        <div class="serial-number">Nomor Tiket: {{ $antrian->ticket_order }}</div>
+    <div id="printedSPK" class="container">
+        <h4 class="text-center mt-3"><strong>Surat Perintah Kerja (e-SPK)</strong></h4>
+
+        <div class="row table-responsive">
+          <table class="table table-bordered table-striped mt-3">
+            <tr class="bg-dark">
+              <td class="text-center text-white" colspan="4">No. SPK : SPK-{{ $antrian->ticket_order }}</td>
+            </tr>
+
+            <tr>
+              <td class="text-center" colspan="4">{{ $order->title }}</td>
+            </tr>
+
+            <tr>
+              <td>Tanggal</td>
+              <td>: {{ $antrian->created_at }}</td>
+              <td>Lokasi Pengerjaan</td>
+              <td>: 
+                @php
+                    $location = $antrian->cabang_id;
+                    //explode string
+                    $explode = explode(',', $location);
+                    //for each
+                    foreach ($explode as $key => $value) {
+                        $cabang = App\Models\Cabang::where('id', $value)->first();
+                        $tempat = "";
+                        if(end($explode) == $value){
+                            echo $tempat .= $cabang->nama_cabang;
+                        }else{
+                            echo $tempat .= $cabang->nama_cabang.',';
+                        }
+                    }
+                @endphp
+              </td>
+            </tr>
+            
+            <tr>
+              <td>Mulai</td>
+              <td>: {{ $dataKerja->tgl_mulai }}</td>
+              <td>Selesai</td>
+              <td>: {{ $dataKerja->tgl_selesai }}</td>
+            </tr>
+
+            <tr class="bg-dark">
+              <td class="text-center text-white" colspan="4">Pelanggan</td>
+            </tr>
+
+            <tr>
+              <td>Customer</td>
+              <td>: {{ $customer->nama }}</td>
+              <td>Alamat</td>
+              <td>: {{ $customer->alamat }}</td>
+            </tr>
+
+            <tr>
+              <td>Instansi</td>
+              <td>: {{ $customer->instansi }}</td>
+              <td>Telepon</td>
+              <td>: {{ $customer->telepon }}</td>
+            </tr>
+
+            <tr class="bg-dark text-white">
+              <td class="text-center" colspan="4">Gambar ACC Desain</td>
+            </tr>
+
+            <tr>
+              <td class="text-center" colspan="4">
+                @foreach ($barang as $item)
+                    <img src="{{ asset($item->accdesain) }}" alt="" width="200px">
+                @endforeach
+              </td>
+            </tr>
+
+            <tr class="bg-dark text-white">
+              <td class="text-center" colspan="4">Daftar Pekerjaan</td>
+            </tr>
+
+            <tr>
+              <td class="text-center">Nama Pekerjaan</td>
+              <td class="text-center">Jumlah</td>
+              <td colspan="2" class="text-center">Keterangan</td>
+            </tr>
+
+            @foreach ($barang as $item)
+            <tr>
+              <td>{{ $item->job->job_name }}</td>
+              <td class="text-center">{{ $item->qty }}</td>
+              <td colspan="2">{{ $item->note }}</td>
+            </tr>
+            @endforeach
+
+            <tr class="bg-dark text-white">
+              <td colspan="4" class="text-center">Penugasan</td>
+            </tr>
+
+            <tr>
+              <td>Desain</td>
+              <td>Operator</td>
+              <td>Finishing</td>
+              <td>Quality Control</td>
+              
+            </tr>
+
+            <tr>
+              <td>{{ $order->employee->name }}</td>
+              <td>
+                @php
+                    $operator = $dataKerja->operator_id;
+                    //explode string
+                    $explode = explode(',', $operator);
+                    //for each
+                    foreach ($explode as $value) {
+                        $employee = App\Models\Employee::where('id', $value)->first();
+                        $operator = "";
+                        if(end($explode) == $value){
+                            echo $operator .= '- ' . $employee->name;
+                        }else{
+                            echo $operator .= '- ' . $employee->name.', <br>';
+                        }
+                    }
+                @endphp
+              </td>
+              <td>
+                @php
+                    $finishing = $dataKerja->finishing_id;
+                    //explode string
+                    $explode = explode(',', $finishing);
+                    //for each
+                    foreach ($explode as $value) {
+                        $employee = App\Models\Employee::where('id', $value)->first();
+                        $finishing = "";
+                        if(end($explode) == $value){
+                            echo $finishing .= '- ' . $employee->name;
+                        }else{
+                            echo $finishing .= '- ' . $employee->name.', <br>';
+                        }
+                    }
+                @endphp
+              </td>
+              <td>
+                @php
+                    $qc = $dataKerja->qc_id;
+                    //explode string
+                    $explode = explode(',', $qc);
+                    //for each
+                    foreach ($explode as $value) {
+                        $employee = App\Models\Employee::where('id', $value)->first();
+                        $qc = "";
+                        if(end($explode) == $value){
+                            echo $qc .= '- ' . $employee->name;
+                        }else{
+                            echo $qc .= '- ' . $employee->name.', <br>';
+                        }
+                    }
+                @endphp
+              </td>
+            </tr>
+
+            <tr>
+              <td class="text-center">Catatan</td>
+              <td colspan="3">: {{ $antrian->admin_note }}</td>
+            </tr>
+
+          </table>
+        </div>
     </div>
-
-    <table class="table table-responsive text-center">
-        <tr>
-            <td width="50%"><strong class="text-success" style="font-size: 30px;">Mulai</strong></td>
-            <td width="50%"><strong class="text-danger" style="font-size: 30px">Deadline</strong></td>
-        </tr>
-        <tr>
-            <td class="bg-outline-success px-3" style="font-size: 20px; font-weight:bold;">{{ $antrian->start_job }}</td>
-            <td class="bg-outline-danger px-3" style="font-size: 20px; font-weight:bold;">{{ $antrian->end_job }}</td>
-        </tr>
-    </table>
-
-    <div class="job-details">
-        <h2>Spesifikasi Pekerjaan</h2>
-        <hr>
-        <table class="table table-responsive text-left">
-            <tbody>
-                <tr>
-                    <th class="table-header">Jenis Pekerjaan</th>
-                    <td>: {{ $antrian->job->job_name }}</td>
-                    <td rowspan="9" class="text-center">
-                        <img src="{{ asset('storage/acc-desain/' . $antrian->order->acc_desain) }}" alt="Gambar Pekerjaan" width="70%">
-                    </td>
-                </tr>
-                <tr>
-                    <th class="table-header">Sales</th>
-                    <td>: {{ $antrian->sales->sales_name }}</td>
-                </tr>
-                <tr>
-                    <th class="table-header">Jumlah</th>
-                    <td>: {{ $antrian->qty }}</td>
-                </tr>
-                <tr>
-                    <th class="table-header">Deskripsi</th>
-                    <td class="spesifikasi">: {{ $antrian->note }}</td>
-                </tr>
-                <tr>
-                    <th class="table-header">Lokasi Workshop</th>
-                    <td>: {{ $antrian->working_at }}</td>
-                </tr>
-                <tr>
-                    <th class="table-header">Omset</th>
-                    <td>: Rp{{ number_format($antrian->omset,0,',','.') }}</td>
-                </tr>
-                <tr>
-                    <th class="table-header">Desainer</th>
-                    <td>: {{ $antrian->order->employee->name }}</td>
-                </tr>
-                <tr>
-                    <th class="table-header">Operator</th>
-                    <td>:
-                    @if($antrian->operator_id)
-                        @php
-                            $operatorId = explode(',', $antrian->operator_id);
-                            foreach ($operatorId as $item) {
-                                if($item == 'rekanan'){
-                                    echo '- Rekanan';
-                                }
-                                else{
-                                    $antriann = App\Models\Employee::find($item);
-                                    //tampilkan name dari tabel employees, jika nama terakhir tidak perlu koma
-                                    if($antriann->id == end($operatorId)){
-                                        echo '- ' . $antriann->name;
-                                    }
-                                    else{
-                                        echo '- ' . $antriann->name . "<br>";
-                                    }
-                                }
-                            }
-                        @endphp
-                        @else
-                        -
-                        @endif
-                    </td>
-                </tr>
-                <tr>
-                    <th class="table-header">Finishing</th>
-                    <td>:
-                        @if($antrian->finisher_id)
-                            @php
-                                $finisherId = explode(',', $antrian->finisher_id);
-                                foreach ($finisherId as $item) {
-                                    if($item == 'rekanan'){
-                                        echo '- Rekanan';
-                                    }
-                                    else{
-                                        $antriann = App\Models\Employee::find($item);
-                                        //tampilkan name dari tabel employees, jika nama terakhir tidak perlu koma
-                                        if($antriann->id == end($finisherId)){
-                                            echo '- ' . $antriann->name;
-                                        }
-                                        else{
-                                            echo '- ' . $antriann->name . "<br>";
-                                        }
-                                    }
-                                }
-                            @endphp
-                            @else
-                            -
-                            @endif
-                    </td>
-                </tr>
-                <tr>
-                    <th class="table-header">Pengawas / QC</th>
-                    <td>:
-                        @if($antrian->qc_id)
-                            @php
-                                $qcId = explode(',', $antrian->qc_id);
-                                foreach ($qcId as $item) {
-                                        $antriann = App\Models\Employee::find($item);
-                                        //tampilkan name dari tabel employees, jika nama terakhir tidak perlu koma
-                                        if($antriann->id == end($qcId)){
-                                            echo '- ' . $antriann->name;
-                                        }
-                                        else{
-                                            echo '- ' . $antriann->name . "<br>";
-                                        }
-                                    }
-                            @endphp
-                            @else
-                                -
-                            @endif
-                    </td>
-                </tr>
-            </tbody>
-
-        </table>
     </div>
-
-    <div class="footer">
-        *Surat Perintah Kerja ini dibuat secara otomatis oleh sistem e-SPK, jika ada kesalahan / pertanyaan silahkan hubungi Admin Workshop / Sales.
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
+      <button type="button" class="btn btn-primary">Unduh</button>
     </div>
+  </div>
+</div>
+</div>
+
 </body>
 </html>

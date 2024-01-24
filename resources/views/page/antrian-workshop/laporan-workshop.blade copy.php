@@ -68,8 +68,6 @@
             vertical-align: baseline;
             border-radius: .25rem;
         }
-
-
     </style>
 </head>
 <body>

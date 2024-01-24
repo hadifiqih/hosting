@@ -13,6 +13,10 @@
             font-family: 'Roboto Mono', monospace;
             font-size: 14px;
         }
+
+        .spesifikasi {
+          white-space: pre-line;
+        }
     </style>
 
 </head>
@@ -42,7 +46,7 @@
         <div id="printedSPK" class="container">
           <h4 class="text-center mt-3"><strong>Surat Perintah Kerja (e-SPK)</strong></h4>
   
-          <div class="row">
+          <div class="row table-responsive">
             <table class="table table-bordered table-striped mt-3">
               <tr class="bg-dark">
                 <td class="text-center text-white" colspan="4">No. SPK : SPK-{{ $antrian->ticket_order }}</td>
@@ -126,7 +130,7 @@
               <tr>
                 <td>{{ $item->job->job_name }}</td>
                 <td class="text-center">{{ $item->qty }}</td>
-                <td colspan="2">{{ $item->note }}</td>
+                <td colspan="2" class="spesifikasi">{{ $item->note }}</td>
               </tr>
               @endforeach
 
@@ -208,7 +212,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
-        <button type="button" class="btn btn-primary">Unduh</button>
+        <button type="button" class="btn btn-primary" onclick="unduhSPK({{ $antrian->ticket_order }})">Unduh</button>
       </div>
     </div>
   </div>
@@ -218,6 +222,29 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
+    function unduhSPK(id){
+      //mengunduh spk pdf dengan ajax
+      $.ajax({
+        url: "{{ route('cetak-espk', $antrian->ticket_order) }}",
+        type: "GET",
+        success: function(response){
+          //swetalert2 success
+          Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: 'e-SPK berhasil diunduh !',
+            showConfirmButton: false,
+            timer: 1500
+          })
+          //mengarahkan ke halaman laporan workshop
+          setTimeout(function(){
+            window.location.href = "{{ route('antrian-workshop.laporan-workshop') }}";
+          }, 1500);
+        }
+      });
+
+    }
+
     $(document).ready(function(){
       $('#modalspk').modal('show');
     });

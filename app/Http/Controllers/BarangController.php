@@ -100,9 +100,9 @@ class BarangController extends Controller
             return 'Rp '.number_format($subtotal, 0, ',', '.');
         })
         ->addColumn('note', function($row){
-            return $row->note;
+            return '<div class="spesifikasi">'. $row->note .'</div>';
         })
-        ->rawColumns(['nama_produk'])
+        ->rawColumns(['nama_produk', 'note', 'subtotal'])
         ->make(true);
     }
 

@@ -167,6 +167,7 @@ Route::controller(ReportController::class)->group(function(){
     Route::get('/order/{id}/nota-order', 'notaOrder')->name('order.notaOrder');
     Route::get('/order/{id}/nota-order-pdf', 'notaOrderPDF')->name('order.notaOrderPDF');
     Route::get('/order/{id}/nota-order-view', 'notaOrderView')->name('order.notaOrderView');
+    Route::get('/cetak-form-espk/{id}', 'cetakFormEspk')->name('cetak-form-espk');
 });
 
 Route::controller(DesignController::class)->group(function(){
@@ -201,7 +202,7 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/order/{id}/toAntrian', 'toAntrian')->middleware(['auth', 'checkrole:sales'])->name('order.toAntrian');
     Route::post('/order/tambahProdukByModal', 'tambahProdukByModal')->name('tambahProdukByModal');
     Route::get('/get-jobs-by-category', 'getJobsByCategory')->name('getJobsByCategory');
-    Route::get('/get-all-jobs', 'getAllJobs')->name('getAllJobs');
+    Route::get('/get-all-jobs', 'getAllJmiddlewareobs')->name('getAllJobs');
     Route::post('/order/set-desainer/', 'bagiDesain')->name('order.bagiDesain');
     //--------------------------------------------
     // Route File Desain FIX

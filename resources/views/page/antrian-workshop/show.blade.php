@@ -7,6 +7,11 @@
 @section('page', 'Antrian')
 
 @section('content')
+<style>
+    .spesifikasi {
+        white-space: pre-line;
+    }
+</style>
 <input type="hidden" id="ticket_order" value="{{ $antrian->ticket_order }}">
     <div class="card">
         <div class="card-header">
