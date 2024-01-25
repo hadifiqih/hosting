@@ -39,12 +39,33 @@
       <input type="hidden" name="sales" value="{{ $sales->id }}">
 
       <div class="mb-3">
+        <label for="kategori" class="form-label">Kategori <span class="text-danger">*</span></label>
+        <select class="custom-select rounded-2" name="kategori" id="kategori" required>
+            @if($job != null)
+            <option value="0" disabled>--Pilih Kategori--</option>
+            <option value="1" {{ $job->kategori_id == "1" && $job != null ? 'selected' : "" }}>Stempel</option>
+            <option value="2" {{ $job->kategori_id == "2" && $job != null ? 'selected' : "" }}>Non Stempel</option>
+            <option value="3" {{ $job->kategori_id == "3" && $job != null ? 'selected' : "" }}>Advertising</option>
+            <option value="4" {{ $job->kategori_id == "4" && $job != null ? 'selected' : "" }}>Digital Printing</option>
+            <option value="5" {{ $job->kategori_id == "5" && $job != null ? 'selected' : "" }}>Jasa Servis</option>
+            @else
+            <option value="0" selected disabled>--Pilih Kategori--</option>
+            <option value="1">Stempel</option>
+            <option value="2">Non Stempel</option>
+            <option value="3">Advertising</option>
+            <option value="4">Digital Printing</option>
+            <option value="5">Jasa Servis</option>
+            @endif
+        </select>
+      </div>
+
+      <div class="mb-3">
         <label for="job" class="form-label">Jenis Produk <span class="text-danger">*</span></label>
-        <br>
-        <select multiple="multiple" class="custom-select rounded-2" name="job[]" id="job" required style="width: 100%">
-          @foreach ($jobs as $job)
-            <option value="{{ $job->id }}" {{ $order->job_id == $job->id ? 'selected' : '' }}>{{ $job->job_name }}</option>
-          @endforeach
+        <select class="custom-select rounded-2" name="job" id="job" required>
+            <option disabled>--Pilih Jenis Produk--</option>
+            @foreach ($jobs as $job)
+              <option value="{{ $job->id }}" {{ $order->job_id == $job->id ? 'selected' : "" }}>{{ $job->job_name }}</option>
+            @endforeach
         </select>
       </div>
 
@@ -148,29 +169,33 @@
             }
         });
 
-    //Mengambil data produk dari database
-    $('#job').select2({
-      placeholder: 'Pilih Jenis Produk',
-      ajax : {
-        url: "{{ route('getJobsByCategory') }}",
-        type: "GET",
-        dataType: 'json',
-        delay: 250,
-        data: {
-          kategori: $(this).val()
-        },
-          processResults: function (data) {
-            return {
-              results:  $.map(data, function (item) {
-                return {
-                  text: item.job_name,
-                  id: item.id
-                }
-              })
-            };
+    $('#kategori').on('change', function() {
+      $('#job').empty();
+      $('#job').append('<option selected disabled>--Pilih Jenis Produk--</option>');
+
+      $('#job').select2({
+        placeholder: 'Pilih Jenis Produk',
+        ajax : {
+          url: "{{ route('getJobsByCategory') }}",
+          type: "GET",
+          dataType: 'json',
+          delay: 250,
+          data: {
+            kategoriProduk: $(this).val()
           },
-          cache: true
-        }
+            processResults: function (data) {
+              return {
+                results:  $.map(data, function (item) {
+                  return {
+                    text: item.job_name,
+                    id: item.id
+                  }
+                })
+              };
+            },
+            cache: true
+          }
+        });
       });
 
     //saat formEditOrder di submit, maka tombol submit akan disabled & loader akan muncul

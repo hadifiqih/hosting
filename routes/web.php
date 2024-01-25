@@ -265,14 +265,7 @@ Route::controller(PaymentController::class)->group(function(){
     Route::post('/payment/pelunasan', 'updatePelunasan')->name('payment.pelunasan');
 });
 
-Route::controller(ProductController::class)->group(function(){
-    Route::get('/product', 'index')->name('product.index');
-    Route::get('/product/create', 'create')->name('product.create');
-    Route::post('/product', 'store')->name('product.store');
-    Route::get('/product/{id}/edit', 'edit')->name('product.edit');
-    Route::put('/product/{id}', 'update')->name('product.update');
-    Route::delete('/product/{id}', 'destroy')->name('product.destroy');
-});
+Route::resource('product', ProductController::class);
 
 Route::controller(CustomerController::class)->group(function(){
     Route::get('/customer', 'index')->name('customer.index');

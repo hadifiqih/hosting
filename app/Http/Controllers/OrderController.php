@@ -119,7 +119,6 @@ class OrderController extends Controller
                 $jenisProduk .= $jobName;
             }
             return $jenisProduk;
-            
         })
         ->addColumn('status', function($data){
             return $data->status == 0 ? '<span class="badge badge-primary">Menunggu</span>' : '<span class="badge badge-success">Dikerjakan</span>';
@@ -168,8 +167,19 @@ class OrderController extends Controller
             }
         })
         ->addColumn('job_name', function($data){
-            $produk = $data->job_id == 0 ? "Belum Dipilih" : $data->job->job_name;
-            return $produk;
+            //explode string to array
+            $job = explode(',', $data->job_id);
+            $jenisProduk = '';
+            foreach($job as $j){
+                $jobName = Job::where('id', $j)->first();
+                if(end($job) == $j){
+                    $jobName = $jobName->job_name;
+                }else{
+                    $jobName = $jobName->job_name . ', ';
+                }
+                $jenisProduk .= $jobName;
+            }
+            return $jenisProduk;
         })
         ->addColumn('desainer', function($data){
             if($data->employee_id == null){
@@ -237,8 +247,19 @@ class OrderController extends Controller
             return $days . ' Hari ' . $hours . ' Jam ' . $minutes . ' Menit ' . $seconds . ' Detik';
         })
         ->addColumn('produk', function($data){
-            $produk = $data->job_id == 0 ? "Belum Dipilih" : $data->job->job_name;
-            return $produk;
+            //explode string to array
+            $job = explode(',', $data->job_id);
+            $jenisProduk = '';
+            foreach($job as $j){
+                $jobName = Job::where('id', $j)->first();
+                if(end($job) == $j){
+                    $jobName = $jobName->job_name;
+                }else{
+                    $jobName = $jobName->job_name . ', ';
+                }
+                $jenisProduk .= $jobName;
+            }
+            return $jenisProduk;
         })
         ->addColumn('desainer', function($data){
             return $data->employee->name;
@@ -392,11 +413,14 @@ class OrderController extends Controller
             Storage::disk('public')->put($path, file_get_contents($file));
         }
 
+        $job = $request->job;
+        $job = implode(',', $job);
+
         // Jika validasi berhasil, simpan data ke database
         $order = Order::find($id);
         $order->title = $request->title;
         $order->sales_id = $request->sales;
-        $order->job_id = $request->job;
+        $order->job_id = $job;
         $order->description = $request->description;
         $order->type_work = $request->jenisPekerjaan;
         if($request->file('refdesain')){
