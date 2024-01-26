@@ -42,9 +42,16 @@
         <label for="job" class="form-label">Jenis Produk <span class="text-danger">*</span></label>
         <br>
         <select multiple="multiple" class="custom-select rounded-2" name="job[]" id="job" required style="width: 100%">
-          @foreach ($jobs as $job)
-            <option value="{{ $job->id }}" {{ $order->job_id == $job->id ? 'selected' : '' }}>{{ $job->job_name }}</option>
-          @endforeach
+          <option value="">Pilih Jenis Produk</option>
+          @php
+            $selected = explode(',', $order->job_id);
+            foreach ($selected as $key) {
+              if($jobSelected = App\Models\Job::find($key))
+              {
+                echo '<option value="'.$jobSelected->id.'" selected>'.$jobSelected->job_name.'</option>';
+              }
+            }
+          @endphp
         </select>
       </div>
 

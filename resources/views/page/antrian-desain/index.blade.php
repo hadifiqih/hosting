@@ -85,7 +85,7 @@
             </div>
             @endif
 
-            <div class="tab-pane fade {{ Auth::user()->role == 'stempel' || Auth::user()->role == 'supervisor' ? 'show active' : ''}}" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
+            <div class="tab-pane fade {{ Auth::user()->role == 'stempel' ? 'show active' : ''}}" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
                 <div class="card">
                     <div class="card-header">
                       <h2 class="card-title">Antrian Desain</h2>
@@ -299,7 +299,7 @@
 
         function pilihDesainer(id) {
             //ambil value dari inputan ticketModalDesainer
-            var idOrder = $('#ticketModalDesainer').val();
+            var ticket_order = $('#ticket_order').val();
             //ajax untuk memilih desainer
             $.ajax({
                 url: "{{ route('order.bagiDesain') }}",
@@ -307,7 +307,7 @@
                 dataType: "JSON",
                 data: {
                     _token: "{{ csrf_token() }}",
-                    id: idOrder,
+                    ticket_order : ticket_order,
                     desainer: id,
                 },
                 success: function(data) {
@@ -543,7 +543,7 @@
             });
                 Toast.fire({
                 icon: 'success',
-                title: '{{ session('success-submit') }}'
+                title: '{{ session('success') }}'
                 });
         });
     </script>

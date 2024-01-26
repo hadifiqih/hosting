@@ -9,7 +9,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <input type="hidden" id="ticketModalDesainer" name="ticketModalDesainer" value="">
+          <input type="hidden" id="ticket_order" name="ticket_order" value="">
             <table id="tableDesainer" class="table table-bordered table-responsive" style="width: 100%">
                 <thead>
                     <tr>
