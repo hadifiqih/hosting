@@ -136,7 +136,7 @@ class OrderController extends Controller
             $button .= '<a href="javascript:void(0)" onclick="showDetailDesain('. $data->id .')" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
 
             if(auth()->user()->role == 'supervisor'){
-            $button .= '<a href="javascript:void(0)" onclick="showDesainer('. $data->id .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Pilih Desainer</a>';
+            $button .= '<a href="javascript:void(0)" onclick="showDesainer('. $data->ticket_order .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Pilih Desainer</a>';
             }
 
             $button .= '<a href="javascript:void(0)" onclick="deleteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
@@ -315,13 +315,13 @@ class OrderController extends Controller
 
     public function bagiDesain(Request $request){
 
-        $order = Order::find($request->ticket_order);
+        $order = Order::where('ticket_order', $request->ticket)->first();
         $order->status = 1;
-        $order->employee_id = $request->desainer;
+        $order->employee_id = $request->idDesainer;
         $order->time_taken = now();
         $order->save();
 
-        $employee = Employee::find($request->desainer);
+        $employee = Employee::find($request->idDesainer);
         $employee->design_load += 1;
         $employee->save();
 
@@ -352,7 +352,6 @@ class OrderController extends Controller
     public function create()
     {
         $sales = Sales::where('user_id', auth()->user()->id)->first();
-
         $jobs = Job::all();
 
         return view('page.order.add', compact('sales', 'jobs'));
@@ -1019,12 +1018,29 @@ class OrderController extends Controller
         })
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
-            $button .= '<a href="javascript:void(0)" onclick="pilihDesainer('. $data->id .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Pilih</a>';
+            $button .= '<button href="javascript:void(0)" onclick="pilihDesainer('. $data->id .')" class="btn btn-sm btn-dark btnDesainer"><i class="fas fa-user"></i> Pilih</button>';
             $button .= '</div>';
             return $button;
         })
         ->rawColumns(['action'])
         ->make(true);
+    }
+
+    public function simpanDesainer(Request $request)
+    {
+
+        $order = Order::where('ticket_order', $ticketOrder)->first();
+        $order->employee_id = $idDesainer;
+        $order->save();
+
+        $employee = Employee::find($idDesainer);
+        $employee->design_load += 1;
+        $employee->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Desainer berhasil dipilih !'
+        ]);
     }
 }
 

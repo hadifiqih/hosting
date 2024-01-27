@@ -247,7 +247,7 @@
 
         function showDesainer(id) {
             $('#modalBagiDesain').modal('show');
-            $('#ticketModalDesainer').val(id);
+            $('#ticket_order').val(id);
         }
 
         function showUploadCetak(id) {
@@ -298,31 +298,32 @@
         }
 
         function pilihDesainer(id) {
-            //ambil value dari inputan ticketModalDesainer
-            var ticket_order = $('#ticket_order').val();
-            //ajax untuk memilih desainer
+            //disable button btnDesainer
+            $('.btnDesainer').prop('disabled', true);
+
+            var tiket = $('#ticket_order').val();
+            var idDesainer = id;
+            //ajax untuk mengirim data ke controller
             $.ajax({
-                url: "{{ route('order.bagiDesain') }}",
-                type: "POST",
-                dataType: "JSON",
+                url: "{{ route('simpanDesainer') }}",
+                type: 'POST',
+                dataType: 'JSON',
                 data: {
                     _token: "{{ csrf_token() }}",
-                    ticket_order : ticket_order,
-                    desainer: id,
+                    idDesainer: id,
+                    ticketOrder: tiket
                 },
                 success: function(data) {
-                    if(data.success) {
-                        $('#modalBagiDesain').modal('hide');
-                        $('#tableDesainer').DataTable().ajax.reload();
-                        $('#tableAntrianDesain').DataTable().ajax.reload();
-                        $('#tableAntrianDikerjakan').DataTable().ajax.reload();
-                        $('#tableAntrianSelesai').DataTable().ajax.reload();
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: data.success
-                        });
-                    }
+                    $('#modalBagiDesain').modal('hide');
+                    $('#tableAntrianDesain').DataTable().ajax.reload();
+                    $('#tableAntrianDikerjakan').DataTable().ajax.reload();
+                    $('#tableAntrianSelesai').DataTable().ajax.reload();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: data.success
+                    });
                 },
                 error: function() {
                     Swal.fire({
@@ -330,6 +331,9 @@
                         title: 'Oops...',
                         text: 'Terjadi Kesalahan!'
                     });
+
+                    //enable button btnDesainer
+                    $('.btnDesainer').prop('disabled', false);
                 }
             });
         }
@@ -503,10 +507,6 @@
         };
 
     $(document).ready(function() {
-        // saat form bagiDesain di submit, maka tampilkan loader dan disable button submitnya
-        $('.bagiDesain').submit(function() {
-            $('.submitButton').prop('disabled', true);
-        });
 
         // saat form upload revisi di submit, maka tampilkan loader dan disable button submitnya
         $('#submitRevisiDesain').click(function() {
