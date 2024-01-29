@@ -203,7 +203,7 @@ Route::controller(OrderController::class)->group(function(){
     Route::post('/order/tambahProdukByModal', 'tambahProdukByModal')->name('tambahProdukByModal');
     Route::get('/get-jobs-by-category', 'getJobsByCategory')->name('getJobsByCategory');
     Route::get('/get-all-jobs', 'getAllJmiddlewareobs')->name('getAllJobs');
-    Route::get('/order/simpan-desainer', 'simpanDesainer')->name('simpanDesainer');
+    Route::post('/order/simpan-desainer', 'simpanDesainer')->name('simpanDesainer');
     //--------------------------------------------
     // Route File Desain FIX
     //--------------------------------------------

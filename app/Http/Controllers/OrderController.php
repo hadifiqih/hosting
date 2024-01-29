@@ -207,7 +207,9 @@ class OrderController extends Controller
             if(auth()->user()->employee->can_design == 1 && $data->employee_id == auth()->user()->employee->id){
                 $button .= '<a href="javascript:void(0)" onclick="showUploadCetak('. $data->ticket_order .')" class="btn btn-sm btn-dark"><i class="fas fa-upload"></i> File Cetak </a>';
             }
-            $button .= '<a href="javascript:void(0)" onclick="deleteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
+            if(auth()->user()->role == 'supervisor' || auth()->user()->role == 'sales'){
+                $button .= '<a href="javascript:void(0)" onclick="deleteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
+            }
             $button .= '</div>';
             return $button;
         })
@@ -1028,18 +1030,19 @@ class OrderController extends Controller
 
     public function simpanDesainer(Request $request)
     {
-
-        $order = Order::where('ticket_order', $ticketOrder)->first();
-        $order->employee_id = $idDesainer;
+        $order = Order::where('ticket_order', $request->input('ticketOrder'))->first();
+        $order->employee_id = $request->input('desainerID');
+        $order->status = 1;
         $order->save();
 
-        $employee = Employee::find($idDesainer);
+        $employee = Employee::find($request->input('desainerID'));
         $employee->design_load += 1;
         $employee->save();
 
+        // return json success for ajax request
         return response()->json([
             'status' => 200,
-            'message' => 'Desainer berhasil dipilih !'
+            'message' => 'Desain berhasil diberikan ke desainer!'
         ]);
     }
 }

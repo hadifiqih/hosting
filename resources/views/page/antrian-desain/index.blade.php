@@ -38,7 +38,7 @@
                 </li>
                 @endif
                 <li class="nav-item">
-                    <a class="nav-link {{Auth::user()->role == 'stempel' ? 'active' : ''}}" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Progress Desain</a>
+                    <a class="nav-link {{Auth::user()->role == 'stempel' || Auth::user()->role == 'desain' ? 'active' : ''}}" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Progress Desain</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="custom-content-below-messages-tab" data-toggle="pill" href="#custom-content-below-messages" role="tab" aria-controls="custom-content-below-messages" aria-selected="false">Selesai Desain</a>
@@ -85,7 +85,7 @@
             </div>
             @endif
 
-            <div class="tab-pane fade {{ Auth::user()->role == 'stempel' ? 'show active' : ''}}" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
+            <div class="tab-pane fade {{ Auth::user()->role == 'stempel' || Auth::user()->role == 'desain' ? 'show active' : ''}}" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
                 <div class="card">
                     <div class="card-header">
                       <h2 class="card-title">Antrian Desain</h2>
@@ -302,7 +302,7 @@
             $('.btnDesainer').prop('disabled', true);
 
             var tiket = $('#ticket_order').val();
-            var idDesainer = id;
+
             //ajax untuk mengirim data ke controller
             $.ajax({
                 url: "{{ route('simpanDesainer') }}",
@@ -310,20 +310,20 @@
                 dataType: 'JSON',
                 data: {
                     _token: "{{ csrf_token() }}",
-                    idDesainer: id,
+                    desainerID: id,
                     ticketOrder: tiket
                 },
                 success: function(data) {
-                    $('#modalBagiDesain').modal('hide');
-                    $('#tableAntrianDesain').DataTable().ajax.reload();
-                    $('#tableAntrianDikerjakan').DataTable().ajax.reload();
-                    $('#tableAntrianSelesai').DataTable().ajax.reload();
-                    
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil',
                         text: data.success
                     });
+
+                    $('#modalBagiDesain').modal('hide');
+                    $('#tableAntrianDesain').DataTable().ajax.reload();
+                    $('#tableAntrianDikerjakan').DataTable().ajax.reload();
+                    $('#tableAntrianSelesai').DataTable().ajax.reload();
                 },
                 error: function() {
                     Swal.fire({
