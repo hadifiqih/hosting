@@ -109,6 +109,10 @@
                             <div class="form-group divAlamatKirim">
                                 <label for="ongkir">Alamat Pengiriman</label>
                                 <input type="text" class="form-control" id="alamatKirim" placeholder="Jl. Alamat Lengkap" name="alamatKirim" value="{{ old('alamatKirim') }}">
+                                <div class="custom-control custom-checkbox mt-1">
+                                    <input class="custom-control-input custom-control-input-danger" type="checkbox" id="alamatSama" name="alamatSama" value="{{ old('alamatSama') }}">
+                                    <label for="alamatSama" class="custom-control-label">Alamat seperti pada Data Pelanggan</label>
+                                </div>
                                 <p class="text-muted font-italic text-sm mb-0 mt-1">*Harap isi dengan alamat lengkap, agar tidak terjadi kesalahan pengiriman.</p>
                                 <p class="text-muted font-italic text-sm mt-0">*Contoh alamat lengkap: Jalan Mangga Kecil No.13, RT 09 RW 03, Kelurahan Besi Tua, Kecamatan Sukaraja, Kab. Binjai, Sumatera Utara, 53421.</p>
                             </div>
@@ -151,7 +155,7 @@
                                     <span>Total : </span><h4 class="font-weight-bold text-danger" id="totalAll"></h4>
                                 </div>
                                 {{-- Hidden input untuk mengambil nilai dari id totalAll --}}
-                                <input type="text" name="totalAllInput" id="totalAllInput" hidden>
+                                <input type="text" name="totalAllInput" id="totalAllInput">
                             </div>
                     </div>
                 </div>
@@ -344,6 +348,23 @@
         $('.divEksLain').hide();
         $('.divResi').hide();
 
+        //function untuk membuat alamat pengiriman sama dengan alamat pada data pelanggan customer
+        $('#alamatSama').on('change', function(){
+            if($(this).is(':checked')){
+                //get id customer
+                var id = $('#customer_id').val();
+                $.ajax({
+                    url: "/pelanggan/" + id,
+                    method: "GET",
+                    success: function(data){
+                        $('#alamatKirim').val(data.alamat);
+                    }
+                });
+            }else{
+                $('#alamatKirim').val('');
+            }
+        });
+
         // function provinsi
         $.ajax({
             url: "{{ route('getProvinsi') }}",
@@ -454,10 +475,12 @@
                 $('#jumlahPembayaran').val(totalAll);
                 $('#jumlahPembayaran').attr('readonly', true);
                 $('#sisaPembayaran').html('Rp 0');
+                $('#statusPembayaran').val('');
             }else{
                 $('#jumlahPembayaran').val('');
                 $('#jumlahPembayaran').attr('readonly', false);
                 $('#sisaPembayaran').html(totalAll + ' (Belum Lunas)');
+                $('#statusPembayaran').val('');
             }
         });
 
@@ -677,6 +700,42 @@
                 $('#ekspedisi').attr('required', true);
 
             }else{
+                if($('#ongkir').val() != ''){
+                    // function updateTotalBarang
+                    var totalBarang = $('span#subtotal').text();
+                    totalBarang = totalBarang.replace(/[^0-9]/g, '');
+                    totalBarang = parseInt(totalBarang);
+
+                    var bPacking = $('#packing').val();
+                    bPacking = bPacking.replace(/[^0-9]/g, '');
+                    bPacking = parseInt(bPacking);
+
+                    var bPasang = $('#pasang').val();
+                    bPasang = bPasang.replace(/[^0-9]/g, '');
+                    bPasang = parseInt(bPasang);
+
+                    var diskon = $('#diskon').val();
+                    diskon = diskon.replace(/[^0-9]/g, '');
+                    diskon = parseInt(diskon);
+
+                    if(isNaN(bPacking)){
+                        bPacking = 0;
+                    }
+                    if(isNaN(bPasang)){
+                        bPasang = 0;
+                    }
+                    if(isNaN(diskon)){
+                        diskon = 0;
+                    }
+
+                    var totalTanpaOngkir = totalBarang + bPacking + bPasang - diskon;
+                    totalTanpaOngkir = totalTanpaOngkir.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+                    console.log(totalTanpaOngkir);
+                    $('#totalAll').html('Rp ' + totalTanpaOngkir);
+                    $('#totalAllInput').val(totalTanpaOngkir);
+                    $('#sisaPembayaran').html('Rp ' + $('#totalAllInput').val());
+                }
+
                 $('.divAlamatKirim').hide();
                 $('.divOngkir').hide();
                 $('.divEkspedisi').hide();
@@ -693,6 +752,8 @@
                 $('#alamatKirim').removeAttr('required');
                 $('#ongkir').removeAttr('required');
                 $('#ekspedisi').removeAttr('required');
+
+                //Jika biaya ongkir tidak digunakan maka totalAllInput dan sisaPembayaranInput akan bernilai sama dengan totalAll
             }
         });
 

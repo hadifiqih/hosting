@@ -276,6 +276,7 @@ Route::controller(CustomerController::class)->group(function(){
     Route::put('/customer/{id}', 'update')->name('customer.update');
     Route::delete('/customer/{id}', 'destroy')->name('customer.destroy');
     Route::get('/pelanggan/search', 'cariPelanggan')->name('pelanggan.search');
+    Route::get('/pelanggan/{id}', 'pelangganById')->name('pelanggan.show');
     Route::get('/customer/searchByNama', 'searchById')->name('pelanggan.searchById');
     Route::get('/pelanggan-all/{id}', 'getAllCustomers')->name('getAllCustomers');
     Route::post('/customer/store', 'store')->name('pelanggan.store');

@@ -425,16 +425,16 @@ class AntrianController extends Controller
         $antrian->sales_id = $request->input('sales_id');
         $antrian->customer_id = $request->input('customer_id');
         $antrian->order_id = $request->input('order_id');
-        $antrian->status = 1;
+        $antrian->status = 0;
         $antrian->save();
 
         //simpan pembayaran
         $payment = new Pembayaran();
         $payment->ticket_order = $request->input('ticket_order');
         $payment->metode_pembayaran = $request->input('metodePembayaran');
-        $payment->biaya_packing = $request->input('biayaPacking') ? CustomHelper::removeCurrencyFormat($request->input('biayaPacking')) : null;
-        $payment->biaya_pasang = $request->input('biayaPacking') ? CustomHelper::removeCurrencyFormat($request->input('biayaPasang')) : null;
-        $payment->diskon = $request->input('biayaPacking') ? CustomHelper::removeCurrencyFormat($request->input('diskon')) : null;
+        $payment->biaya_packing = $request->input('biayaPacking') != null ? CustomHelper::removeCurrencyFormat($request->input('biayaPacking')) : 0;
+        $payment->biaya_pasang = $request->input('biayaPasang') != null ? CustomHelper::removeCurrencyFormat($request->input('biayaPasang')) : 0;
+        $payment->diskon = $request->input('diskon') != null ? CustomHelper::removeCurrencyFormat($request->input('diskon')) : 0;
         $payment->total_harga = CustomHelper::removeCurrencyFormat($request->input('totalAllInput'));
         $payment->dibayarkan = CustomHelper::removeCurrencyFormat($request->input('jumlahPembayaran'));
         $payment->status_pembayaran = $request->input('statusPembayaran');

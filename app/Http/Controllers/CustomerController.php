@@ -62,10 +62,15 @@ class CustomerController extends Controller
 
     public function cariPelanggan(Request $request)
     {
-
         $data = Customer::where('nama', 'LIKE', "%".request('q')."%")->get();
 
         return response()->json($data);
+    }
+
+    public function pelangganById($id)
+    {
+        $customer = Customer::find($id);
+        return response()->json($customer);
     }
 
     public function edit(Request $request)

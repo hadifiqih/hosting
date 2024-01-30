@@ -52,6 +52,7 @@ class BarangController extends Controller
         
         $barang = new Barang();
         $barang->ticket_order = $request->ticket_order;
+        $barang->kategori_id = $request->kategoriProduk;
         $barang->job_id = $request->namaProduk;
         $barang->user_id = auth()->user()->id;
         $barang->price = $harga;

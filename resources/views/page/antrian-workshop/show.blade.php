@@ -28,11 +28,11 @@
                     $batas = new DateTime($antrian->dataKerja->tgl_selesai);
                     $selesai = new DateTime($antrian->finish_date);
                 @endphp
-                @if($antrian->status == 0)
+                @if($antrian->status == 1 && $antrian->cabang_id == null)
                     <p class="text-danger"><i class="fas fa-circle"></i> <span class="ml-2">Belum Diantrikan</span></p>
-                @elseif($antrian->status == 1)
+                @elseif($antrian->status == 1 && $antrian->cabang_id != null)
                     <p class="text-primary"><i class="fas fa-circle"></i> <span class="ml-2">Sedang Dikerjakan</span></p>
-                @elseif($antrian->status == 2)
+                @elseif($antrian->status == 2 && $antrian->cabang_id != null)
                     <p class="text-success"><i class="fas fa-circle"></i> <span class="ml-2">Selesai : <strong>{{ date_format($selesai , 'd F Y - H:i')}}</strong></span></p>
                 @endif
             </div>
@@ -187,7 +187,12 @@
                         <div class="col">
                             <div class="row">
                                 <div class="col-2 mt-2">
-                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->printfile->nama_file, -3)) }}</div>
+                                    @php
+                                        $fileCetak = $antrian->printfile->nama_file;
+                                        $fileCetak = explode('.', $fileCetak);
+                                        $fileCetak = end($fileCetak);
+                                    @endphp
+                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper($fileCetak) }}</div>
                                 </div>
                                 <div class="col-4 my-auto">
                                     <a href="{{ route('design.download', $antrian->id) }}" class="font-weight-bold my-0">File Cetak</a>
@@ -199,7 +204,12 @@
                         <div class="col">
                             <div class="row">
                                 <div class="col-2 mt-2">
-                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->buktiBayar->gambar, -3)) }}</div>
+                                    @php
+                                        $buktiBayar = $antrian->buktiBayar->gambar;
+                                        $buktiBayar = explode('.', $buktiBayar);
+                                        $buktiBayar = end($buktiBayar);
+                                    @endphp
+                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper($buktiBayar) }}</div>
                                 </div>
                                 <div class="col-4 my-auto">
                                     <a class="font-weight-bold my-0" onclick="modalBuktiPembayaran()">Bukti Pembayaran</a>
@@ -212,7 +222,12 @@
                         <div class="col">
                             <div class="row">
                                 <div class="col-2 mt-2">
-                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper(substr($antrian->filePendukung->nama_file, -3)) }}</div>
+                                    @php
+                                        $namaFile = $antrian->filePendukung->nama_file;
+                                        $namaFile = explode('.', $namaFile);
+                                        $namaFile = end($namaFile);
+                                    @endphp
+                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper($namaFile) }}</div>
                                 </div>
                                 <div class="col-4 my-auto">
                                     <a href="{{ route('design.downloadFilePendukung', $antrian->id) }}" class="font-weight-bold my-0">File Pendukung</a>
