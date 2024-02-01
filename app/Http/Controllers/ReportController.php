@@ -6,14 +6,13 @@ use PDF;
 use QrCode;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
-use PDFSnappy;
-use ImageSnappy;
 
 use App\Models\Order;
 use App\Models\Sales;
 use App\Models\Barang;
 use App\Models\Antrian;
 use App\Models\Machine;
+use App\Models\DataKerja;
 use App\Models\Pembayaran;
 use App\Models\Pengiriman;
 use Mike42\Escpos\Printer;
@@ -21,26 +20,19 @@ use App\Models\DataAntrian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\ReportResource;
 
+use Mike42\Escpos\CapabilityProfile;
+use App\Http\Resources\ReportResource;
 use Yajra\DataTables\Facades\DataTables;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
-use Mike42\Escpos\CapabilityProfile;
-
-
 
 class ReportController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
-    }
-
-    public function cetakFormEspk($id)
-    {
-        
     }
 
     public function notaOrderPDF($id)
@@ -464,13 +456,14 @@ class ReportController extends Controller
 
     public function cetakEspk($id)
     {
-        $antrian = Antrian::with('customer', 'sales', 'payment', 'operator', 'finishing', 'job', 'order')
-            ->where('id', $id)
-            ->first();
+        $antrian = DataAntrian::where('ticket_order', $id)->first();
+        $order = Order::where('ticket_order', $id)->first();
+        $dataKerja = DataKerja::where('ticket_order', $id)->first();
+        $customer = $antrian->customer;
+        $barang = Barang::where('ticket_order', $id)->get();
 
-        $pdf = PDF::loadview('page.antrian-workshop.cetak-spk-workshop', compact('antrian'))->setPaper('folio', 'landscape');
+        $pdf = PDF::loadview('page.antrian-workshop.cetak-spk-workshop', compact('antrian', 'order', 'dataKerja', 'customer', 'barang'))->setPaper('folio', 'portrait');
         return $pdf->stream("Adm_" . $antrian->ticket_order . "_" . $antrian->order->title . '_espk.pdf');
-
         // return view('page.antrian-workshop.cetak-spk-workshop', compact('antrian'));
     }
 

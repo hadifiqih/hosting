@@ -11,5 +11,8 @@ class Bahan extends Model
 
     protected $table = 'bahan_produksi';
 
-    
+    public function antrian()
+    {
+        return $this->belongsTo(DataAntrian::class, 'ticket_order', 'ticket_order');
+    }
 }

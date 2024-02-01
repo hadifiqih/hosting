@@ -8,7 +8,7 @@
           </button>
         </div>
         <div class="modal-body">
-                @if ($antrian->buktiBayar->gambar)
+                @if($antrian->buktiBayar->gambar)
                     <img src="{{ asset('storage/bukti-pembayaran/'.$antrian->buktiBayar->gambar) }}" alt="Bukti Pembayaran" class="img-fluid">
                 @else
                     <p class="text-center">Belum ada bukti pembayaran</p>

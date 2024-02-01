@@ -155,13 +155,21 @@
                       $explode = explode(',', $operator);
                       //for each
                       foreach ($explode as $value) {
-                          $employee = App\Models\Employee::where('id', $value)->first();
-                          $operator = "";
+                        $employee = App\Models\Employee::where('id', $value)->first();
+                        $operator = "";
+                        if($value == 'r'){
+                          if(end($explode) == $value){
+                            echo $operator .= '- Rekanan';
+                          }else{
+                            echo $operator .= '- Rekanan, <br>';
+                          }
+                        }else{
                           if(end($explode) == $value){
                               echo $operator .= '- ' . $employee->name;
                           }else{
                               echo $operator .= '- ' . $employee->name.', <br>';
                           }
+                        }
                       }
                   @endphp
                 </td>
@@ -172,13 +180,21 @@
                       $explode = explode(',', $finishing);
                       //for each
                       foreach ($explode as $value) {
-                          $employee = App\Models\Employee::where('id', $value)->first();
-                          $finishing = "";
+                        $employee = App\Models\Employee::where('id', $value)->first();
+                        $finishing = "";
+                        if($value == 'r'){
+                          if(end($explode) == $value){
+                            echo $finishing .= '- Rekanan';
+                          }else{
+                            echo $finishing .= '- Rekanan, <br>';
+                          }
+                        }else{
                           if(end($explode) == $value){
                               echo $finishing .= '- ' . $employee->name;
                           }else{
                               echo $finishing .= '- ' . $employee->name.', <br>';
                           }
+                        }
                       }
                   @endphp
                 </td>
@@ -212,7 +228,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
-        <button type="button" class="btn btn-primary" onclick="unduhSPK({{ $antrian->ticket_order }})">Unduh</button>
+        <button id="downloadButton" type="button" class="btn btn-primary">Unduh</button>
       </div>
     </div>
   </div>
@@ -222,32 +238,20 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
-    function unduhSPK(id){
-      //mengunduh spk pdf dengan ajax
-      $.ajax({
-        url: "{{ route('cetak-espk', $antrian->ticket_order) }}",
-        type: "GET",
-        success: function(response){
-          //swetalert2 success
-          Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: 'e-SPK berhasil diunduh !',
-            showConfirmButton: false,
-            timer: 1500
-          })
-          //mengarahkan ke halaman laporan workshop
-          setTimeout(function(){
-            window.location.href = "{{ route('antrian-workshop.laporan-workshop') }}";
-          }, 1500);
-        }
-      });
-
-    }
-
     $(document).ready(function(){
       $('#modalspk').modal('show');
-    });
+
+      $('#downloadButton').click(function() {
+          // convert printedSPK to image with html2canvas high resolution
+          html2canvas(document.getElementById('printedSPK'), { scale: 2 })
+            .then(function(canvas) {
+              var link = document.createElement('a');
+              link.href = canvas.toDataURL('image/png');
+              link.download = 'printedSPK.png';
+              link.click();
+            });
+        });
+      });
   </script>
 </body>
 </html>

@@ -52,11 +52,8 @@ class BahanController extends Controller
         $bahan->note = $request->note != null ? $request->note : '-';
         $bahan->save();
 
-        $antrian = Antrian::where('ticket_order', $request->ticket_order)->first();
-
-
         return response()->json([
-            'success' => true,
+            'status' => 200,
             'message' => 'Bahan berhasil ditambahkan',
         ]);
     }
@@ -70,47 +67,28 @@ class BahanController extends Controller
 
         $antrian = DataAntrian::where('ticket_order', $id)->first();
 
-        $done = $antrian->done_production_at;
-
         $bahanTotal = Bahan::where('ticket_order', $id)->sum('harga');
-
-        if($done == null) {
-            $dataTable = Datatables::of($bahan)
-            ->addIndexColumn()
-            ->addColumn('nama_bahan', function ($row) {
-                return $row->nama_bahan;
-            })
-            ->addColumn('harga', function ($row) {
-                return 'Rp ' . number_format($row->harga, 0, ',', '.');
-            })
-            ->addColumn('note', function ($row) {
-                return $row->note;
-            })
-            ->addColumn('aksi', function ($row) {
+        
+        $dataTable = Datatables::of($bahan)
+        ->addIndexColumn()
+        ->addColumn('nama_bahan', function ($row) {
+            return $row->nama_bahan;
+        })
+        ->addColumn('harga', function ($row) {
+            return 'Rp ' . number_format($row->harga, 0, ',', '.');
+        })
+        ->addColumn('note', function ($row) {
+            return $row->note;
+        })
+        ->addColumn('aksi', function ($row) {
+            if(auth()->user()->role_id == '10' && $row->antrian->done_production_at == null) {
                 $btn = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBahan(' . $row->id . ')"><i class="fas fa-trash"></i></a>';
-                return $btn;
-            });
-
-            return $dataTable->rawColumns(['aksi'])->make(true);
-        }else{
-            $dataTable = Datatables::of($bahan)
-            ->addIndexColumn()
-            ->addColumn('nama_bahan', function ($row) {
-                return $row->nama_bahan;
-            })
-            ->addColumn('harga', function ($row) {
-                return 'Rp ' . number_format($row->harga, 0, ',', '.');
-            })
-            ->addColumn('note', function ($row) {
-                return $row->note;
-            })
-            ->addColumn('aksi', function ($row) {
-                $btn = '<a href="javascript:void(0)" class="btn btn-secondary btn-sm disabled"><i class="fas fa-trash"></i></a>';
-                return $btn;
-            });
-
-            return $dataTable->rawColumns(['aksi'])->make(true);
-        }
+            } else {
+                $btn = '<a href="javascript:void(0)" class="btn btn-danger btn-sm disabled"><i class="fas fa-trash"></i></a>';
+            }
+            return $btn;
+        });
+     return $dataTable->rawColumns(['aksi'])->make(true);
     }
 
     /**

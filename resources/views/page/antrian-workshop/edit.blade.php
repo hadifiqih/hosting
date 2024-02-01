@@ -9,6 +9,12 @@
 @section('breadcrumb', 'Edit Antrian')
 
 @section('content')
+<style>
+    .spesifikasi {
+        white-space: pre-line;
+    }
+</style>
+
 <div class="container-fluid">
     <div class="col-md-12">
         <div class="card">
@@ -34,7 +40,8 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="5" class="text-right">Total</th>
+                            <th colspan="4" class="text-right">Total</th>
+                            <th id="jumlahBarang">{{ $totalBarang }}</th>
                             <th id="jumlahHargaBarang">Rp{{ $totalHargaBarang }}</th>
                         </tr>
                     </tfoot>
@@ -61,14 +68,25 @@
             <div class="form-group">
                 <div class="form-check">
                     @php
-                        $isCheckedOperator = is_array($operatorId) && in_array($operator->id, $operatorId);
+                        $isCheckedOperator = in_array($operator->id, $operatorId) ? 'checked' : '';
                     @endphp
-                    <input name="operator_id[]" value="{{ $operator->id }}" class="form-check-input" type="checkbox" {{ $isCheckedOperator ? 'checked' : '' }}>
+                    <input name="operator_id[]" value="{{ $operator->id }}" class="form-check-input" type="checkbox" {{ $isCheckedOperator }}>
                     <label class="form-check-label">{{ $operator->name }}</label>
                 </div>
             </div>
         </div>  
         @endforeach
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="form-check">
+                    @php
+                        $isOprRekanan = in_array('r', $operatorId) ? 'checked' : '';
+                    @endphp
+                    <input name="operator_id[]" value="r" class="form-check-input" type="checkbox" {{ $isOprRekanan }}>
+                    <label class="form-check-label"><span>Rekanan</span></label>
+                </div>
+            </div>
+        </div>
     </div>
     @else
     -
@@ -85,14 +103,25 @@
             <div class="form-group">
                 <div class="form-check">
                     @php
-                        $isCheckedFinishing = is_array($finishingId) && in_array($operator->id, $finishingId);
+                        $isCheckedFinishing = in_array($operator->id, $finishingId) ? 'checked' : '';
                     @endphp
-                    <input name="finishing_id[]" value="{{ $operator->id }}" class="form-check-input" type="checkbox" {{ $isCheckedFinishing ? 'checked' : '' }}>
+                    <input name="finishing_id[]" value="{{ $operator->id }}" class="form-check-input" type="checkbox" {{ $isCheckedFinishing }}>
                     <label class="form-check-label">{{ $operator->name }}</label>
                 </div>
             </div>
         </div>  
         @endforeach
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="form-check">
+                    @php
+                        $isFinRekanan = in_array('r', $finishingId) ? 'checked' : '';
+                    @endphp
+                    <input name="finishing_id[]" value="{{ $operator->id }}" class="form-check-input" type="checkbox" {{ $isFinRekanan }}>
+                    <label class="form-check-label"><span>Rekanan</span></label>
+                </div>
+            </div>
+        </div>
     </div>
     @else
     -

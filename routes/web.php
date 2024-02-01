@@ -48,6 +48,8 @@ Route::get('/dashboard', function () {
     return view('page.dashboard');
 });
 
+Route::get('users/export/', [UserController::class, 'export']);
+
 // Reset Password ------------------------------
 
 Route::get('/forgot-password', function () {
@@ -168,6 +170,7 @@ Route::controller(ReportController::class)->group(function(){
     Route::get('/order/{id}/nota-order-pdf', 'notaOrderPDF')->name('order.notaOrderPDF');
     Route::get('/order/{id}/nota-order-view', 'notaOrderView')->name('order.notaOrderView');
     Route::get('/cetak-form-espk/{id}', 'cetakFormEspk')->name('cetak-form-espk');
+
 });
 
 Route::controller(DesignController::class)->group(function(){

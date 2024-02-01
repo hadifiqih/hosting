@@ -2,14 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use App\Exports\UsersExport;
+use Illuminate\Http\Request;
+use Excel;
 
 class UserController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+
+    public function export()
+    {
+        return Excel::download(new UsersExport, 'users.xlsx');
     }
     /**
      * Display a listing of the resource.

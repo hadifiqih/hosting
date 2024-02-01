@@ -112,7 +112,11 @@ class AntrianController extends Controller
                     $operator = explode(',', $antrian->dataKerja->operator_id);
                     $namaOperator = [];
                     foreach($operator as $o){
-                        $namaOperator[] = Employee::where('id', $o)->first()->name;
+                        if($o == 'r'){
+                            $namaOperator[] = "<span class='text-primary'>Rekanan</span>";
+                        }else{
+                            $namaOperator[] = Employee::where('id', $o)->first()->name;
+                        }
                     }
                     return implode(', ', $namaOperator);
                 }
@@ -125,7 +129,11 @@ class AntrianController extends Controller
                     $finishing = explode(',', $antrian->dataKerja->finishing_id);
                     $namaFinishing = [];
                     foreach($finishing as $f){
-                        $namaFinishing[] = Employee::where('id', $f)->first()->name;
+                        if($f == 'r'){
+                            $namaFinishing[] = "<span class='text-primary'>Rekanan</span>";
+                        }else{
+                            $namaFinishing[] = Employee::where('id', $f)->first()->name;
+                        }
                     }
                     return implode(', ', $namaFinishing);
                 }
@@ -469,14 +477,22 @@ class AntrianController extends Controller
         $bukti->gambar = $namaBaru;
         $bukti->save();
 
+        $order = Order::where('ticket_order', $request->input('ticket_order'))->first();
+
         //simpan data kerja
         $dataKerja = new DataKerja();
         $dataKerja->ticket_order = $request->input('ticket_order');
+        $dataKerja->desainer_id = $order->employee_id;
         $dataKerja->save();
 
         //jika antrian berhasil disimpan, customer frekuensi order ditambah 1
         $customer = Customer::where('id', $request->input('customer_id'))->first();
-        $customer->frekuensi_order += 1;
+        //Jika customer melakukan order lebih dari 1 kali pada hari yang sama, maka frekuensi order hanya bertambah 1 kali
+        if($antrian->customer_id == $customer->id && $antrian->created_at->format('Y-m-d') == Carbon::now()->format('Y-m-d')){
+            $customer->frekuensi_order += 0;
+        }else{
+            $customer->frekuensi_order = 1;
+        }
         $customer->save();
 
         return redirect()->route('antrian.index')->with('success', 'Data antrian, berhasil ditambahkan!');
@@ -635,6 +651,7 @@ class AntrianController extends Controller
             $totalHargaBarang += $barang->price * $barang->qty;
         }
         $totalHargaBarang = number_format($totalHargaBarang, 0, ',', '.');
+        $totalBarang = $barangs->sum('qty') . ' pcs';
 
         $tempatCabang = Cabang::pluck('nama_cabang', 'id');
 
@@ -644,7 +661,7 @@ class AntrianController extends Controller
             $isEdited = 1;
         }
 
-        return view('page.antrian-workshop.edit', compact('antrian', 'operatorId', 'finishingId', 'qualityId', 'cabangId', 'operators', 'qualitys', 'machines', 'tempatCabang', 'isEdited', 'totalHargaBarang'));
+        return view('page.antrian-workshop.edit', compact('antrian', 'operatorId', 'finishingId', 'qualityId', 'cabangId', 'operators', 'qualitys', 'machines', 'tempatCabang', 'isEdited', 'totalHargaBarang', 'totalBarang'));
     }
 
     public function update(Request $request, $id)
@@ -746,12 +763,20 @@ class AntrianController extends Controller
 
     public function show($id)
     {
-        $antrian = DataAntrian::where('ticket_order', $id)->with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile', 'pembayaran')->first();
+        $antrian = DataAntrian::where('ticket_order', $id)->with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile', 'pembayaran', 'estimator')->first();
 
         $items = Barang::where('ticket_order', $id)->get();
 
         $pembayaran = Pembayaran::where('ticket_order', $id)->first();
 
+        $omset = $pembayaran->total_harga;
+
+        $satuPersen = 1;
+        $duaPersen = 2;
+        $duaSetengahPersen = 2.5;
+        $tigaPersen = 3;
+        $limaPersen = 5;
+        
         $total = 0;
 
         foreach($items as $item){
@@ -767,7 +792,20 @@ class AntrianController extends Controller
             $totalBahan += $b->harga;
         }
 
-        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'pembayaran' , 'bahan', 'totalBahan'));
+        $biayaSales = ($omset * $tigaPersen) / 100;
+        $biayaDesain = ($omset * $duaPersen) / 100;
+        $biayaPenanggungJawab = ($omset * $tigaPersen) / 100;
+        $biayaPekerjaan = ($omset * $limaPersen) / 100;
+        $biayaBPJS = ($omset * $duaSetengahPersen) / 100;
+        $biayaTransportasi = ($omset * $satuPersen) / 100;
+        $biayaOverhead = ($omset * $duaSetengahPersen) / 100;
+        $biayaAlatListrik = ($omset * $duaPersen) / 100;
+
+        $totalBiaya = $biayaSales + $biayaDesain + $biayaPenanggungJawab + $biayaPekerjaan + $biayaBPJS + $biayaTransportasi + $biayaOverhead + $biayaAlatListrik;
+
+        $profit = $omset - $totalBiaya;
+
+        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'pembayaran' , 'bahan', 'totalBahan', 'biayaSales', 'biayaDesain', 'biayaPenanggungJawab', 'biayaPekerjaan', 'biayaBPJS', 'biayaTransportasi', 'biayaOverhead', 'biayaAlatListrik', 'totalBiaya', 'profit'));
     }
 
     public function updateDeadline(Request $request)
@@ -939,13 +977,13 @@ class AntrianController extends Controller
 
     public function biayaProduksiSelesai(Request $request, $id)
     {
-        $antrian = Antrian::where('ticket_order', $id)->first();
+        $antrian = DataAntrian::where('ticket_order', $id)->first();
         $antrian->done_production_at = Carbon::now();
-        $antrian->done_production_by = auth()->user()->id;
-        $antrian->save();
+        $antrian->estimator_id = auth()->user()->employee->id;
 
-        $omset = $antrian->omset;
-        $omset = intval($omset);
+        $omset = $request->input('omsetTotal');
+        $omset = str_replace(['Rp', '.'], '', $omset);
+        $omset = (int)$omset;
 
         $bproduksi = new BiayaProduksi();
         $bproduksi->ticket_order = $id;
@@ -958,6 +996,7 @@ class AntrianController extends Controller
         $bproduksi->biaya_overhead = $omset * 0.025;
         $bproduksi->biaya_alat_listrik = $omset * 0.02;
         $bproduksi->save();
+        $antrian->save();
 
         return response()->json(['message' => 'Biaya Produksi berhasil disimpan !'], 200);
     }

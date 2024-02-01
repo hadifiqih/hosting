@@ -23,6 +23,11 @@ class DataAntrian extends Model
 
     protected $table = 'data_antrian';
 
+    public function estimator()
+    {
+        return $this->belongsTo(Employee::class, 'estimator_id', 'id');
+    }
+
     public function operator()
     {
         return $this->belongsTo(Employee::class, 'operator_id', 'id');

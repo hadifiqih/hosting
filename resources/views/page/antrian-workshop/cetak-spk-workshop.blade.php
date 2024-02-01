@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Export PDF - Laporan Workshop</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <style>
         /* Memberi border pada tabel */
         table, th, td {
@@ -178,37 +177,53 @@
               <td>{{ $order->employee->name }}</td>
               <td>
                 @php
-                    $operator = $dataKerja->operator_id;
-                    //explode string
-                    $explode = explode(',', $operator);
-                    //for each
-                    foreach ($explode as $value) {
+                      $operator = $dataKerja->operator_id;
+                      //explode string
+                      $explode = explode(',', $operator);
+                      //for each
+                      foreach ($explode as $value) {
                         $employee = App\Models\Employee::where('id', $value)->first();
                         $operator = "";
-                        if(end($explode) == $value){
-                            echo $operator .= '- ' . $employee->name;
+                        if($value == 'r'){
+                          if(end($explode) == $value){
+                            echo $operator .= '- Rekanan';
+                          }else{
+                            echo $operator .= '- Rekanan, <br>';
+                          }
                         }else{
-                            echo $operator .= '- ' . $employee->name.', <br>';
+                          if(end($explode) == $value){
+                              echo $operator .= '- ' . $employee->name;
+                          }else{
+                              echo $operator .= '- ' . $employee->name.', <br>';
+                          }
                         }
-                    }
-                @endphp
+                      }
+                  @endphp
               </td>
               <td>
                 @php
-                    $finishing = $dataKerja->finishing_id;
-                    //explode string
-                    $explode = explode(',', $finishing);
-                    //for each
-                    foreach ($explode as $value) {
+                      $finishing = $dataKerja->finishing_id;
+                      //explode string
+                      $explode = explode(',', $finishing);
+                      //for each
+                      foreach ($explode as $value) {
                         $employee = App\Models\Employee::where('id', $value)->first();
                         $finishing = "";
-                        if(end($explode) == $value){
-                            echo $finishing .= '- ' . $employee->name;
+                        if($value == 'r'){
+                          if(end($explode) == $value){
+                            echo $finishing .= '- Rekanan';
+                          }else{
+                            echo $finishing .= '- Rekanan, <br>';
+                          }
                         }else{
-                            echo $finishing .= '- ' . $employee->name.', <br>';
+                          if(end($explode) == $value){
+                              echo $finishing .= '- ' . $employee->name;
+                          }else{
+                              echo $finishing .= '- ' . $employee->name.', <br>';
+                          }
                         }
-                    }
-                @endphp
+                      }
+                  @endphp
               </td>
               <td>
                 @php

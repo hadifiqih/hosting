@@ -139,7 +139,7 @@
                     $biayaPacking = $antrian->pembayaran->biaya_packing;
                     $totalKeseluruhan = $total + $ongkir + $biayaPasang + $biayaPacking;
                 @endphp
-                <h5><strong>Total Keseluruhan : </strong><span class="float-right font-weight-bold text-danger">Rp{{ number_format($totalKeseluruhan, 0, ',', '.') }}</span></h5>
+                <h5><strong>Total Keseluruhan : </strong><span class="float-right font-weight-bold text-danger" id="totalKeseluruhan">Rp{{ number_format($totalKeseluruhan, 0, ',', '.') }}</span></h5>
                 <h6>Diskon<span class="float-right text-danger">-Rp{{ number_format($antrian->pembayaran->diskon, 0, ',', '.') }}</span></h6>
                 @php
                     $diskon = $antrian->pembayaran->diskon;
@@ -263,8 +263,8 @@
                         @php
                             $operatorId = explode(',', $antrian->dataKerja->operator_id);
                             foreach ($operatorId as $item) {
-                                if($item == 'rekanan'){
-                                    echo '- Rekanan';
+                                if($item == 'r'){
+                                    echo '<p class="text-primary mb-0"><i class="fas fa-circle"></i> Rekanan</p>';
                                 }
                                 else{
                                     $antriann = App\Models\Employee::find($item);
@@ -288,8 +288,8 @@
                         @php
                             $finisherId = explode(',', $antrian->dataKerja->finishing_id);
                             foreach ($finisherId as $item) {
-                                if($item == 'rekanan'){
-                                    echo '- Rekanan';
+                                if($item == 'r'){
+                                    echo '<p class="text-primary mb-0"><i class="fas fa-circle"></i> Rekanan</p>';
                                 }
                                 else{
                                     $antriann = App\Models\Employee::find($item);
@@ -342,13 +342,6 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col">
-                    @php
-                        $omset = $antrian->pembayaran->total_harga;
-                    @endphp
-                </div>
-            </div>
-            <div class="row">
                 <div class="col-md table-responsive">
                     <h5><strong>Biaya Bahan</strong></h5>
                 @if($antrian->done_production_at == null && auth()->user()->role_id == 10)
@@ -365,21 +358,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($bahan as $item)
-                        <tr>
-                            <th scope="row">{{ $loop->iteration }}</th>
-                            <td>{{ $item->nama_bahan }}</td>
-                            <td>{{ 'Rp '.number_format($item->harga, 0, ',', '.') }}</td>
-                            <td class="spesifikasi" style="">{{ $item->note }}</td>
-                            <td>
-                                @if(auth()->user()->role_id == 10)
-                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                                @else
-                                    <button class="btn btn-danger btn-sm disabled"><i class="fas fa-trash"></i></button>
-                                @endif
-                            </td>
-                        </tr>
-                        @endforeach
+                        
                     </tbody>
                     <tfoot>
                         <tr>
@@ -392,16 +371,6 @@
                 <table id="tableBahan" class="table table-responsive table-bordered table-hover mt-3" style="width: 100%">
                     <thead>
                         <tr>
-                            @php
-                                $biayaSales = $omset * 0.03;
-                                $biayaDesain = $omset * 0.02;
-                                $biayaPenanggungJawab = $omset * 0.03;
-                                $biayaPekerjaan = $omset * 0.05;
-                                $biayaBPJS = $omset * 0.025;
-                                $biayaTransportasi = $omset * 0.01;
-                                $biayaOverhead = $omset * 0.025;
-                                $biayaAlatListrik = $omset * 0.02;
-                            @endphp
                             <th>Biaya Sales (3%)</th>
                             <th>Biaya Desain (2%)</th>
                             <th>Biaya Penanggung Jawab (3%)</th>
@@ -426,21 +395,17 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="8" class="text-center">Total Biaya Lainnya : <span class="text-danger" id="totalBiayaLain">Rp{{ number_format($omset * 0.03 + $omset * 0.02 + $omset * 0.03 + $omset * 0.05 + $omset * 0.025 + $omset * 0.01 + $omset * 0.025 + $omset * 0.02, 0, ',', '.') }}</span></th>
+                            <th colspan="8" class="text-center">Total Biaya Lainnya : <span class="text-danger" id="totalBiayaLain">Rp{{ number_format($biayaSales + $biayaDesain + $biayaPenanggungJawab + $biayaPekerjaan + $biayaBPJS + $biayaTransportasi + $biayaOverhead + $biayaAlatListrik, 0, ',', '.') }}</span></th>
                         </tr>
                     </tfoot>
                 </table>
                 <hr>
                 <div class="row">
                     <div class="col">
-                        @php
-                            $totalBiaya = ($biayaSales + $biayaDesain + $biayaPenanggungJawab + $biayaPekerjaan + $biayaBPJS + $biayaTransportasi + $biayaOverhead + $biayaAlatListrik) + $totalBahan;
-                            $profit = $omset - $totalBiaya;
-                        @endphp
                         <h5 class="font-weight-bold">Profit Perusahaan : <span class="text-danger float-right" id="profit">Rp{{ number_format($profit, 0, ',', '.') }}</span></h5>
                         <h6>Omset : <span class="text-danger float-right" id="profit">Rp{{ number_format($totalKeseluruhan, 0, ',', '.') }}</span></h6>
                         <h6>Total Biaya Produksi : <span class="text-danger float-right" id="totalProduksi">-Rp{{ number_format($totalBiaya, 0, ',', '.')}}</span></h6>
-                        <h6>Dihitung oleh : <span class="text-danger">{{ $antrian->estimator_id ? $antrian->estimator->name : '-' }}</span></h6>
+                        <h6>Diupdate oleh : <span class="text-danger float-right">{{ $antrian->estimator_id == null ? '-' : $antrian->estimator->name }}</span></h6>
                     </div>
                 </div>
                 <div class="row">
@@ -486,6 +451,8 @@
 
         //fungsi untuk menandai selesai hitung BP
         function tandaiSelesaiHitungBP() {
+            var omset = $('#totalKeseluruhan').text();
+
             Swal.fire({
                 title: 'Apakah anda yakin?',
                 text: "Biaya Produksi akan disimpan dan tidak dapat diubah lagi!",
@@ -501,8 +468,9 @@
                         url: "{{ route('biaya.produksi.update', $antrian->ticket_order) }}",
                         type: "POST",
                         data: {
-                            "_method": "PUT",
-                            "_token": "{{ csrf_token() }}",
+                            _method: "PUT",
+                            _token: "{{ csrf_token() }}",
+                            omsetTotal: omset,
                         },
                         success: function(response) {
                             //muncul toast success
