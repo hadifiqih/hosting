@@ -10,6 +10,15 @@
         <div class="modal-body">
             <form id="formBahan" enctype="multipart/form-data" action="">
                 <div class="form-group">
+                    <label for="barang">Orderan</label>
+                    <select id="barang" name="barang_id" class="custom-select form-control-border border-width-2" required>
+                        <option selected disabled>Pilih Orderan</option>
+                        @foreach($items as $item)
+                            <option value="{{ $item->id }}">{{ $item->job->job_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="nama_bahan">Nama Bahan<span class="text-danger">*</span></label>
                     <input type="text" name="nama_bahan" id="nama_bahan" class="form-control" placeholder="Nama Bahan" required>
                 </div>

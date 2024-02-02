@@ -170,6 +170,7 @@ Route::controller(ReportController::class)->group(function(){
     Route::get('/order/{id}/nota-order-pdf', 'notaOrderPDF')->name('order.notaOrderPDF');
     Route::get('/order/{id}/nota-order-view', 'notaOrderView')->name('order.notaOrderView');
     Route::get('/cetak-form-espk/{id}', 'cetakFormEspk')->name('cetak-form-espk');
+    Route::get('/report/tampilBP/{id}', 'tampilBP')->name('report.tampilBP');
 
 });
 

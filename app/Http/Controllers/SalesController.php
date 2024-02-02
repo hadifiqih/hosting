@@ -9,8 +9,6 @@ use App\Models\Customer;
 use App\Models\CategoryUsaha;
 use Illuminate\Http\Request;
 
-use function PHPUnit\Framework\returnSelf;
-
 class SalesController extends Controller
 {
     public function __construct()
@@ -52,7 +50,6 @@ class SalesController extends Controller
     {
         $sales = Sales::all();
         $jobs = Job::all();
-
 
         if (request()->get('customer')) {
             $customer = Customer::where('customer_phone', request()->get('customer'))->first();

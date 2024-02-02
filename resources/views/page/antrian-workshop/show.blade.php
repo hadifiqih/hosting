@@ -354,6 +354,7 @@
                             <th scope="col">Nama Bahan</th>
                             <th scope="col">Harga</th>
                             <th scope="col">Note</th>
+                            <th scope="col">Orderan</th>
                             <th scope="col">Aksi</th>
                         </tr>
                     </thead>
@@ -362,7 +363,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="5" class="text-center">Total Biaya Bahan : <span class="text-danger" id="bahanTotal">{{ $totalBahan }}</span></th>
+                            <th colspan="6" class="text-center">Total Biaya Bahan : <span class="text-danger" id="bahanTotal">{{ $totalBahan }}</span></th>
                         </tr>
                     </tfoot>
                 </table>
@@ -402,10 +403,10 @@
                 <hr>
                 <div class="row">
                     <div class="col">
-                        <h5 class="font-weight-bold">Profit Perusahaan : <span class="text-danger float-right" id="profit">Rp{{ number_format($profit, 0, ',', '.') }}</span></h5>
-                        <h6>Omset : <span class="text-danger float-right" id="profit">Rp{{ number_format($totalKeseluruhan, 0, ',', '.') }}</span></h6>
+                        <h5 class="font-weight-bold">Profit Perusahaan : <span class="text-success float-right" id="profit">Rp{{ number_format($profit, 0, ',', '.') }}</span></h5>
+                        <h6>Omset : <span class="text-dark float-right" id="profit">Rp{{ number_format($totalKeseluruhan, 0, ',', '.') }}</span></h6>
                         <h6>Total Biaya Produksi : <span class="text-danger float-right" id="totalProduksi">-Rp{{ number_format($totalBiaya, 0, ',', '.')}}</span></h6>
-                        <h6>Diupdate oleh : <span class="text-danger float-right">{{ $antrian->estimator_id == null ? '-' : $antrian->estimator->name }}</span></h6>
+                        <h6>Diupdate oleh : <span class="text-dark float-right">{{ $antrian->estimator_id == null ? '-' : $antrian->estimator->name }}</span></h6>
                     </div>
                 </div>
                 <div class="row">
@@ -415,7 +416,7 @@
                                 @if($antrian->done_production_at == null)
                                 <button class="btn btn-success btn-sm" onclick="tandaiSelesaiHitungBP()">Tandai Selesai <i class="fas fa-check"></i></button>
                                 @else
-                                <button class="btn btn-warning btn-sm">Unduh BP <i class="fas fa-download"></i></button>
+                                <a href="{{ route('report.tampilBP', $antrian->ticket_order) }}" class="btn btn-warning btn-sm">Unduh BP<i class="fas fa-download"></i></a>
                                 @endif
                             @endif
                         </div>
@@ -526,6 +527,7 @@
                     {data: 'nama_bahan', name: 'nama_bahan'},
                     {data: 'harga', name: 'harga'},
                     {data: 'note', name: 'note'},
+                    {data: 'barang', name: 'barang'},
                     {data: 'aksi', name: 'aksi'},
                 ],
             });

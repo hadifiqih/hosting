@@ -15,4 +15,9 @@ class Bahan extends Model
     {
         return $this->belongsTo(DataAntrian::class, 'ticket_order', 'ticket_order');
     }
+
+    public function barang()
+    {
+        return $this->belongsTo(Barang::class, 'barang_id', 'id');
+    }
 }

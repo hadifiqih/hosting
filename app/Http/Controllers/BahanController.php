@@ -39,6 +39,7 @@ class BahanController extends Controller
             'nama_bahan' => 'required',
             'harga_bahan' => 'required',
             'ticket_order' => 'required',
+            'barang_id' => 'required',
         ]);
 
         //remove Rp dan titik dari harga
@@ -50,6 +51,7 @@ class BahanController extends Controller
         $bahan->harga = $harga;
         $bahan->ticket_order = $request->ticket_order;
         $bahan->note = $request->note != null ? $request->note : '-';
+        $bahan->barang_id = $request->barang_id;
         $bahan->save();
 
         return response()->json([
@@ -80,6 +82,9 @@ class BahanController extends Controller
         ->addColumn('note', function ($row) {
             return $row->note;
         })
+        ->addColumn('barang', function ($row) {
+            return $row->barang_id != null ? $row->barang->job->job_name : '-';
+        })
         ->addColumn('aksi', function ($row) {
             if(auth()->user()->role_id == '10' && $row->antrian->done_production_at == null) {
                 $btn = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBahan(' . $row->id . ')"><i class="fas fa-trash"></i></a>';
@@ -88,7 +93,8 @@ class BahanController extends Controller
             }
             return $btn;
         });
-     return $dataTable->rawColumns(['aksi'])->make(true);
+
+        return $dataTable->rawColumns(['aksi'])->make(true);
     }
 
     /**

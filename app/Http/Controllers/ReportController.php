@@ -7,6 +7,7 @@ use QrCode;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
 
+use App\Models\Bahan;
 use App\Models\Order;
 use App\Models\Sales;
 use App\Models\Barang;
@@ -18,9 +19,11 @@ use App\Models\Pengiriman;
 use Mike42\Escpos\Printer;
 use App\Models\DataAntrian;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use App\Models\BiayaProduksi;
 
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Mike42\Escpos\CapabilityProfile;
 use App\Http\Resources\ReportResource;
 use Yajra\DataTables\Facades\DataTables;
@@ -570,19 +573,6 @@ class ReportController extends Controller
         return view('page.report.omset-per-produk', compact('dateRange'));
     }
 
-    // public function ringkasanOmsetSales()
-    // {
-    //     $antrians = Antrian::with('payment', 'order', 'sales', 'customer', 'job', 'design', 'operator', 'finishing')
-    //         ->where('created_at', 'like', '%2023-10-21%')
-    //         ->get();
-
-    //     $listSales = Sales::all();
-
-    //     $isFilter = false;
-
-    //     return view('page.report.ringkasan-omset-sales', compact('antrians', 'listSales', 'isFilter'));
-    // }
-
     public function ringkasanSalesIndex()
     {
         $listSales = Sales::all();
@@ -725,5 +715,28 @@ class ReportController extends Controller
         $machine = Machine::all();
 
         return response()->json($machine);
+    }
+
+    public function tampilBP($id)
+    {
+        $antrian = DataAntrian::where('ticket_order', $id)->first();
+        $barangs = Barang::where('ticket_order', $id)->get();
+        $biaya = BiayaProduksi::where('ticket_order', $id)->first();
+        $bahans = Bahan::where('ticket_order', $id)->get();
+
+        $dataKerja = DataKerja::where('ticket_order', $id)->first();
+
+        $total = 0;
+        $omset = 0;
+
+        foreach ($barangs as $barang) {
+            $omset += $barang->price * $barang->qty;
+        }
+        foreach ($bahans as $bahan) {
+            $total += $bahan->harga;
+        }
+
+        $pdf = PDF::loadview('page.report.unduh-bp', compact('antrian', 'biayas', 'bahans', 'total', 'omset', 'dataKerja'))->setPaper('a4', 'portrait');
+        return $pdf->stream($antrian->ticket_order . "_" . $antrian->order->title . '_biaya-produksi.pdf');
     }
 }
