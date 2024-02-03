@@ -203,27 +203,27 @@
     <table>
         <tr>
             <td class="text-center">Biaya Sales (3%)</td>
-            <td> {{ $biaya->biaya_sales }}</td>
+            <td> {{ $totalBiayaSales }}</td>
             <td class="text-center">BPJS (2.5%)</td>
-            <td> {{ $antrian->biaya_desain }}</td>
+            <td> {{ $totalBiayaBPJS }}</td>
         </tr>
         <tr>
             <td class="text-center">Biaya Desain</td>
-            <td> {{ $biaya->biaya_desain }}</td>
+            <td> {{ $totalBiayaDesain }}</td>
             <td class="text-center">Biaya Transportasi</td>
-            <td> {{ $biaya->biaya_transportasi }}</td>
+            <td> {{ $totalBiayaTransport }}</td>
         </tr>
         <tr>
             <td class="text-center">Biaya Penanggung Jawab</td>
-            <td> {{ $biaya->biaya_transportasi }}</td>
+            <td> {{ $totalBiayaPenanggungJawab }}</td>
             <td class="text-center">Biaya Overhead/Lain-lain</td>
-            <td> {{ $biaya->biaya_lain }}</td>
+            <td> {{ $totalBiayaOverhead }}</td>
         </tr>
         <tr>
             <td class="text-center">Biaya Pekerja</td>
-            <td> {{ $biaya->biaya_pekerja }}</td>
+            <td> {{ $totalBiayaPekerja }}</td>
             <td class="text-center">Biaya Alat dan Listrik</td>
-            <td> Rp{{ $biaya->biaya_alat_listrik}}</td>
+            <td> Rp{{ $totalBiayaListrik }}</td>
         </tr>
 
     </table>

@@ -717,6 +717,16 @@ class ReportController extends Controller
         return response()->json($machine);
     }
 
+    //variabel global untuk menyimpan biaya produksi
+    public $biayaSales = 0.03;
+    public $biayaDesain = 0.02;
+    public $biayaPenanggungJawab = 0.03;
+    public $biayaPekerja = 0.05;
+    public $biayaBPJS = 0.025;
+    public $biayaTransport = 0.01;
+    public $biayaOverhead = 0.025;
+    public $biayaListrik = 0.02;
+
     public function tampilBP($id)
     {
         $antrian = DataAntrian::where('ticket_order', $id)->first();
@@ -728,7 +738,7 @@ class ReportController extends Controller
 
         $total = 0;
         $omset = 0;
-
+        
         foreach ($barangs as $barang) {
             $omset += $barang->price * $barang->qty;
         }
@@ -736,7 +746,27 @@ class ReportController extends Controller
             $total += $bahan->harga;
         }
 
-        $pdf = PDF::loadview('page.report.unduh-bp', compact('antrian', 'biayas', 'bahans', 'total', 'omset', 'dataKerja'))->setPaper('a4', 'portrait');
+        $totalBiayaSales = 0;
+        $totalBiayaDesain = 0;
+        $totalBiayaPenanggungJawab = 0;
+        $totalBiayaPekerja = 0;
+        $totalBiayaBPJS = 0;
+        $totalBiayaTransport = 0;
+        $totalBiayaOverhead = 0;
+        $totalBiayaListrik = 0;
+
+        if(!isset($biaya) || $biaya == null) {
+            $totalBiayaSales = $omset * $this->biayaSales;
+            $totalBiayaDesain = $omset * $this->biayaDesain;
+            $totalBiayaPenanggungJawab = $omset * $this->biayaPenanggungJawab;
+            $totalBiayaPekerja = $omset * $this->biayaPekerja;
+            $totalBiayaBPJS = $omset * $this->biayaBPJS;
+            $totalBiayaTransport = $omset * $this->biayaTransport;
+            $totalBiayaOverhead = $omset * $this->biayaOverhead;
+            $totalBiayaListrik = $omset * $this->biayaListrik;
+        }
+
+        $pdf = PDF::loadview('page.report.unduh-bp', compact('antrian', 'biaya', 'bahans', 'total', 'omset', 'dataKerja', 'totalBiayaSales', 'totalBiayaDesain', 'totalBiayaPenanggungJawab', 'totalBiayaPekerja', 'totalBiayaBPJS', 'totalBiayaTransport', 'totalBiayaOverhead', 'totalBiayaListrik'))->setPaper('a4', 'portrait');
         return $pdf->stream($antrian->ticket_order . "_" . $antrian->order->title . '_biaya-produksi.pdf');
     }
 }
