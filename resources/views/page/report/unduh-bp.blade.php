@@ -44,35 +44,20 @@
         background-color: #f9f9f9;
     }
 
-    .button-container {
-        text-align: center;
-        margin-top: 20px;
-    }
-
-    .button {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-        text-decoration: none;
-    }
-
-    .button:hover {
-        background-color: #45a049;
-    }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h3 class="text-center">Laporan Biaya Produksi Cetak</h3>
+    <h2 class="text-center">Laporan Biaya Produksi</h2>
     <p class="text-center">Nomor Tiket : {{ $antrian->ticket_order }}</p>
     <table>
         <tr>
             <td>Sales</td>
+            <td>{{ $antrian->sales->sales_name }}</td>
+        </tr>
+        <tr>
+            <td>Customer</td>
             <td>{{ $antrian->customer->nama }}</td>
         </tr>
         <tr>
@@ -87,16 +72,54 @@
             <td>Jam / Tanggal Selesai</td>
             <td>{{ $antrian->dataKerja->tgl_selesai }}</td>
         </tr>
+        <tr>
+            <td>Total Biaya Produksi</td>
+            <td style="color: darkred">Rp{{ number_format($totalProduksi,0,',','.') }} ({{ $persenBiayaProduksi }}%)</td>
+        </tr>
+        <tr>
+            <td>Laba / Keuntungan</td>
+            <td style="color: darkgreen"><strong>Rp{{ number_format($profit,0,',','.') }} ({{ $persenProfit }}%)</strong></td>
+        </tr>
+        
     </table>
 
-    <h3 class="text-center m-2">Penugasan Pengerjaan</h3>
+    <h3 class="text-center mt-3 text-primary">Keterangan Orderan</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Jenis Produk</th>
+                <th>Qty</th>
+                <th>Harga</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($barangs as $barang)
+            <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $barang->job->job_name }}</td>
+                <td>{{ $barang->qty }}</td>
+                <td>Rp{{ number_format($barang->price,0,',','.') }}</td>
+                <td>Rp{{ number_format($barang->price * $barang->qty,0,',','.') }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="4" class="text-center">Total</th>
+                <th>Rp{{ number_format($omset,0,',','.') }}</th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <h3 class="text-center mt-3 text-primary">Penugasan Pengerjaan</h3>
     <table>
         <tr>
             <td>Operator</td>
             <td>Finishing</td>
             <td>Quality Control</td>
         </tr>
-
           <tr>
             <td>
               @php
@@ -168,7 +191,7 @@
           </tr>
     </table>
 
-    <h3 class="text-center m-2">Biaya Produksi</h3>
+    <h3 class="text-center mt-3 text-primary">Biaya Produksi</h3>
     <table>
         <thead>
             <tr>
@@ -201,31 +224,35 @@
     </table>
 
     <table>
+        <tr><td colspan="4" class="text-center"><strong>Biaya Lain - Lain</strong> </td></tr>
         <tr>
             <td class="text-center">Biaya Sales (3%)</td>
-            <td> {{ $totalBiayaSales }}</td>
+            <td> Rp{{ $totalBiayaSales }}</td>
             <td class="text-center">BPJS (2.5%)</td>
-            <td> {{ $totalBiayaBPJS }}</td>
+            <td> Rp{{ $totalBiayaBPJS }}</td>
         </tr>
         <tr>
-            <td class="text-center">Biaya Desain</td>
-            <td> {{ $totalBiayaDesain }}</td>
-            <td class="text-center">Biaya Transportasi</td>
-            <td> {{ $totalBiayaTransport }}</td>
+            <td class="text-center">Biaya Desain (2%)</td>
+            <td> Rp{{ $totalBiayaDesain }}</td>
+            <td class="text-center">Biaya Transportasi (1%)</td>
+            <td> Rp{{ $totalBiayaTransport }}</td>
         </tr>
         <tr>
-            <td class="text-center">Biaya Penanggung Jawab</td>
-            <td> {{ $totalBiayaPenanggungJawab }}</td>
-            <td class="text-center">Biaya Overhead/Lain-lain</td>
-            <td> {{ $totalBiayaOverhead }}</td>
+            <td class="text-center">Biaya Penanggung Jawab (3%)</td>
+            <td> Rp{{ $totalBiayaPenanggungJawab }}</td>
+            <td class="text-center">Biaya Overhead/Lain-lain (2.5%)</td>
+            <td> Rp{{ $totalBiayaOverhead }}</td>
         </tr>
         <tr>
-            <td class="text-center">Biaya Pekerja</td>
-            <td> {{ $totalBiayaPekerja }}</td>
-            <td class="text-center">Biaya Alat dan Listrik</td>
+            <td class="text-center">Biaya Pekerja (5%)</td>
+            <td> Rp{{ $totalBiayaPekerja }}</td>
+            <td class="text-center">Biaya Alat dan Listrik (2%)</td>
             <td> Rp{{ $totalBiayaListrik }}</td>
         </tr>
-
+        <tr>
+            <td class="text-center" colspan="2"><strong>Total</strong></td>
+            <td class="text-center" colspan="2"><strong>Rp {{ $totalBiayaAllFormatted }}</strong></td>
+        </tr>
     </table>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>

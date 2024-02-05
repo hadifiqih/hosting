@@ -754,19 +754,41 @@ class ReportController extends Controller
         $totalBiayaTransport = 0;
         $totalBiayaOverhead = 0;
         $totalBiayaListrik = 0;
+        $totalBiayaLain = 0;
 
         if(!isset($biaya) || $biaya == null) {
-            $totalBiayaSales = $omset * $this->biayaSales;
-            $totalBiayaDesain = $omset * $this->biayaDesain;
-            $totalBiayaPenanggungJawab = $omset * $this->biayaPenanggungJawab;
-            $totalBiayaPekerja = $omset * $this->biayaPekerja;
-            $totalBiayaBPJS = $omset * $this->biayaBPJS;
-            $totalBiayaTransport = $omset * $this->biayaTransport;
-            $totalBiayaOverhead = $omset * $this->biayaOverhead;
-            $totalBiayaListrik = $omset * $this->biayaListrik;
+            $totalBiayaSales = $omset * $biayaSales;
+            $totalBiayaDesain = $omset * $biayaDesain;
+            $totalBiayaPenanggungJawab = $omset * $biayaPenanggungJawab;
+            $totalBiayaPekerja = $omset * $biayaPekerja;
+            $totalBiayaBPJS = $omset * $biayaBPJS;
+            $totalBiayaTransport = $omset * $biayaTransport;
+            $totalBiayaOverhead = $omset * $biayaOverhead;
+            $totalBiayaListrik = $omset * $biayaListrik;
+        }else{
+            $totalBiayaSales = number_format($biaya->biaya_sales,0,',','.');
+            $totalBiayaDesain = number_format($biaya->biaya_desain,0,',','.');
+            $totalBiayaPenanggungJawab = number_format($biaya->biaya_penanggung_jawab,0,',','.');
+            $totalBiayaPekerja = number_format($biaya->biaya_pekerjaan,0,',','.');
+            $totalBiayaBPJS = number_format($biaya->biaya_bpjs,0,',','.');
+            $totalBiayaTransport = number_format($biaya->biaya_transportasi,0,',','.');
+            $totalBiayaOverhead = number_format($biaya->biaya_overhead,0,',','.');
+            $totalBiayaListrik = number_format($biaya->biaya_alat_listrik,0,',','.');
+
+            //total biaya mulai dari biaya sales sampai biaya listrik
+            $totalBiayaAll = $biaya->biaya_sales + $biaya->biaya_desain + $biaya->biaya_penanggung_jawab + $biaya->biaya_pekerjaan + $biaya->biaya_bpjs + $biaya->biaya_transportasi + $biaya->biaya_overhead + $biaya->biaya_alat_listrik;
+            $totalBiayaAllFormatted = number_format($totalBiayaAll,0,',','.');
         }
 
-        $pdf = PDF::loadview('page.report.unduh-bp', compact('antrian', 'biaya', 'bahans', 'total', 'omset', 'dataKerja', 'totalBiayaSales', 'totalBiayaDesain', 'totalBiayaPenanggungJawab', 'totalBiayaPekerja', 'totalBiayaBPJS', 'totalBiayaTransport', 'totalBiayaOverhead', 'totalBiayaListrik'))->setPaper('a4', 'portrait');
+        $totalProduksi = $total + $totalBiayaAll;
+        $profit = $omset - $totalProduksi;
+        $persenBiayaProduksi = ($totalProduksi / $omset) * 100;
+        $persenProfit = 100 - $persenBiayaProduksi;
+        //jadikan format persentasi $persenBiayaProduksi
+        $persenBiayaProduksi = number_format($persenBiayaProduksi, 2, ',', '.');
+        $persenProfit = number_format($persenProfit, 2, ',', '.');
+
+        $pdf = PDF::loadview('page.report.unduh-bp', compact('omset','barangs','antrian', 'biaya', 'bahans', 'total', 'omset', 'dataKerja', 'totalBiayaSales', 'totalBiayaDesain', 'totalBiayaPenanggungJawab', 'totalBiayaPekerja', 'totalBiayaBPJS', 'totalBiayaTransport', 'totalBiayaOverhead', 'totalBiayaListrik', 'totalBiayaAllFormatted', 'totalProduksi', 'profit', 'persenBiayaProduksi', 'persenProfit'))->setPaper('a4', 'portrait');
         return $pdf->stream($antrian->ticket_order . "_" . $antrian->order->title . '_biaya-produksi.pdf');
     }
 }
