@@ -15,7 +15,23 @@ class JobController extends Controller
 
     public function searchByNama(Request $request)
     {
-        $data = Job::where('id', 'LIKE', "%".request('id')."%")->get();
+        $search = $request->term;
+        $data = Job::where('job_name', 'LIKE', "%".$search."%")->get();
+        return response()->json($data);
+    }
+
+    public function searchByCategory(Request $request)
+    {
+        $search = $request->kategoriProduk;
+        $hasilKetik = $request->q;
+        if(isset($search) && !isset($hasilKetik)){
+            $data = Job::where('kategori_id','=', $search)->get();
+        }elseif(isset($search) && isset($hasilKetik)){
+            $data = Job::where('kategori_id','=', $search)->where('job_name', 'LIKE', "%".$hasilKetik."%")->get();
+        }else{
+            $data = Job::where('job_name', 'LIKE', "%".$hasilKetik."%")->get();
+        }
+        
         return response()->json($data);
     }
 }

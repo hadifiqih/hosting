@@ -291,6 +291,7 @@ Route::controller(CustomerController::class)->group(function(){
 Route::controller(JobController::class)->group(function(){
     Route::get('/job/search', 'search')->name('job.search');
     Route::get('/job/searchByNama', 'searchByNama')->name('job.searchByNama');
+    Route::get('/job/searchByCategory', 'searchByCategory')->name('job.searchByCategory');
 });
 
 Route::controller(DocumentationController::class)->group(function(){

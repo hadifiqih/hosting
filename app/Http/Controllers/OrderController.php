@@ -90,7 +90,11 @@ class OrderController extends Controller
         return Datatables()->of($listOrder)
         ->addIndexColumn()
         ->addColumn('ticket_order', function($data){
-            return $data->ticket_order;
+            if($data->is_priority == 1){
+                return $data->ticket_order .'<span class="text-warning"><i class="fas fa-star"></i></span>';
+            }else{
+                return $data->ticket_order;
+            }
         })
         ->addColumn('title', function($data){
             return $data->title;
@@ -143,18 +147,28 @@ class OrderController extends Controller
             $button .= '</div>';
             return $button;
         })
-        ->rawColumns(['action', 'ref_desain', 'status', 'job_name'])
+        ->rawColumns(['action', 'ref_desain', 'status', 'job_name', 'ticket_order'])
         ->make(true);
     }
 
     public function listDalamProses()
     {
-        $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 1)->get();
+        if(auth()->user()->role_id == 11){
+            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 1)->where('sales_id', auth()->user()->sales->id)->get();
+        }elseif(auth()->user()->role_id == 5){
+            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 1)->get();
+        }elseif(auth()->user()->role_id == 16 || auth()->user()->role_id == 17){
+            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 1)->where('employee_id', auth()->user()->employee->id)->get();
+        }
 
         return Datatables()->of($listOrder)
         ->addIndexColumn()
         ->addColumn('ticket_order', function($data){
-            return $data->ticket_order;
+            if($data->is_priority == 1){
+                return $data->ticket_order .'<span class="text-warning"><i class="fas fa-star"></i></span>';
+            }else{
+                return $data->ticket_order;
+            }
         })
         ->addColumn('title', function($data){
             return $data->title;
@@ -213,18 +227,28 @@ class OrderController extends Controller
             $button .= '</div>';
             return $button;
         })
-        ->rawColumns(['action', 'ref_desain', 'status', 'desainer'])
+        ->rawColumns(['action', 'ref_desain', 'status', 'desainer', 'job_name', 'ticket_order'])
         ->make(true);
     }
 
     public function listSelesai()
     {
-        $listOrder = Order::with('employee', 'sales', 'job', 'user', 'kategori')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 2)->get();
+        if(auth()->user()->role_id == 11){
+            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 2)->where('sales_id', auth()->user()->sales->id)->get();
+        }elseif(auth()->user()->role_id == 5){
+            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 2)->get();
+        }elseif(auth()->user()->role_id == 16 || auth()->user()->role_id == 17){
+            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 2)->where('employee_id', auth()->user()->employee->id)->get();
+        }
 
         return Datatables()->of($listOrder)
         ->addIndexColumn()
         ->addColumn('ticket_order', function($data){
-            return $data->ticket_order;
+            if($data->is_priority == 1){
+                return $data->ticket_order .'<span class="text-warning"><i class="fas fa-star"></i></span>';
+            }else{
+                return $data->ticket_order;
+            }
         })
         ->addColumn('sales', function($data){
             return $data->sales->sales_name;
@@ -300,7 +324,7 @@ class OrderController extends Controller
             $button .= '</div>';
             return $button;
         })
-        ->rawColumns(['ref_desain', 'status', 'desainer', 'periode', 'file_cetak', 'action'])
+        ->rawColumns(['ref_desain', 'status', 'desainer', 'periode', 'file_cetak', 'action', 'ticket_order'])
         ->make(true);
     }
 
@@ -711,7 +735,6 @@ class OrderController extends Controller
     //Untuk submit file cetak bukan link
     public function submitReuploadFile($id)
     {
-
         $order = Order::find($id);
 
         if(!$order->file_cetak){
@@ -742,12 +765,20 @@ class OrderController extends Controller
 
     public function listRevisi()
     {
-        $listrevisi = DataAntrian::where('is_revision', 1)->get();
+        if(auth()->user()->role_id == 11){
+            $listrevisi = DataAntrian::where('is_revision', 1)->where('sales_id', auth()->user()->sales->id)->get();
+        }elseif(auth()->user()->role_id == 5 || auth()->user()->role_id == 16 || auth()->user()->role_id == 17){
+            $listrevisi = DataAntrian::where('is_revision', 1)->get();
+        }
 
         return Datatables()->of($listrevisi)
         ->addIndexColumn()
         ->addColumn('ticket_order', function($data){
-            return $data->ticket_order;
+            if($data->is_priority == 1){
+                return $data->ticket_order .'<span class="text-warning"><i class="fas fa-star"></i></span>';
+            }else{
+                return $data->ticket_order;
+            }
         })
         ->addColumn('sales', function($data){
             return $data->sales->sales_name;
@@ -757,15 +788,17 @@ class OrderController extends Controller
         })
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
+
             if($data->order->employee_id == auth()->user()->employee->id){
                 $button .= '<a href="javascript:void(0)" onclick="uploadRevisi('. $data->ticket_order .')" class="btn btn-sm btn-dark"><i class="fas fa-upload"></i> Unggah File Revisi</a>';
             }else{
                 $button .= '<a href="javascript:void(0)" class="btn btn-sm btn-dark disabled"><i class="fas fa-upload"></i> Unggah File Revisi</a>';
             }
             $button .= '</div>';
+
             return $button;
         })
-        ->rawColumns(['acc_desain', 'action'])
+        ->rawColumns(['acc_desain', 'action', 'ticket_order'])
         ->make(true);
     }
 
@@ -971,8 +1004,8 @@ class OrderController extends Controller
     //-------------------------------------------------------------------------------------------------------------
     // Mendapatkan Produk berdasarkan Kategori by Sales
     //-------------------------------------------------------------------------------------------------------------
-    public function getJobsByCategory(Request $request){
-        $jobs = Job::where('kategori_id', 'LIKE' , "%". $request->kategoriProduk ."%")->get();
+    public function getJobsByCategory(Request $request, $kategori){
+        $jobs = Job::where('job_name', 'LIKE' , "%". $kategori ."%")->get();
         return response()->json($jobs);
     }
 

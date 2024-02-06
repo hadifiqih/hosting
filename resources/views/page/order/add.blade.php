@@ -40,7 +40,7 @@
       <div class="mb-3">
         <label for="job" class="form-label">Jenis Produk <span class="text-danger">*</span></label>
         <br>
-        <select multiple="multiple" class="custom-select rounded-2" name="job[]" id="job" required style="width: 100%">
+        <select style="width: 100%" multiple="multiple" class="custom-select rounded-2" name="job[]" id="job" required>
 
         </select>
       </div>
@@ -140,13 +140,9 @@
     $('#job').select2({
       placeholder: 'Pilih Jenis Produk',
       ajax : {
-        url: "{{ route('getJobsByCategory') }}",
-        type: "GET",
+        url: "{{ route('job.searchByNama') }}",
         dataType: 'json',
         delay: 250,
-        data: {
-          kategori: $(this).val()
-        },
           processResults: function (data) {
             return {
               results:  $.map(data, function (item) {

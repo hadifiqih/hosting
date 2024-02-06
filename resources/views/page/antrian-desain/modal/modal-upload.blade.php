@@ -13,6 +13,7 @@
                     @csrf
                     <input type="hidden" id="idOrder" name="idOrder" class="idOrder" value="">
                 </form>
+                
                 <div class="row mt-2 mr-2 float-right">
                     <button id="submitCetak" href="javascript:void(0)" class="btn btn-primary btn-sm">Unggah</button>
                 </div>

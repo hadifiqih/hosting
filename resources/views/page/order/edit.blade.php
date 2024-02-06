@@ -159,8 +159,7 @@
     $('#job').select2({
       placeholder: 'Pilih Jenis Produk',
       ajax : {
-        url: "{{ route('getJobsByCategory') }}",
-        type: "GET",
+        url: "{{ route('job.searchByNama') }}",
         dataType: 'json',
         delay: 250,
         data: {

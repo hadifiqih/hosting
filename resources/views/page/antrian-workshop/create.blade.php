@@ -155,7 +155,7 @@
                                     <span>Total : </span><h4 class="font-weight-bold text-danger" id="totalAll"></h4>
                                 </div>
                                 {{-- Hidden input untuk mengambil nilai dari id totalAll --}}
-                                <input type="text" name="totalAllInput" id="totalAllInput">
+                                <input type="hidden" name="totalAllInput" id="totalAllInput">
                             </div>
                     </div>
                 </div>
@@ -537,26 +537,26 @@
             $('#modalPilihProduk #namaProduk').select2({
                 placeholder: 'Pilih Produk',
                 ajax: {
-                    url: "{{ route('getJobsByCategory') }}",
+                    url: "{{ route('job.searchByCategory') }}",
                     data: function (params) {
-                        var query = {
-                            kategoriProduk: $('#kategoriProduk').val()
-                        }
-                        return query;
+                        return {
+                            kategoriProduk: $('#kategoriProduk').val(),
+                            q: params.term // tambahkan jika ingin mencari berdasarkan keyword
+                        };
                     },
                     processResults: function (data) {
                         return {
-                            results:  $.map(data, function (item) {
-                            return {
-                                id: item.id,
-                                text: item.job_name
-                            };
+                            results: $.map(data, function (item) {
+                                return {
+                                    id: item.id,
+                                    text: item.job_name
+                                };
                             })
                         };
                     },
                     cache: true
-                    }
-                });
+                }
+            });
         });
 
         //DataTables Produk
