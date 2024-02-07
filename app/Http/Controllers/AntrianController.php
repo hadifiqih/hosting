@@ -19,6 +19,7 @@ use App\Models\Employee;
 
 use App\Models\Anservice;
 use App\Models\DataKerja;
+use App\Models\Ekspedisi;
 use App\Models\Pembayaran;
 use App\Models\Pengiriman;
 use App\Models\DataAntrian;
@@ -769,6 +770,10 @@ class AntrianController extends Controller
 
         $pembayaran = Pembayaran::where('ticket_order', $id)->first();
 
+        $pengiriman = Pengiriman::where('ticket_order', $id)->first();
+
+        $ekspedisi = Ekspedisi::all();
+
         $omset = $pembayaran->total_harga;
 
         $satuPersen = 1;
@@ -805,7 +810,7 @@ class AntrianController extends Controller
 
         $profit = $omset - $totalBiaya;
 
-        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'pembayaran' , 'bahan', 'totalBahan', 'biayaSales', 'biayaDesain', 'biayaPenanggungJawab', 'biayaPekerjaan', 'biayaBPJS', 'biayaTransportasi', 'biayaOverhead', 'biayaAlatListrik', 'totalBiaya', 'profit'));
+        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'pembayaran' , 'bahan', 'totalBahan', 'biayaSales', 'biayaDesain', 'biayaPenanggungJawab', 'biayaPekerjaan', 'biayaBPJS', 'biayaTransportasi', 'biayaOverhead', 'biayaAlatListrik', 'totalBiaya', 'profit', 'pengiriman', 'ekspedisi'));
     }
 
     public function updateDeadline(Request $request)

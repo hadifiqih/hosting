@@ -157,6 +157,38 @@
 
     <div class="card">
         <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-truck mr-2"></i> <strong>Informasi Pengiriman</strong></h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md">
+                    <h5><strong>Alamat Pengiriman</strong></h5>
+                    <p>{{ $pengiriman->alamat_pengiriman }}</p>
+                </div>
+                <div class="col-md">
+                    <h5><strong>Ekspedisi Pengiriman</strong></h5>
+                    <p>{{ $pengiriman->ekspedisi->nama_ekspedisi }}</p>
+                </div>
+                <div class="col-md">
+                    <h5><strong>Biaya Pengiriman</strong></h5>
+                    <p>Rp{{ number_format($pengiriman->ongkir, 0, ',', '.') }}</p>
+                </div>
+                <div class="col-md">
+                    <h5><strong>Resi (Airway Bill)</strong></h5>
+                    <p>{{ $pengiriman->no_resi == null ? '-' : $pengiriman->no_resi }}</p>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
             <h3 class="card-title"><i class="fas fa-clipboard mr-2"></i> <strong>Catatan Admin Workshop</strong></h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -166,7 +198,7 @@
         </div>
         <div class="card-body">
             <div class="row ml-1">
-                <p class="text-dark keterangan">{{ $antrian->admin_note }}</p>
+                <p class="text-dark keterangan">{{ $antrian->admin_note == null ? '-' : $antrian->admin_note }}</p>
             </div>
         </div>
     </div>

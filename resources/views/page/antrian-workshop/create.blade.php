@@ -121,21 +121,9 @@
                                 <label for="ekspedisi">Ekspedisi</label>
                                 <select name="ekspedisi" id="ekspedisi" class="form-control">
                                     <option value="" selected disabled>Pilih Ekspedisi</option>
-                                    <option value="GOSEND">GO-SEND (Instant)</option>
-                                    <option value="JNE">JNE</option>
-                                    <option value="J&T">J&T Express</option>
-                                    <option value="POS">POS Indonesia</option>
-                                    <option value="TIKI">TIKI</option>
-                                    <option value="WAHANA">Wahana</option>
-                                    <option value="SICEPAT">SiCepat Express</option>
-                                    <option value="NINJA">Ninja Express</option>
-                                    <option value="LION">Lion Parcel</option>
-                                    <option value="IDE">ID Express</option>
-                                    <option value="ANTERAJA">AnterAja</option>
-                                    <option value="BALI">Bali Prima Travel</option>
-                                    <option value="BUS">Bus Terminal</option>
-                                    <option value="KERETA">Kereta Api</option>
-                                    <option value="LAIN">Lainnya</option>
+                                    @foreach($ekspedisi as $eks)
+                                    <option value="{{ $eks->kode_ekspedisi }}">{{ $eks->nama_ekspedisi }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -222,7 +210,7 @@
             </div>
         </div>
     </div>
-      {{-- Tombol Submit Antrikan --}}
+    {{-- Tombol Submit Antrikan --}}
         <div class="row">
             <div class="col-12">
                 <div class="card">

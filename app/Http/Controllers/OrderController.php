@@ -12,9 +12,10 @@ use App\Models\Barang;
 use App\Models\Design;
 use App\Models\Customer;
 use App\Models\Employee;
+use App\Models\Ekspedisi;
 use App\Models\GambarAcc;
-use App\Models\PrintFile;
 
+use App\Models\PrintFile;
 use App\Models\DataAntrian;
 use Illuminate\Http\Request;
 use App\Notifications\AntrianDesain;
@@ -981,7 +982,9 @@ class OrderController extends Controller
             $totalBarang += $b->price * $b->qty;
         }
 
-        return view ('page.antrian-workshop.create', compact('order', 'totalBarang'));
+        $ekspedisi = Ekspedisi::all();
+
+        return view ('page.antrian-workshop.create', compact('order', 'totalBarang', 'ekspedisi'));
     }
 
     //-------------------------------------------------------------------------------------------------------------
