@@ -44,6 +44,17 @@
                     <textarea name="keterangan" id="keterangan" cols="30" rows="5" class="form-control" placeholder="Ukuran : 6x6cm" required></textarea>
                 </div>
 
+                <style>
+                    .select2-container .select2-selection--single {
+                        height: 38px;
+                    }
+                </style>
+                <div class="form-group">
+                    <label for="infoPelanggan">Periode Iklan</label>
+                    <select class="form-control select2" id="periode_iklan" name="iklan" style="width: 100%">
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label for="fileAccDesain">File ACC Desain</label>
                     <div class="input-group">

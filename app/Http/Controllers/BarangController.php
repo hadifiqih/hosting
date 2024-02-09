@@ -59,6 +59,7 @@ class BarangController extends Controller
         $barang->qty = $request->qty;
         $barang->note = $request->keterangan;
         $barang->accdesain = $fileName;
+        $barang->iklan_id = $request->iklan ? $request->iklan : null;
         $barang->save();
 
         return response()->json([

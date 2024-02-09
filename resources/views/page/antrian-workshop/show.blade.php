@@ -130,11 +130,11 @@
         <div class="row">
             <div class="col pr-4 mt-3">
                 <h5><strong>Total Penjualan : </strong><span class="float-right font-weight-bold text-danger">Rp{{ number_format($total, 0, ',', '.') }}</span></h5>
-                <h6>Ongkos Kirim<span class="float-right text-danger">Rp{{ number_format($antrian->pengiriman->ongkir, 0, ',', '.') }}</span></h6>
+                <h6>Ongkos Kirim<span class="float-right text-danger">Rp{{ !isset($pengiriman->ongkir ) ? '-' : number_format($antrian->pengiriman->ongkir, 0, ',', '.') }}</span></h6>
                 <h6>Biaya Pasang<span class="float-right text-danger">Rp{{ number_format($antrian->pembayaran->biaya_pasang, 0, ',', '.') }}</span></h6>
                 <h6>Biaya Packing<span class="float-right text-danger">Rp{{ number_format($antrian->pembayaran->biaya_packing, 0, ',', '.') }}</span></h6>
                 @php
-                    $ongkir = $antrian->pengiriman->ongkir;
+                    $ongkir = !isset($pengiriman->ongkir) ? 0 : $antrian->pengiriman->ongkir;
                     $biayaPasang = $antrian->pembayaran->biaya_pasang;
                     $biayaPacking = $antrian->pembayaran->biaya_packing;
                     $totalKeseluruhan = $total + $ongkir + $biayaPasang + $biayaPacking;
@@ -168,19 +168,19 @@
             <div class="row">
                 <div class="col-md">
                     <h5><strong>Alamat Pengiriman</strong></h5>
-                    <p>{{ $pengiriman->alamat_pengiriman }}</p>
+                    <p>{{ !isset($pengiriman->alamat_pengiriman) ? '-' : $pengiriman->alamat_pengiriman }}</p>
                 </div>
                 <div class="col-md">
                     <h5><strong>Ekspedisi Pengiriman</strong></h5>
-                    <p>{{ $pengiriman->ekspedisi->nama_ekspedisi }}</p>
+                    <p>{{ !isset($pengiriman->ekspedisi->nama_ekspedisi) ? '-' : $pengiriman->ekspedisi->nama_ekspedisi }}</p>
                 </div>
                 <div class="col-md">
                     <h5><strong>Biaya Pengiriman</strong></h5>
-                    <p>Rp{{ number_format($pengiriman->ongkir, 0, ',', '.') }}</p>
+                    <p>Rp{{ !isset($pengiriman->ongkir) ? '-' : number_format($pengiriman->ongkir, 0, ',', '.') }}</p>
                 </div>
                 <div class="col-md">
                     <h5><strong>Resi (Airway Bill)</strong></h5>
-                    <p>{{ $pengiriman->no_resi == null ? '-' : $pengiriman->no_resi }}</p>
+                    <p>{{ !isset($pengiriman->no_resi) || $pengiriman->no_resi == null ? '-' : $pengiriman->no_resi }}</p>
                 </div>
                 
             </div>

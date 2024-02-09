@@ -44,11 +44,11 @@
                         <label for="sumberPelanggan">Status Pelanggan</label>
                         <input type="text" class="form-control" id="statusPelanggan" name="statusPelanggan" placeholder="Status Pelanggan" value="{{ old('statusPelanggan') }}" readonly>
                     </div>
-              </div>
+            </div>
             </div>
         </div>
-      </div>
-      <div class="row">
+    </div>
+    <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
@@ -592,6 +592,32 @@
                                     text: item.nama + ' - ' + item.telepon,
                                     id: item.id,
                                 }
+                            }
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+
+        $('#periode_iklan').select2({
+            placeholder: 'Pilih Periode Iklan',
+            ajax: {
+                url: "{{ route('iklan.getPeriodeIklan') }}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                        return {
+                            sales: {{ $order->sales_id }},
+                            q: params.term // tambahkan jika ingin mencari berdasarkan keyword
+                        };
+                    },
+                processResults: function (data) {
+                    return {
+                        results:  $.map(data, function (item) {
+                            return {
+                                text: item.nomor_iklan + ' - ' + item.job.job_name + ' - ' + item.tanggal_mulai + ' -> ' + item.tanggal_selesai,
+                                id: item.id,
                             }
                         })
                     };

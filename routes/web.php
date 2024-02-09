@@ -13,13 +13,14 @@ use App\Http\Controllers\UserController;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Password;
 use App\Http\Controllers\BahanController;
+use App\Http\Controllers\IklanController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Auth\Events\PasswordReset;
 use App\Http\Controllers\BarangController;
+
 use App\Http\Controllers\DesignController;
 
 use App\Http\Controllers\ReportController;
-
 use App\Http\Controllers\AntrianController;
 use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\PaymentController;
@@ -146,6 +147,11 @@ Route::controller(AuthController::class)->group(function(){
     Route::get('/beams-generateToken', 'generateToken')->name('beams.auth');
 });
 
+Route::resource('iklan', IklanController::class);
+Route::controller(IklanController::class)->group(function(){
+    Route::get('/login/getTableIklan', 'tableIklan')->name('getTableIklan');
+});
+
 Route::controller(ReportController::class)->group(function(){
     Route::get('/report-workshop', 'pilihTanggal')->name('laporan.workshop');
     Route::post('/report-workshop-pdf', 'exportLaporanWorkshopPDF')->name('laporan-workshop-pdf');
@@ -232,7 +238,7 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/design/submit-reupload-file/{id}', 'submitReuploadFile')->name('submit.reupload');
     Route::post('/design/submit-reupload-link', 'submitLinkReupload')->name('submitLinkReupload');
     //--------------------------------------------
-    
+    Route::get('/iklan/getPeriodeIklan', 'getPeriodeIklan')->name('iklan.getPeriodeIklan');
 });
 
 Route::controller(AntrianController::class)->group(function(){

@@ -434,7 +434,7 @@ class AntrianController extends Controller
         $antrian->sales_id = $request->input('sales_id');
         $antrian->customer_id = $request->input('customer_id');
         $antrian->order_id = $request->input('order_id');
-        $antrian->status = 0;
+        $antrian->status = 1;
         $antrian->save();
 
         //simpan pembayaran
@@ -479,6 +479,8 @@ class AntrianController extends Controller
         $bukti->save();
 
         $order = Order::where('ticket_order', $request->input('ticket_order'))->first();
+        $order->toWorkshop = 1;
+        $order->save();
 
         //simpan data kerja
         $dataKerja = new DataKerja();

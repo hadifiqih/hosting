@@ -171,26 +171,109 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-                @if(Auth::user()->role_id == 11)
-                    @include('layouts.partials.menu-sales')
-                @elseif(Auth::user()->role_id == 12)
-                    @include('layouts.partials.menu-marol')
-                @elseif(Auth::user()->role_id == 10 || Auth::user()->role_id == 15)
-                    @include('layouts.partials.menu-admin-workshop')
-                @elseif(Auth::user()->role_id == 19)
-                    @include('layouts.partials.menu-admin')
-                @elseif(Auth::user()->role_id == 16 || Auth::user()->role_id == 17)
-                    @include('layouts.partials.menu-desainer')
-                @elseif(Auth::user()->role_id == 13)
-                    @include('layouts.partials.menu-produksi')
-                @else
+          <li class="nav-item menu-open">
+            <a href="{{ url('/dashboard') }}" class="nav-link active">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                    Antrian
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                @if(auth()->user()->role == 'sales' || auth()->user()->employee->can_design == 1 || auth()->user()->role == 'desain' || auth()->user()->role == 'manager')
+                <li class="nav-item">
+                    <a href="{{ route('design.index') }}" class="nav-link {{ request()->routeIs('design.index') || request()->routeIs('order.edit') ? 'active' : '' }}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>{{ auth()->user()->role == 'sales' ? 'Submit Project' : 'List Desain' }}</p>
+                    </a>
+                </li>
+                @endif
+                @if(auth()->user()->role == 'sales')
+                <li class="nav-item">
+                    <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') ? 'active' : '' }}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>List Order</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('report.sales') }}" class="nav-link {{ request()->routeIs('report.sales') ? 'active' : '' }}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Ringkasan Penjualan</p>
+                    </a>
+                </li>
+                @endif
+
+                @if(auth()->user()->role == 'admin' || auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising' || auth()->user()->role == 'dokumentasi' || auth()->user()->role == 'supervisor' || auth()->user()->role == 'manager' || auth()->user()->role == 'estimator')
+                <li class="nav-item">
+                    <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') ? 'active' : '' }}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>List Pekerjaan</p>
+                    </a>
+                </li>
+                @endif
+
+                @if(auth()->user()->role == 'admin')
+                {{-- Memilih tanggal untuk Unduh Laporan Workshop --}}
+                <li class="nav-item">
+                    <a href="{{ route('laporan.workshop') }}" class="nav-link {{ request()->routeIs('laporan.workshop') ? 'active' : '' }}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Laporan Workshop</p>
+                    </a>
+                </li>
+                @elseif(auth()->user()->role == 'estimator')
+                <li class="nav-item">
+                    <a href="{{ route('estimator.index') }}" class="nav-link {{ request()->routeIs('estimator.index') || request()->routeIs('estimator.edit') ? 'active' : '' }}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Estimator</p>
+                    </a>
+                </li>
+                @endif
+
+                @if(auth()->user()->role == 'staffAdmin' || auth()->user()->role == 'staffGudang' || auth()->user()->role == 'adminKeuangan')
                     <li class="nav-item">
-                        <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') ? 'active' : '' }}">
+                        <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('laporan.workshop') ? 'active' : '' }}">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Antrian Workshop</p>
                         </a>
                     </li>
                 @endif
+
+                @if(auth()->user()->role == 'adminKeuangan')
+                    <li class="nav-item">
+                        <a href="{{ route('ringkasan.salesIndex') }}" class="nav-link {{ request()->routeIs('ringkasan.salesIndex') ? 'active' : '' }}">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Ringkasan Penjualan</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('omset.globalSales') }}" class="nav-link {{ request()->routeIs('omset.globalSales') ? 'active' : '' }}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Omset Global Sales</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('omset.perCabang') }}" class="nav-link {{ request()->routeIs('omset.perCabang') ? 'active' : '' }}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Omset Cabang</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('omset.perProduk') }}" class="nav-link {{ request()->routeIs('omset.perProduk') ? 'active' : '' }}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Omset Produk</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('customer.index') }}" class="nav-link {{ request()->routeIs('customer.index') ? 'active' : '' }}">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Data Pelanggan</p>
+                        </a>
+                    </li>
+                @endif
+            </ul>
+          </li>
+        </ul>
+      </nav>
       <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->

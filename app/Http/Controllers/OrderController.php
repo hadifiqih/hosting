@@ -5,16 +5,17 @@ namespace App\Http\Controllers;
 use PDF;
 use App\Models\Job;
 use App\Models\User;
+use App\Models\Iklan;
 use App\Models\Order;
 use App\Models\Sales;
-use App\Models\Barang;
 
+use App\Models\Barang;
 use App\Models\Design;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Ekspedisi;
-use App\Models\GambarAcc;
 
+use App\Models\GambarAcc;
 use App\Models\PrintFile;
 use App\Models\DataAntrian;
 use Illuminate\Http\Request;
@@ -985,6 +986,14 @@ class OrderController extends Controller
         $ekspedisi = Ekspedisi::all();
 
         return view ('page.antrian-workshop.create', compact('order', 'totalBarang', 'ekspedisi'));
+    }
+
+    public function getPeriodeIklan(Request $request)
+    {
+        $sales = $request->sales;
+        $iklan = Iklan::with('job')->where('sales_id', $sales)->get();
+
+        return response()->json($iklan);
     }
 
     //-------------------------------------------------------------------------------------------------------------

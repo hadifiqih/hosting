@@ -156,7 +156,6 @@
                                     <tbody>
                                 
                                     </tbody>
-                                    
                                 </table>
                                 <!-- /.card -->
                             </div>
