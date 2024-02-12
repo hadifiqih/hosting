@@ -988,14 +988,6 @@ class OrderController extends Controller
         return view ('page.antrian-workshop.create', compact('order', 'totalBarang', 'ekspedisi'));
     }
 
-    public function getPeriodeIklan(Request $request)
-    {
-        $sales = $request->sales;
-        $iklan = Iklan::with('job')->where('sales_id', $sales)->get();
-
-        return response()->json($iklan);
-    }
-
     //-------------------------------------------------------------------------------------------------------------
     // Tambah Produk by Modal by Sales
     //-------------------------------------------------------------------------------------------------------------

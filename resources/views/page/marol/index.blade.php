@@ -32,6 +32,7 @@
                                 <th>Nama Sales</th>
                                 <th>Platform</th>
                                 <th>Biaya Iklan</th>
+                                <th>Status Iklan</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -46,6 +47,46 @@
 
 @section('script')
     <script>
+        //delete iklan
+        function deleteDataIklan(id) {
+        @if(Auth::user()->role_id == 20)
+                Swal.fire({
+                    title: 'Apakah Anda Yakin?',
+                    text: "Data Iklan ini akan dihapus!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Hapus!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "iklan/" + id,
+                            type: "POST",
+                            data: {
+                                '_method': 'DELETE',
+                                '_token': '{{ csrf_token() }}'
+                            },
+                            success: function(data) {
+                                $('#tableDataIklan').DataTable().ajax.reload();
+                                Swal.fire(
+                                    'Terhapus!',
+                                    'Data Iklan berhasil dihapus.',
+                                    'success'
+                                )
+                            }
+                        });
+                    }
+                });
+            @else
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Hanya Supervisor yang dapat menghapus data!',
+                });
+            @endif
+            }
+
         //datatable iklan
         $(document).ready(function() {
             $('#tableDataIklan').DataTable({
@@ -61,9 +102,27 @@
                     { data: 'nama_sales', name: 'nama_sales' },
                     { data: 'platform', name: 'platform' },
                     { data: 'biaya_iklan', name: 'biaya_iklan' },
+                    { data: 'status', name: 'status' },
                     { data: 'action', name: 'action' }
                 ]
             });
+
+            //jika ada pesan sukses
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: '{{ session('success') }}'
+                });
+            @elseif(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: '{{ session('error') }}'
+                });
+            @endif
         });
+
+
     </script>
 @endsection

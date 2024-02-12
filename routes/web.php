@@ -148,8 +148,10 @@ Route::controller(AuthController::class)->group(function(){
 });
 
 Route::resource('iklan', IklanController::class);
+
 Route::controller(IklanController::class)->group(function(){
     Route::get('/login/getTableIklan', 'tableIklan')->name('getTableIklan');
+    Route::get('/iklan/getPeriodeIklan', 'getPeriodeIklan')->name('iklan.getPeriodeIklan');
 });
 
 Route::controller(ReportController::class)->group(function(){
@@ -238,7 +240,6 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/design/submit-reupload-file/{id}', 'submitReuploadFile')->name('submit.reupload');
     Route::post('/design/submit-reupload-link', 'submitLinkReupload')->name('submitLinkReupload');
     //--------------------------------------------
-    Route::get('/iklan/getPeriodeIklan', 'getPeriodeIklan')->name('iklan.getPeriodeIklan');
 });
 
 Route::controller(AntrianController::class)->group(function(){

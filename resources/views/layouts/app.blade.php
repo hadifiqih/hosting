@@ -173,7 +173,7 @@
                with font-awesome or any other icon font library -->
                 @if(Auth::user()->role_id == 11)
                     @include('layouts.partials.menu-sales')
-                @elseif(Auth::user()->role_id == 12)
+                @elseif(Auth::user()->role_id == 12 || Auth::user()->role_id == 20)
                     @include('layouts.partials.menu-marol')
                 @elseif(Auth::user()->role_id == 10 || Auth::user()->role_id == 15)
                     @include('layouts.partials.menu-admin-workshop')

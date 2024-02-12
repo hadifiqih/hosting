@@ -49,10 +49,15 @@
                         height: 38px;
                     }
                 </style>
-                <div class="form-group">
+                <div class="form-group mb-1">
                     <label for="infoPelanggan">Periode Iklan</label>
                     <select class="form-control select2" id="periode_iklan" name="iklan" style="width: 100%">
                     </select>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" id="not_iklan" type="checkbox" name="not_iklan">
+                    <label class="form-check-label">Tidak dari iklan</label>
                 </div>
 
                 <div class="form-group">

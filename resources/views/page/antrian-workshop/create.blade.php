@@ -336,6 +336,16 @@
         $('.divEksLain').hide();
         $('.divResi').hide();
 
+        $('#not_iklan').on('change', function(){
+            if($(this).is(':checked')){
+                $('#periode_iklan').val('');
+                //disabled <select></select>
+                $('#periode_iklan').prop('disabled', true);
+            }else{
+                $('#periode_iklan').prop('disabled', false);
+            }
+        })
+
         //function untuk membuat alamat pengiriman sama dengan alamat pada data pelanggan customer
         $('#alamatSama').on('change', function(){
             if($(this).is(':checked')){
@@ -603,15 +613,9 @@
         $('#periode_iklan').select2({
             placeholder: 'Pilih Periode Iklan',
             ajax: {
-                url: "{{ route('iklan.getPeriodeIklan') }}",
+                url: "{{ route('iklan.show', $order->sales_id) }}",
                 dataType: 'json',
                 delay: 250,
-                data: function (params) {
-                        return {
-                            sales: {{ $order->sales_id }},
-                            q: params.term // tambahkan jika ingin mencari berdasarkan keyword
-                        };
-                    },
                 processResults: function (data) {
                     return {
                         results:  $.map(data, function (item) {
