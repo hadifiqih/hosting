@@ -6,6 +6,8 @@ use App\Models\Job;
 use App\Models\User;
 use App\Models\Iklan;
 use App\Models\Sales;
+use App\Models\Barang;
+use App\Models\DataAntrian;
 use Illuminate\Http\Request;
 use App\Models\SumberPelanggan;
 
@@ -33,6 +35,9 @@ class IklanController extends Controller
             ->addIndexColumn()
             ->addColumn('marol', function($row){
                 return $row->user->name;
+            })
+            ->addColumn('nomor_iklan', function($row){
+                return $row->nomor_iklan;
             })
             ->addColumn('nomor_iklan', function($row){
                 return $row->nomor_iklan;
@@ -164,7 +169,64 @@ class IklanController extends Controller
     public function show($id)
     {
         $iklan = Iklan::with('job')->where('sales_id', $id)->where('status', 1)->get();
-
         return response()->json($iklan);
-    } 
+    }
+
+    public function destroy($id)
+    {
+        try{
+        $iklan = Iklan::find($id);
+        $iklan->delete();
+
+        return redirect()->route('iklan.index')
+            ->with('success','Data Iklan berhasil dihapus !');
+        } catch (\Exception $e) {
+            return redirect()->route('iklan.index')
+            ->with('error','Data Iklan gagal dihapus !');
+        }
+    }
+
+    public function penjualanIklan()
+    {
+        $bulan = date('m');
+        $barangs = Barang::with('user', 'job', 'iklan')->where('iklan_id', '!=', null)->whereMonth('created_at', $bulan)->get();
+        $omset = 0;
+        foreach($barangs as $barang){
+            $omset += $barang->price * $barang->qty;
+        }
+        return view('page.marol.penjualan', compact('omset'));
+    }
+
+    public function penjualanJson()
+    {
+        $barangs = Barang::with('user', 'job', 'iklan')->where('iklan_id', '!=', null)->get();
+        
+        return Datatables()->of($barangs)
+            ->addIndexColumn()
+            ->addColumn('nomor_iklan', function($row){
+                return $row->iklan->nomor_iklan;
+            })
+            ->addColumn('tanggal_order', function($row){
+                return $row->created_at->format('d-m-Y');
+            })
+            ->addColumn('marol', function($row){
+                return $row->iklan->user->name;
+            })
+            ->addColumn('sales', function($row){
+                return $row->iklan->sales->sales_name;
+            })
+            ->addColumn('nama_produk', function($row){
+                return $row->iklan->job->job_name;
+            })
+            ->addColumn('sumber_pelanggan', function($row){
+                $sumber = SumberPelanggan::where('code_sumber', 'LIKE', $row->sumber_pelanggan)->first();
+                return $sumber->nama_sumber;
+            })
+            ->addColumn('omset', function($row){
+                $omset = $row->price * $row->qty;
+                return '<strong>Rp. '.number_format($omset,0,',','.') .'</strong>';
+            })
+            ->rawColumns(['omset'])
+            ->make(true);
+    }
 }

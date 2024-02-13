@@ -338,7 +338,7 @@
 
         $('#not_iklan').on('change', function(){
             if($(this).is(':checked')){
-                $('#periode_iklan').val('');
+                $('#periode_iklan').val(null).trigger('change');
                 //disabled <select></select>
                 $('#periode_iklan').prop('disabled', true);
             }else{
@@ -665,6 +665,7 @@
             dataInput.append('qty', $('#qty').val());
             dataInput.append('harga', $('#harga').val());
             dataInput.append('keterangan', $('#keterangan').val());
+            dataInput.append('periode_iklan', $('#periode_iklan').val());
 
             $.ajax({
                 url: "{{ route('barang.store') }}",

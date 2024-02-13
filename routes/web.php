@@ -147,11 +147,18 @@ Route::controller(AuthController::class)->group(function(){
     Route::get('/beams-generateToken', 'generateToken')->name('beams.auth');
 });
 
-Route::resource('iklan', IklanController::class);
-
 Route::controller(IklanController::class)->group(function(){
-    Route::get('/login/getTableIklan', 'tableIklan')->name('getTableIklan');
+    Route::get('/iklan', 'index')->name('iklan.index');
+    Route::get('/iklan/create', 'create')->name('iklan.create');
+    Route::get('/iklan/{id}', 'show')->name('iklan.show');
+    Route::post('/iklan', 'store')->name('iklan.store');
+    Route::get('/iklan/{id}/edit', 'edit')->name('iklan.edit');
+    Route::put('/iklan/{id}', 'update')->name('iklan.update');
+    Route::delete('/iklan/{id}', 'destroy')->name('iklan.destroy');
+    Route::get('/iklan/getTableIklan', 'tableIklan')->name('getTableIklan');
     Route::get('/iklan/getPeriodeIklan', 'getPeriodeIklan')->name('iklan.getPeriodeIklan');
+    Route::get('/iklan/penjualan-iklan', 'penjualanIklan')->name('iklan.penjualanIklan');
+    Route::get('/iklan/penjualan-iklan-json', 'penjualanJson')->name('iklan.penjualanJson');
 });
 
 Route::controller(ReportController::class)->group(function(){
@@ -179,7 +186,7 @@ Route::controller(ReportController::class)->group(function(){
     Route::get('/order/{id}/nota-order-view', 'notaOrderView')->name('order.notaOrderView');
     Route::get('/cetak-form-espk/{id}', 'cetakFormEspk')->name('cetak-form-espk');
     Route::get('/report/tampilBP/{id}', 'tampilBP')->name('report.tampilBP');
-
+    // Route Laporan Iklan
 });
 
 Route::controller(DesignController::class)->group(function(){

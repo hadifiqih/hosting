@@ -51,7 +51,7 @@
                 </style>
                 <div class="form-group mb-1">
                     <label for="infoPelanggan">Periode Iklan</label>
-                    <select class="form-control select2" id="periode_iklan" name="iklan" style="width: 100%">
+                    <select class="form-control select2" id="periode_iklan" name="periode_iklan" style="width: 100%">
                     </select>
                 </div>
 
