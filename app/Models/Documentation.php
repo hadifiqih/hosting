@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Antrian;
+use App\Models\DataAntrian;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Documentation extends Model
 {
@@ -14,7 +15,7 @@ class Documentation extends Model
 
     public function antrian()
     {
-        return $this->belongTo(Antrian::class);
+        return $this->belongsTo(DataAntrian::class, 'ticket_order', 'ticket_order');
     }
 
 }

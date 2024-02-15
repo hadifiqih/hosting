@@ -147,7 +147,7 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="{{ Auth::user()->employee->photo == null ? asset('adminlte/dist/img/user-kosong.png') :  asset('storage/profile/'. Auth::user()->employee->photo)  }}" class="img-circle elevation-2" alt="User Image">
+          <img src="{{ !isset(Auth::user()->employee->photo) || Auth::user()->employee->photo == null ? asset('adminlte/dist/img/user-kosong.png') :  asset('storage/profile/'. Auth::user()->employee->photo)  }}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
           <a href="{{ route('employee.show', Auth::user()->id) }}" class="d-block">{{ Auth::user()->name }}</a>
@@ -181,6 +181,8 @@
                     @include('layouts.partials.menu-desainer')
                 @elseif(Auth::user()->role_id == 13)
                     @include('layouts.partials.menu-produksi')
+                @elseif(Auth::user()->role_id == 21)
+                    @include('layouts.partials.menu-dokumentasi')
                 @else
                     <li class="nav-item">
                         <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') ? 'active' : '' }}">
@@ -322,22 +324,23 @@
     .then(userId => console.log('Successfully registered and subscribed!', userId))
     .then(() =>
 
-    @if(Auth::user()->role == 'sales')
+    @if(Auth::user()->role_id == 11)
     beamsClient.setDeviceInterests(['hello' , 'sales'])
-    @elseif(Auth::user()->role == 'admin')
+    @elseif(Auth::user()->role_id == 15)
     beamsClient.setDeviceInterests(['hello' , 'admin'])
-    @elseif(Auth::user()->role == 'stempel' || auth()->user()->role == 'advertising')
+    @elseif(Auth::user()->role_id == 13)
     beamsClient.setDeviceInterests(['hello' , 'operator'])
-    @elseif(Auth::user()->role == 'supervisor')
+    @elseif(Auth::user()->role_id == 5 || Auth::user()->role_id == 20)
     beamsClient.setDeviceInterests(['hello' , 'supervisor'])
-    @elseif(Auth::user()->role == 'estimator')
+    @elseif(Auth::user()->role_id == 10)
     beamsClient.setDeviceInterests(['hello', 'operator'])
-    @elseif(Auth::user()->role == 'desain' || Auth::user()->employee->can_design == 1)
+    @elseif(Auth::user()->role_id == 16)
     beamsClient.setDeviceInterests(['hello' , 'desain'])
     @else
     beamsClient.setDeviceInterests(['hello'])
     @endif
     )
+
     .then(() => beamsClient.getDeviceInterests())
     .then(interests => console.log('Successfully registered and subscribed!', interests))
     .catch(console.error);

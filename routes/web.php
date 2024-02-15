@@ -309,7 +309,10 @@ Route::controller(JobController::class)->group(function(){
 });
 
 Route::controller(DocumentationController::class)->group(function(){
-    Route::get('/documentation/{id}', 'previewDokumentasi')->name('documentation.preview');
+    //documentation index
+    Route::get('/documentation', 'index')->name('documentation.index');
+    Route::get('/documentation/{id}/edit', 'edit')->name('documentation.edit');
+    Route::get('/documentation/json', 'indexJson')->name('documentation.indexJson');
 });
 
 Route::controller(UserController::class)->group(function(){
