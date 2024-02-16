@@ -49,6 +49,9 @@ class BarangController extends Controller
             $pathGambar = 'acc_desain/'.$fileName;
             Storage::disk('public')->put($pathGambar, file_get_contents($file));
         }
+
+        //cek apakah user memiliki relasi dengan tabel sales
+        
         
         $barang = new Barang();
         $barang->ticket_order = $request->ticket_order;

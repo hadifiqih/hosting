@@ -91,16 +91,112 @@
                             <!-- /.col -->
                         </div>
                     </div>
+                    <div class="tab-pane fade" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Selesai Dokumentasi</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <table id="dataSelesai" class="table table-responsive table-bordered table-hover" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Ticket Order</th>
+                                            <th scope="col">Sales</th>
+                                            <th scope="col">Desain</th>
+                                            <th scope="col">Nama Produk</th>
+                                            <th scope="col">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                                <!-- /.card -->
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- /.row -->
+    @include('page.dokumentasi.modal.show-dokumentasi')
 @endsection
 
 @section('script')
 <script src="{{ asset('adminlte/dist/js/maskMoney.min.js') }}"></script>
     <script>
+        function progressDokumentasi(id) {
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: "Data akan dipindahkan ke selesai dokumentasi!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, pindahkan!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ url('documentation/progress') }}/" + id,
+                        type: "GET",
+                        success: function(data) {
+                            if (data.status == 'success') {
+                                Swal.fire(
+                                    'Berhasil!',
+                                    'Data berhasil dipindahkan ke selesai dokumentasi.',
+                                    'success'
+                                ).then((result) => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Gagal!',
+                                    'Data gagal dipindahkan ke selesai dokumentasi.',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function tampilDokumentasi(id){
+            $.ajax({
+                url: "{{ url('documentation/show') }}/" + id,
+                type: "GET",
+                success: function(response, data) {
+                    if (response.status == 200) {
+                        $('#modal-tampilDokumentasi').modal('show');
+                        $('#gambarDokum').attr('src', '{{ asset("storage/dokumentasi") }}/' + response.data.filename);
+                    } else {
+                        Swal.fire(
+                            'Gagal!',
+                            'Data gagal ditampilkan.',
+                            'error'
+                        );
+                    }
+                }
+            });
+        }
+
+        function downloadGambar() {
+            var src = $('#gambarDokum').attr('src');
+            var a = document.createElement('a');
+            var waktu = Date.now();
+            //ambil extensi gambar
+            var ext = src.split('.').pop();
+            a.href = src;
+            a.download = waktu + '.' + ext;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
         $(document).ready(function() {
             $('.maskRupiah').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
             
@@ -121,9 +217,27 @@
                 ]
             });
 
+            $("#dataSelesai").DataTable({
+                responsive: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('documentation.selesaiJson') }}",
+                },
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                    {data: 'ticket_order', name: 'ticket_order'},
+                    {data: 'sales', name: 'sales'},
+                    {data: 'accdesain', name: 'accdesain', orderable: false, searchable: false},
+                    {data: 'nama_produk', name: 'nama_produk'},
+                    {data: 'action', name: 'action'}
+                ]
+            });
+
             //reload ajax datatable setiap 10 menit
             setInterval(function(){
                 $('#dataAntrian').DataTable().ajax.reload();
+                $('#dataSelesai').DataTable().ajax.reload();
             }, 600000);
         });
     </script>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Kategori;
+use App\Models\Documentation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -15,6 +16,11 @@ class Barang extends Model
     public function dataKerja()
     {
         return $this->belongsTo(DataKerja::class, 'ticket_order', 'ticket_order');
+    }
+
+    public function documentation()
+    {
+        return $this->belongsTo(Documentation::class);
     }
 
     public function order()

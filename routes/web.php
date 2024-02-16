@@ -312,7 +312,11 @@ Route::controller(DocumentationController::class)->group(function(){
     //documentation index
     Route::get('/documentation', 'index')->name('documentation.index');
     Route::get('/documentation/{id}/edit', 'edit')->name('documentation.edit');
+    Route::get('/documentation/show/{id}', 'show')->name('documentation.show');
     Route::get('/documentation/json', 'indexJson')->name('documentation.indexJson');
+    Route::get('/documentation/selesai-json', 'selesaiJson')->name('documentation.selesaiJson');
+    Route::get('/documentation/download/{id}', 'downloadGambar')->name('documentation.download');
+    Route::post('/documentation/upload-gambar', 'uploadGambar')->name('documentation.uploadGambar');
 });
 
 Route::controller(UserController::class)->group(function(){
