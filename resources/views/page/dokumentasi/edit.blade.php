@@ -19,13 +19,14 @@
                 <div class="card-body">
                         <!-- Formulir Dropzone untuk unggah file -->
                         <form action="{{ route('documentation.upload') }}" class="dropzone" id="my-dropzone">
+                            @csrf
                             <div class="dz-message" data-dz-message><span>Letakkan file di sini atau klik untuk memilih file</span></div>
                             <input type="hidden" name="job_id" value="{{ $barang->job_id }}">
-
+                            <input type="hidden" name="barang_id" value="{{ $barang->id }}">
                         </form>
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button id="submitUpload" type="submit" class="btn btn-primary">Simpan</button>
                 </div>
             </div>
         </div>
@@ -41,7 +42,32 @@
     dictDefaultMessage: "Letakkan file di sini atau klik untuk memilih file",
     acceptedFiles: 'image/*', // Batasi hanya file gambar yang dapat diunggah
     addRemoveLinks: true, // Tampilkan tautan Hapus pada setiap file yang diunggah
-    autoUpload: false, // Setel false agar file tidak diunggah secara otomatis
+    autoProcessQueue: false, // Nonaktifkan otomatis mengunggah file saat file dipilih
+    init: function() {
+      var submitButton = document.querySelector("#submitUpload")
+      myDropzone = this; // Menyimpan objek Dropzone ke variabel global
+      submitButton.addEventListener("click", function() {
+        myDropzone.processQueue(); // Mengunggah file yang dipilih
+      });
+      // Menampilkan gambar saat file diunggah
+      this.on("complete", function(file) {
+        if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+          // tampilkan swal berhasil
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Dokumentasi berhasil diunggah',
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            // redirect ke halaman sebelumnya
+            setTimeout(function() {
+                window.location.href = "{{ route('documentation.index') }}";
+            }, 2000);
+        }
+    });
+    }
   };
 </script>
 

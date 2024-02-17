@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use Illuminate\Http\Request;
 use App\Models\Documentation;
-use App\Models\DataAntrian; // Import the DataAntrian model
+use Illuminate\Support\Facades\Storage;
 
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\DataAntrian; // Import the DataAntrian model
 
 class DocumentationController extends Controller
 {
@@ -28,7 +29,7 @@ class DocumentationController extends Controller
         try {
             $barang = Barang::with('antrian')->whereHas('antrian', function ($query) {
                 $query->where('status', 1);
-            })->where('documentation_id', null)->get(); // Fetch the $barang variable correctly
+            })->where('documentation_id', null)->orderBy('created_at', 'asc')->get(); // Fetch the $barang variable correctly
         
             return Datatables::of($barang)
                 ->addIndexColumn()
@@ -65,7 +66,7 @@ class DocumentationController extends Controller
     public function selesaiJson()
     {
         try {
-            $barang = Barang::with('antrian')->where('documentation_id', '!=', null)->get(); // Fetch the $barang variable correctly
+            $barang = Barang::with('antrian')->where('documentation_id', '!=', null)->orderBy('updated_at', 'desc')->get(); // Fetch the $barang variable correctly
         
             return Datatables::of($barang)
                 ->addIndexColumn()
@@ -117,5 +118,35 @@ class DocumentationController extends Controller
         $barang = Barang::find($id);
         
         return view('page.dokumentasi.edit', compact('barang'));
+    }
+
+    public function uploadGambar(Request $request)
+    {
+        $this->validate(request(), [
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:51200',
+        ]);
+
+        $file = request()->file('file');
+        $filename = time() . '.' . $file->getClientOriginalExtension();
+        $path = 'dokumentasi/' . $filename;
+        Storage::disk('public')->put($path, file_get_contents($file));
+
+        $dokum = new Documentation;
+        $dokum->filename = $filename;
+        $dokum->path_file = $path;
+        $dokum->type_file = $file->getClientMimeType();
+        $dokum->job_id = request('job_id');
+        $dokum->save();
+
+        $barang = Barang::find(request('barang_id'));
+        $barang->documentation_id = $dokum->id;
+        $barang->save();
+
+        //cek apakah file sudah tersimpan dalam folder
+        if(Storage::disk('public')->exists($path)){
+            return response()->json(['status' => 200]);
+        }else{
+            return response()->json(['status' => 500]);
+        }
     }
 }
