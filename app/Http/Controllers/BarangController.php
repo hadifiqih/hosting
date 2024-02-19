@@ -198,4 +198,14 @@ class BarangController extends Controller
             'message' => 'Barang berhasil dihapus !',
         ]);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
     }
+
+    public function getBarangById(string $id)
+    {
+        $barang = Barang::with('documentation')->find($id);
+
+        return response()->json([
+            'success' => true,
+            'barang' => $barang,
+        ]);
+    }
 }

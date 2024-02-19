@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Job;
 use App\Models\Barang;
 use Illuminate\Http\Request;
 use App\Models\Documentation;
-use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\DataAntrian; // Import the DataAntrian model
 
@@ -106,13 +107,6 @@ class DocumentationController extends Controller
         return response()->json(['data' => $dokum, 'status' => 200]);
     }
 
-    public function downloadGambar($id)
-    {
-        $dokum = Documentation::find($id);
-        //download file
-        return response()->download(storage_path('app/public/dokumentasi/'.$dokum->filename));
-    }
-
     public function edit($id)
     {
         $barang = Barang::find($id);
@@ -148,5 +142,20 @@ class DocumentationController extends Controller
         }else{
             return response()->json(['status' => 500]);
         }
+    }
+
+    public function galleryDokumentasi(Request $request)
+    {
+        if($request != null && $request->get('produk') != null){
+            $jenisProduk = Job::all();
+            $selectedProduk = $request->get('produk');
+            $barang = Barang::orderBy('updated_at', 'desc')->where('job_id',$request->get('produk'))->paginate(6);
+            return view('page.dokumentasi.gallery', compact('barang', 'jenisProduk', 'selectedProduk'));
+        }
+
+        $jenisProduk = Job::all();
+        $selectedProduk = '';
+        $barang = Barang::orderBy('updated_at', 'desc')->paginate(6);
+        return view('page.dokumentasi.gallery', compact('barang', 'jenisProduk', 'selectedProduk'));
     }
 }

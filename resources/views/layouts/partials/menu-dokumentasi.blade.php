@@ -18,6 +18,14 @@
                 </a>
             </li>
         </ul>
+        <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="{{ route('documentation.gallery') }}" class="nav-link {{ request()->routeIs('documentation.gallery') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Galeri Dokumentasi</p>
+                </a>
+            </li>
+        </ul>
         </li>
     </ul>
 </nav>

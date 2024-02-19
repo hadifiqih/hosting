@@ -347,6 +347,7 @@ Route::controller(BarangController::class)->group(function(){
     Route::get('/barang/getTotalHarga/{id}', 'getTotalHarga')->name('getTotalHarga');
     Route::get('/barang/show/{id}', 'showCreate')->name('barang.showCreate');
     Route::get('/barang/getTotalBarang/{id}', 'getTotalBarang')->name('getTotalBarang');
+    Route::get('/barang/getBarangById/{id}', 'getBarangById')->name('getBarangById');
 });
 
 Route::get('/error', function () {

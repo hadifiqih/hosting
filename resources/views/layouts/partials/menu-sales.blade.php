@@ -2,8 +2,8 @@
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
       <!-- Add icons to the links using the .nav-icon class
            with font-awesome or any other icon font library -->
-      <li class="nav-item menu-open">
-        <a href="{{ url('/dashboard') }}" class="nav-link active">
+      <li class="nav-item {{ request()->routeIs('design.index') || request()->routeIs('order.edit') || request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') || request()->routeIs('report.sales') ? 'menu-open' : '' }}">
+        <a href="{{ url('/dashboard') }}" class="nav-link {{ request()->routeIs('design.index') || request()->routeIs('order.edit') || request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') || request()->routeIs('report.sales') ? 'active' : '' }}">
           <i class="nav-icon fas fa-tachometer-alt"></i>
             <p>
                 Antrian
@@ -31,5 +31,22 @@
             </li>
         </ul>
         </li>
+        <li class="nav-item {{ request()->routeIs('documentation.gallery') ? 'menu-open' : '' }}">
+            <a href="" class="nav-link {{ request()->routeIs('documentation.gallery') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                    Dokumentasi
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ route('documentation.gallery') }}" class="nav-link {{ request()->routeIs('documentation.gallery') ? 'active' : '' }}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Galeri Dokumentasi</p>
+                    </a>
+                </li>
+            </ul>
+            </li>
     </ul>
 </nav>
