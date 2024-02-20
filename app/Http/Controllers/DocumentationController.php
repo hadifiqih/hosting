@@ -158,4 +158,11 @@ class DocumentationController extends Controller
         $barang = Barang::orderBy('updated_at', 'desc')->paginate(6);
         return view('page.dokumentasi.gallery', compact('barang', 'jenisProduk', 'selectedProduk'));
     }
+
+    public function uploadGambarProduksi($id)
+    {
+        $barang = Barang::where('ticket_order', $id)->get();
+        $ticket = $id;
+        return view('page.dokumentasi.upload-dokumentasi-produksi', compact('barang', 'ticket'));
+    }
 }

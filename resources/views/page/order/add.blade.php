@@ -9,22 +9,13 @@
 @section('breadcrumb', 'Tambah Desain')
 
 @section('content')
-
+<style>
+  .select2-selection {
+    height: 38px !important;
+  }
+</style>
 <div class="card">
   <h5 class="card-header">Tambah Antrian Desain</h5>
-
-  {{-- Tampilkan jika ada error apapun --}}
-  @if ($errors->any())
-  <div class="alert alert-danger" role="alert">
-    <ul>
-      {{-- Tampilkan semua error yang ada --}}
-      @foreach ($errors->all() as $error)
-      <li>{{ $error }}</li>
-      @endforeach
-    </ul>
-  </div>
-  @endif
-
   <div class="card-body">
     <form id="formOrder" action="{{ route('order.store') }}" method="POST" enctype="multipart/form-data">
       @csrf
@@ -33,102 +24,44 @@
         <label for="title" class="form-label">Judul Project (Keyword)<span class="text-danger">*</span></label>
         <input type="text" class="form-control" id="title" name="title" placeholder="Contoh : Es Teh Indonesia" required>
       </div>
-
       {{-- Input Sales bertipe Hidden --}}
       <input type="hidden" name="sales" value="{{ $sales->id }}">
 
       <div class="mb-3">
         <label for="job" class="form-label">Jenis Produk <span class="text-danger">*</span></label>
         <br>
-        <select style="width: 100%" multiple="multiple" class="custom-select rounded-2" name="job[]" id="job" required>
-
-        </select>
+        <button id="btnTambahProduk" type="button" class="btn btn-sm btn-primary">
+          Tambah Produk
+        </button>
+        <table id="tableProduk" class="table table-bordered mt-3">
+          <thead>
+            <tr>
+              <th>Jenis Produk</th>
+              <th>Kategori Produk</th>
+              <th>Referensi Desain</th>
+              <th>Keterangan</th>
+              <th>Jumlah</th>
+            </tr>
+          </thead>
+        </table>
       </div>
-
-      <div class="mb-3">
-        <label for="description" class="form-label">Keterangan</label>
-        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Contoh : Ukuran 6x6cm, ditambah No. Telp : 08xxxxxxxx"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="refdesain">Gambar Referensi <span class="text-danger">*</span></label>
-        <div class="custom-file">
-            <input type="file" class="custom-file-input" id="refdesain" name="refdesain" required>
-            <label class="custom-file-label" for="refdesain">Pilih Gambar</label>
-        </div>
-      </div>
-
-      <h6 class="font-weight-bold">Jenis Pekerjaan <span class="text-danger">*</span></h6>
-      <div class="form-check form-check-inline mb-3">
-        <input class="form-check-input" type="radio" name="jenisPekerjaan" id="inlineRadio1" value="baru" required>
-        <label class="form-check-label" for="inlineRadio1">Desain Baru</label>
-      </div>
-
-      <div class="form-check form-check-inline mb-3">
-        <input class="form-check-input" type="radio" name="jenisPekerjaan" id="inlineRadio2" value="edit" required>
-        <label class="form-check-label" for="inlineRadio2">Edit Desain</label>
-      </div>
-
-      {{-- Menangani jika ada error file tidak ditemukan --}}
-      @if ($errors->has('design'))
-        <div class="alert alert-danger" role="alert">
-            {{ $errors->first('design') }}
-        </div>
-      @endif
 
       {{-- Checkbox untuk pesanan prioritas / tidak --}}
-      <div class="mb-3">
-        <div class="custom-control custom-checkbox">
-          <input class="custom-control-input custom-control-input-danger" type="checkbox" id="defaultCheck" value="1" name="priority">
-          <label class="custom-control-label" for="defaultCheck">
-            Prioritas
-          </label>
+      <div class="form-group">
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="prioritas" name="prioritas">
+          <label class="custom-control-label" for="prioritas">Prioritas</label>
         </div>
       </div>
 
       {{-- Tombol Submit --}}
         <div class="d-flex align-items-center">
-            <input type="submit" class="btn btn-primary submitButton" value="Submit"><div id="loader" class="loader m-2" style="display: none;"></div>
+            <input type="submit" class="btn btn-sm btn-primary submitButton" value="Submit"><div id="loader" class="loader m-2" style="display: none;"></div>
         </div>
     </form>
   </div>
-  {{-- Modal Tambah Jenis Produk --}}
-  <div class="modal fade" id="exampleModalProduk" tabindex="-1" role="dialog" aria-labelledby="exampleModalProdukLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalProdukLabel">Tambah Produk Baru</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form id="produkForm" action="{{ route('tambahProdukByModal') }}" enctype="multipart/form-data">
-            @csrf
-            <div class="form-group">
-                <label for="modalNamaProduk">Nama Produk <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="modalNamaProduk" placeholder="Contoh : Stempel Cup Plastik" name="modalNamaProduk" required>
-            </div>
-            <div class="form-group">
-                <label for="modalJenisProduk">Kategori Produk <span class="text-danger">*</span></label>
-                <select class="custom-select rounded-0" id="modalJenisProduk" name="modalJenisProduk" required>
-                    <option selected disabled>--Pilih Kategori--</option>
-                    <option value="Stempel">Stempel</option>
-                    <option value="Advertising">Advertising</option>
-                    <option value="Non Stempel">Non Stempel</option>
-                    <option value="Digital Printing">Digital Printing</option>
-                </select>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-            <input type="submit" class="btn btn-primary submitButton" value="Tambah Produk"><div id="loader" class="loader" style="display: none;"></div>
-        </div>
-        </form>
-        </div>
-    </div>
-    </div>
 </div>
+@include('page.order.modal.tambah-produk')
 @endsection
 
 @section('script')
@@ -137,25 +70,95 @@
   $(document).ready(function() {
     bsCustomFileInput.init();
 
-    $('#job').select2({
-      placeholder: 'Pilih Jenis Produk',
-      ajax : {
-        url: "{{ route('job.searchByNama') }}",
-        dataType: 'json',
-        delay: 250,
-          processResults: function (data) {
-            return {
-              results:  $.map(data, function (item) {
-                return {
-                  text: item.job_name,
-                  id: item.id
-                }
-              })
-            };
-          },
-          cache: true
+    $('#btnTambahProduk').on('click', function() {
+      $('#modalTambahProduk').modal('show');
+    });
+
+    $('#modalTambahProduk').on('hidden.bs.modal', function() {
+      $('#formTambahProduk').trigger('reset');
+    });
+
+    $('#formTambahProduk').on('submit', function(e) {
+      e.preventDefault();
+      
+      var dataInput = new FormData(this);
+
+      $.ajax({
+        url: "{{ route('simpanBarangDariDesain') }}",
+        type: "POST",
+        data: dataInput,
+        contentType: false,
+        cache: false,
+        processData: false,
+        success: function(data) {
+          $('#modalTambahProduk').modal('hide');
+          Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: data.message,
+            showConfirmButton: false,
+            timer: 3000
+          });
+          $('#tableProduk').DataTable().ajax.reload();
+        },
+        error: function(data) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Terjadi kesalahan!',
+          });
         }
       });
+
+    });
+
+    $('#tableProduk').DataTable({
+      responsive: true,
+      autoWidth: false,
+      processing: true,
+      serverSide: true,
+      paging: false,
+      searching: false,
+      info: false,
+      ajax: "{{ route('getAllJobs') }}",
+      columns: [
+        { data: 'jenis_produk', name: 'jenis_produk' },
+        { data: 'kategori_produk', name: 'kategori_produk' },
+        { data: 'referensi_desain', name: 'referensi_desain' },
+        { data: 'keterangan', name: 'keterangan' },
+        { data: 'jumlah', name: 'jumlah' },
+      ]
+    });
+
+    //mengambil nilai kategori produk
+    $('#kategoriProduk').on('change', function() {
+      var kategoriProduk = $(this).val();
+      $('#jenisProduk').select2({
+        placeholder: 'Pilih Jenis Produk',
+        ajax : {
+          url: "{{ route('job.searchByCategory') }}",
+          dataType: 'json',
+          delay: 250,
+            data: function(params) {
+              return {
+                kategoriProduk: kategoriProduk,
+                q: params.term
+              }
+            },
+            processResults: function (data) {
+              return {
+                results:  $.map(data, function (item) {
+                  return {
+                    text: item.job_name,
+                    id: item.id
+                  }
+                })
+              };
+            },
+            cache: true
+          }
+        });
+    });
 
     $('#formOrder').on('submit', function(e) {
         e.preventDefault();

@@ -12,7 +12,7 @@
         </a>
         <ul class="nav nav-treeview">
             <li class="nav-item">
-                <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('laporan.workshop') ? 'active' : '' }}">
+                <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('antrian.index') ? 'active' : '' }}">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Antrian Workshop</p>
                 </a>

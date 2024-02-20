@@ -221,7 +221,7 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/order/{id}/toAntrian', 'toAntrian')->middleware(['auth', 'checkrole:sales'])->name('order.toAntrian');
     Route::post('/order/tambahProdukByModal', 'tambahProdukByModal')->name('tambahProdukByModal');
     Route::get('/get-jobs-by-category', 'getJobsByCategory')->name('getJobsByCategory');
-    Route::get('/get-all-jobs', 'getAllJmiddlewareobs')->name('getAllJobs');
+    Route::get('/get-all-jobs', 'getAllJobs')->name('getAllJobs');
     Route::post('/order/simpan-desainer', 'simpanDesainer')->name('simpanDesainer');
     //--------------------------------------------
     // Route File Desain FIX
@@ -318,6 +318,7 @@ Route::controller(DocumentationController::class)->group(function(){
     Route::get('/documentation/download/{id}', 'downloadGambar')->name('documentation.download');
     Route::get('/documentation/gallery', 'galleryDokumentasi')->name('documentation.gallery');
     Route::post('/documentation/upload-gambar', 'uploadGambar')->name('documentation.upload');
+    Route::get('/documentation/upload-gambar-produksi/{id}', 'uploadGambarProduksi')->name('documentation.uploadProduksi');
 });
 
 Route::controller(UserController::class)->group(function(){
@@ -348,6 +349,7 @@ Route::controller(BarangController::class)->group(function(){
     Route::get('/barang/show/{id}', 'showCreate')->name('barang.showCreate');
     Route::get('/barang/getTotalBarang/{id}', 'getTotalBarang')->name('getTotalBarang');
     Route::get('/barang/getBarangById/{id}', 'getBarangById')->name('getBarangById');
+    Route::post('/barang/simpan-barang-dari-desain', 'simpanBarangDariDesain')->name('simpanBarangDariDesain');
 });
 
 Route::get('/error', function () {

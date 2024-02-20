@@ -9,16 +9,6 @@
 @section('breadcrumb', 'Tambah Antrian')
 
 @section('content')
-@if ($errors->any())
-<div class="alert alert-danger">
-  <ul>
-    @foreach ($errors->all() as $error)
-      <li>{{ $error }}</li>
-    @endforeach
-  </ul>
-</div>
-@endif
-
 <div class="container-fluid">
     <form action="{{ route('antrian.simpanAntrian') }}" method="POST" enctype="multipart/form-data">
         @csrf

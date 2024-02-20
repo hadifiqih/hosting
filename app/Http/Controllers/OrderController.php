@@ -382,7 +382,15 @@ class OrderController extends Controller
         $sales = Sales::where('user_id', auth()->user()->id)->first();
         $jobs = Job::all();
 
-        return view('page.order.add', compact('sales', 'jobs'));
+        $lastId = Order::latest()->first();
+        if($lastId == null){
+            $lastId = 1;
+        }else{
+            $lastId = $lastId->id + 1;
+        }
+        $ticketOrder = date('Ymd') . $lastId;
+
+        return view('page.order.add', compact('sales', 'jobs', 'ticketOrder'));
     }
 
     public function getAccDesain($id)

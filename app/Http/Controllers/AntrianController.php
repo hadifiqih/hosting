@@ -179,7 +179,7 @@ class AntrianController extends Controller
                     
                 }
                 elseif(auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising') {
-                    $btn .= '<a href="' . route('antrian.showDokumentasi', $antrian->ticket_order) . '" class="btn btn-warning btn-sm"><i class="fas fa-upload"></i> Proses</a>';
+                    $btn .= '<a href="' . route('documentation.uploadProduksi', $antrian->ticket_order) . '" class="btn btn-warning btn-sm"><i class="fas fa-upload"></i> Proses</a>';
                 }
                 else{
                     $btn .= '<a href="'.route('antrian.show', $antrian->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
@@ -958,8 +958,22 @@ class AntrianController extends Controller
     }
 
     public function markSelesai($id){
+        //cek apakah documentasi sudah diupload
+        $barang = Barang::where('ticket_order', $id)->get();
+
+        foreach($barang as $b){
+            if($b->documentation_id == null){
+                return redirect()->back()->with('error', 'Ada barang yang belum di dokumentasi !');
+            }
+        }
+
+        $datakerja = DataKerja::where('ticket_order', $id)->first();
+        if($datakerja->operator_id == null || $datakerja->finishing_id == null || $datakerja->qc_id == null){
+            return redirect()->back()->with('error', 'Data penugasan belum lengkap !');
+        }
+
         //cek apakah waktu sekarang sudah melebihi waktu deadline
-        $antrian = DataAntrian::where('id', $id)->first();
+        $antrian = DataAntrian::where('ticket_order', $id)->first();
         $antrian->finish_date = Carbon::now();
         $antrian->status = 2;
         $antrian->save();
@@ -975,11 +989,11 @@ class AntrianController extends Controller
             array("web" => array("notification" => array(
               "title" => "Antree",
               "body" => "Yuhuu! Pekerjaan dengan tiket " . $antrian->ticket_order . " (" . $antrian->order->title ."), dari sales ". $antrian->sales->sales_name ." udah selesai !",
-              "deep_link" => "https://interatama.my.id/",
+              "deep_link" => "https://app.kassabsyariah.com/",
             )),
         ));
 
-        return redirect()->route('antrian.index')->with('success-dokumentasi', 'Berhasil ditandai selesai !');
+        return redirect()->route('antrian.index')->with('success', 'Berhasil ditandai selesai !');
     }
 
     public function biayaProduksiSelesai(Request $request, $id)

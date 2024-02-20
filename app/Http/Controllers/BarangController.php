@@ -208,4 +208,26 @@ class BarangController extends Controller
             'barang' => $barang,
         ]);
     }
+
+    public function simpanBarangDariDesain(Request $request)
+    {
+        $harga = CustomHelper::removeCurrencyFormat($request->harga);
+
+        $barang = new Barang();
+        $barang->ticket_order = $request->ticket_order;
+        $barang->kategori_id = $request->kategoriProduk;
+        $barang->job_id = $request->namaProduk;
+        $barang->user_id = auth()->user()->id;
+        $barang->price = $harga;
+        $barang->qty = $request->qty;
+        $barang->note = $request->keterangan;
+        $barang->accdesain = $fileName;
+        $barang->iklan_id = $request->periode_iklan ? $request->periode_iklan : null;
+        $barang->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Barang berhasil ditambahkan !',
+        ]);
+    }
 }
