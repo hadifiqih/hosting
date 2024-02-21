@@ -67,10 +67,8 @@
                         <tr>
                             <th>No</th>
                             <th>Ticket Order</th>
-                            <th>Judul Desain</th>
+                            <th>Judul Project</th>
                             <th>Sales</th>
-                            <th>Ref. Desain</th>
-                            <th>Jenis Pekerjaan</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -101,11 +99,8 @@
                             <tr>
                                 <th>No</th>
                                 <th>Ticket Order</th>
-                                <th>Judul Desain</th>
                                 <th>Sales</th>
-                                <th>Ref. Desain</th>
-                                <th>Jenis Produk</th>
-                                <th>Desainer</th>
+                                <th>Judul Project</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
@@ -136,13 +131,8 @@
                                 <th>No</th>
                                 <th>Ticket Order</th>
                                 <th>Sales</th>
-                                <th>Judul Desain</th>
-                                <th>Waktu Selesai</th>
-                                <th>Lama Proses</th>
-                                <th>Produk</th>
-                                <th>Desainer</th>
+                                <th>Judul Project</th>
                                 <th>Status</th>
-                                <th>File Cetak</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -357,8 +347,6 @@
                 {data: 'ticket_order', name: 'ticket_order'},
                 {data: 'title', name: 'title'},
                 {data: 'sales', name: 'sales'},
-                {data: 'ref_desain', name: 'ref_desain'},
-                {data: 'job_name', name: 'job_name'},
                 {data: 'status', name: 'status'},
                 {data: 'action', name: 'action'},
             ],
@@ -375,11 +363,8 @@
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                 {data: 'ticket_order', name: 'ticket_order'},
-                {data: 'title', name: 'title'},
                 {data: 'sales', name: 'sales'},
-                {data: 'ref_desain', name: 'ref_desain'},
-                {data: 'job_name', name: 'job_name'},
-                {data: 'desainer', name: 'desainer'},
+                {data: 'title', name: 'title'},
                 {data: 'status', name: 'status'},
                 {data: 'action', name: 'action'},
             ],
@@ -398,12 +383,7 @@
                 {data: 'ticket_order', name: 'ticket_order'},
                 {data: 'sales', name: 'sales'},
                 {data: 'title', name: 'title'},
-                {data: 'selesai', name: 'selesai'},
-                {data: 'periode', name: 'periode'},
-                {data: 'produk', name: 'produk'},
-                {data: 'desainer', name: 'desainer'},
                 {data: 'status', name: 'status'},
-                {data: 'file_cetak', name: 'file_cetak'},
                 {data: 'action', name: 'action'},
             ],
         });

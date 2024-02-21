@@ -9,213 +9,244 @@
 @section('breadcrumb', 'Tambah Desain')
 
 @section('content')
-
-<div class="card card-warning">
-  <h5 class="card-header">Edit Antrian Desain</h5>
-
-  {{-- Tampilkan jika ada error apapun --}}
-  @if ($errors->any())
-  <div class="alert alert-danger" role="alert">
-    <ul>
-      {{-- Tampilkan semua error yang ada --}}
-      @foreach ($errors->all() as $error)
-      <li>{{ $error }}</li>
-      @endforeach
-    </ul>
-  </div>
-  @endif
-
+<style>
+  .select2-selection {
+    height: 38px !important;
+  }
+</style>
+<div class="card">
+  <h5 class="card-header">Tambah Antrian Desain</h5>
   <div class="card-body">
-    <form id="formEditOrder" action="{{ route('order.update', $order->id) }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    @method('PUT')
+    <form id="formOrder" action="{{ route('order.update', $order->id) }}" method="POST" enctype="multipart/form-data">
+      @csrf
+      @method('PUT')
       {{-- Inputan untuk judul desain --}}
       <div class="mb-3">
-        <label for="title" class="form-label">Judul Project (Keyword) <span class="text-danger">*</span></label>
+        <label for="title" class="form-label">Judul Project (Keyword)<span class="text-danger">*</span></label>
         <input type="text" class="form-control" id="title" name="title" placeholder="Contoh : Es Teh Indonesia" value="{{ $order->title }}" required>
       </div>
-
       {{-- Input Sales bertipe Hidden --}}
       <input type="hidden" name="sales" value="{{ $sales->id }}">
-
+      {{-- Inputan untuk deskripsi desain --}}
+      
       <div class="mb-3">
         <label for="job" class="form-label">Jenis Produk <span class="text-danger">*</span></label>
         <br>
-        <select multiple="multiple" class="custom-select rounded-2" name="job[]" id="job" required style="width: 100%">
-          <option value="">Pilih Jenis Produk</option>
-          @php
-            $selected = explode(',', $order->job_id);
-            foreach ($selected as $key) {
-              if($jobSelected = App\Models\Job::find($key))
-              {
-                echo '<option value="'.$jobSelected->id.'" selected>'.$jobSelected->job_name.'</option>';
-              }
-            }
-          @endphp
-        </select>
+        <button id="btnTambahProduk" type="button" class="btn btn-sm btn-primary">
+          Tambah Produk
+        </button>
+        <table id="tableProduk" class="table table-bordered mt-3">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Jenis Produk</th>
+              <th>Kategori Produk</th>
+              <th>Referensi Desain</th>
+              <th>Keterangan</th>
+              <th>Jumlah</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+        </table>
       </div>
-
-      <div class="mb-3">
-        <label for="description" class="form-label">Keterangan</label>
-        <textarea class="form-control" id="description" name="description" rows="3">{{ $order->description }}</textarea>
-      </div>
-
-      {{-- Uplaoad File Referensi Desain --}}
-      <div class="mb-3" id="refdesain">
-        <h6><strong>File Ref. Desain </strong><span class="font-italic text-danger text-sm">*(Jika tidak ada perubahan, hiraukan / kosongkan ini)</span></h6>
-        <div class="input-group">
-          <div class="custom-file">
-            <input type="file" class="custom-file-input" id="refdesain" name="refdesain">
-            <label class="custom-file-label" for="refDesain"><span class="text-secondary">Pilih File..</span></label>
-          </div>
-        </div>
-      </div>
-
-      <h6 class="font-weight-bold">Jenis Pekerjaan <span class="text-danger">*</span></h6>
-      <div class="form-check form-check-inline mb-3">
-        <input class="form-check-input" type="radio" name="jenisPekerjaan" id="inlineRadio1" value="baru" {{ $order->type_work == 'baru' ? 'checked' : '' }} required>
-        <label class="form-check-label" for="inlineRadio1">Desain Baru</label>
-      </div>
-      <div class="form-check form-check-inline mb-3">
-        <input class="form-check-input" type="radio" name="jenisPekerjaan" id="inlineRadio2" value="edit" {{ $order->type_work == 'edit' ? 'checked' : '' }} required>
-        <label class="form-check-label" for="inlineRadio2">Edit Desain</label>
-      </div>
-
-      {{-- Menangani jika ada error file tidak ditemukan --}}
-      @if ($errors->has('design'))
-      <div class="alert alert-danger" role="alert">
-        {{ $errors->first('design') }}
-      </div>
-      @endif
 
       {{-- Checkbox untuk pesanan prioritas / tidak --}}
-      <div class="mb-3">
-        <div class="custom-control custom-checkbox">
-          <input class="custom-control-input custom-control-input-danger" type="checkbox" id="defaultCheck" value="1" name="priority" {{ $order->is_priority == 1 ? 'checked' : '' }}>
-          <label class="custom-control-label" for="defaultCheck">
-            Prioritas
-          </label>
+      <div class="form-group">
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="prioritas" name="prioritas" {{ $order->is_priority == 1 ? 'checked' : '' }}>
+          <label class="custom-control-label" for="prioritas">Prioritas</label>
         </div>
       </div>
 
       {{-- Tombol Submit --}}
         <div class="d-flex align-items-center">
-            <input type="submit" class="btn btn-primary submitButton"><span id="loader" class="loader" style="display: none;"></span>
+            <input type="submit" class="btn btn-sm btn-primary submitButton" value="Submit"><div id="loader" class="loader m-2" style="display: none;"></div>
         </div>
     </form>
   </div>
-  {{-- Modal Tambah Jenis Produk --}}
-  <div class="modal fade" id="exampleModalProduk" tabindex="-1" role="dialog" aria-labelledby="exampleModalProdukLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalProdukLabel">Tambah Produk Baru</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form id="produkForm" action="{{ route('tambahProdukByModal') }}" enctype="multipart/form-data">
-            @csrf
-            <div class="form-group">
-                <label for="modalNamaPekerjaan">Nama Produk <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="modalNamaPekerjaan" placeholder="Contoh : Stempel Cup Plastik" name="modalNamaProduk" required>
-            </div>
-            <div class="form-group">
-                <label for="modalJenisPekerjaan">Kategori Produk <span class="text-danger">*</span></label>
-                <select class="custom-select rounded-0" id="modalJenisPekerjaan" name="modalJenisProduk" required>
-                    <option value="Stempel">Stempel</option>
-                    <option value="Advertising">Advertising</option>
-                    <option value="Non Stempel">Non Stempel</option>
-                </select>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-            <input type="submit" class="btn btn-primary" value="Tambah Produk"><span id="loader" class="loader" style="display: none;"></span>
-        </div>
-        </form>
-        </div>
-    </div>
-    </div>
 </div>
+@include('page.order.modal.tambah-produk')
 @endsection
 
 @section('script')
-
 <script>
+
+  function deleteBarang(id)
+  {
+    Swal.fire({
+      title: 'Apakah anda yakin?',
+      text: "Data yang dihapus tidak dapat dikembalikan!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: "/barang/" + id,
+          type: "DELETE",
+          data: {
+            "_token": "{{ csrf_token() }}",
+          },
+          success: function(data) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Berhasil',
+              text: data.message,
+              showConfirmButton: false,
+              timer: 3000
+            });
+            $('#tableProduk').DataTable().ajax.reload();
+          },
+          error: function(data) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Terjadi kesalahan!',
+            });
+          }
+        });
+      }
+    });
+  }
+
   $(document).ready(function() {
     bsCustomFileInput.init();
 
-    $('input[type="radio"]').click(function() {
-            if ($(this).attr('id') == 'inlineRadio1') {
-                $('#refDesain').show();
-            } else {
-                $('#refDesain').hide();
-            }
-        });
+    $('#btnTambahProduk').on('click', function() {
+      $('#modalTambahProduk').modal('show');
+    });
 
-    //Mengambil data produk dari database
-    $('#job').select2({
-      placeholder: 'Pilih Jenis Produk',
-      ajax : {
-        url: "{{ route('job.searchByNama') }}",
-        dataType: 'json',
-        delay: 250,
-        data: {
-          kategori: $(this).val()
+    $('#modalTambahProduk').on('hidden.bs.modal', function() {
+      $('#formTambahProduk').trigger('reset');
+    });
+
+    $('#formTambahProduk').on('submit', function(e) {
+      e.preventDefault();
+      
+      var dataInput = new FormData(this);
+
+      $.ajax({
+        url: "{{ route('simpanBarangDariDesain') }}",
+        type: "POST",
+        data: dataInput,
+        contentType: false,
+        cache: false,
+        processData: false,
+        success: function(data) {
+          $('#modalTambahProduk').modal('hide');
+          Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: data.message,
+            showConfirmButton: false,
+            timer: 3000
+          });
+          $('#tableProduk').DataTable().ajax.reload();
         },
-          processResults: function (data) {
-            return {
-              results:  $.map(data, function (item) {
-                return {
-                  text: item.job_name,
-                  id: item.id
-                }
-              })
-            };
-          },
-          cache: true
+        error: function(data) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Terjadi kesalahan!',
+          });
         }
       });
 
-    //saat formEditOrder di submit, maka tombol submit akan disabled & loader akan muncul
-    $('#formEditOrder').on('submit', function() {
-      $(this).find('input[type="submit"]').prop('disabled', true);
-      $('#loader').show();
     });
 
-    //Jika radio button desain baru checked, maka tampilkan inputan refdesain
-    if ($('#inlineRadio1').is(':checked')) {
-      $('#refDesain').show();
-    }else{
-      $('#refDesain').hide();
-    }
+    $('#tableProduk').DataTable({
+      responsive: true,
+      autoWidth: false,
+      processing: true,
+      serverSide: true,
+      paging: false,
+      searching: false,
+      info: false,
+      ajax: "/barang/get-barang-by-ticket/{{ $ticketOrder }}",
+      columns: [
+        { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+        { data: 'jenis_produk', name: 'jenis_produk' },
+        { data: 'kategori_produk', name: 'kategori_produk' },
+        { data: 'refdesain', name: 'refdesain' },
+        { data: 'keterangan', name: 'keterangan' },
+        { data: 'jumlah', name: 'jumlah' },
+        { data: 'action', name: 'action'}
+      ]
+    });
+
+    //mengambil nilai kategori produk
+    $('#kategoriProduk').on('change', function() {
+      var kategoriProduk = $(this).val();
+
+      //mengosongkan inputan jenis produk
+      $('#jenisProduk').val(null).trigger('change');
+
+      $('#jenisProduk').select2({
+        placeholder: 'Pilih Jenis Produk',
+        ajax : {
+          url: "{{ route('job.searchByCategory') }}",
+          dataType: 'json',
+          delay: 250,
+            data: function(params) {
+              return {
+                kategoriProduk: kategoriProduk,
+                q: params.term
+              }
+            },
+            processResults: function (data) {
+              return {
+                results:  $.map(data, function (item) {
+                  return {
+                    text: item.job_name,
+                    id: item.id
+                  }
+                })
+              };
+            },
+            cache: true
+          }
+        });
+    });
+
+    $('#formOrder').on('submit', function(e) {
+        e.preventDefault();
+        $('.submitButton').attr('disabled', true);
+        $('.loader').show();
+        this.submit();
+    });
 
     $('#produkForm').submit(function(e) {
       e.preventDefault();
+      var modalNamaProduk = $('#modalNamaProduk').val();
+      var modalJenisProduk = $('#modalJenisProduk').val();
 
-      $('.submitButton').prop('disabled', true);
-      $('.loader').show();
+      if(modalNamaProduk == '' || modalJenisProduk == '') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Harap isi semua inputan!',
+        });
+        $('.submitButton').attr('disabled', false);
+        $('.loader').hide();
+        return false;
+      }
 
-      var namaProduk = $('#modalNamaPekerjaan').val();
-      var jenisProduk = $('#modalJenisPekerjaan').val();
-      var keterangan = $('#modalKeterangan').val();
       $.ajax({
         url: "{{ route('tambahProdukByModal') }}",
         type: "POST",
         data: {
           "_token": "{{ csrf_token() }}",
-          "namaProduk": namaProduk,
-          "jenisProduk": jenisProduk,
-          "keterangan": keterangan
+          "namaProduk": modalNamaProduk,
+          "jenisProduk": modalJenisProduk,
         },
         success: function(data) {
           $('#exampleModalProduk').modal('hide');
           //menghapus inputan pada modal
-            $('#modalNamaPekerjaan').val('');
-            $('#modalJenisPekerjaan').val('');
-            $('#modalKeterangan').val('');
+            $('#modalNamaProduk').val('');
+            $('#modalJenisProduk').val('');
           //muncul sweetalert2 success
             Swal.fire({
                 icon: 'success',
@@ -228,7 +259,7 @@
             //reload halaman
             setInterval(() => {
                 location.reload();
-            }, 3500);
+            }, 2500);
 
         },
         error: function(data) {
@@ -236,13 +267,10 @@
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: data.message,
             });
         }
       });
     });
-
   });
 </script>
-
 @endsection

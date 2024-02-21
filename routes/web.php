@@ -350,6 +350,8 @@ Route::controller(BarangController::class)->group(function(){
     Route::get('/barang/getTotalBarang/{id}', 'getTotalBarang')->name('getTotalBarang');
     Route::get('/barang/getBarangById/{id}', 'getBarangById')->name('getBarangById');
     Route::post('/barang/simpan-barang-dari-desain', 'simpanBarangDariDesain')->name('simpanBarangDariDesain');
+    Route::get('/barang/get-barang-by-ticket/{id}', 'getBarangByTicket')->name('getBarangByTicket');
+    Route::get('/barang/upload-cetak/{id}', 'uploadCetak')->name('barang.uploadCetak');
 });
 
 Route::get('/error', function () {

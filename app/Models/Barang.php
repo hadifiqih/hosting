@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Models\Kategori;
+use App\Models\RefDesain;
 use App\Models\Documentation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +14,16 @@ class Barang extends Model
     use HasFactory;
 
     protected $table = 'barang';
+
+    public function desainer()
+    {
+        return $this->belongsTo(User::class, 'desainer_id', 'id');
+    }
+
+    public function refdesain()
+    {
+        return $this->belongsTo(RefDesain::class);
+    }
 
     public function dataKerja()
     {

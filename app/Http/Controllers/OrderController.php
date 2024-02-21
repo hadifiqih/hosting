@@ -35,26 +35,10 @@ class OrderController extends Controller
     }
 
     public function show($id){
-        $order = Order::with('sales', 'user', 'employee', 'job', 'barang')->where('id', $id)->first();
+        $order = Order::where('ticket_order', $id)->first();
+        $barang = Barang::where('ticket_order', $id)->get();
 
-        $jenisProduk = '';
-        if($order->job_id != 0){
-            //explode string to array
-            $job = explode(',', $order->job_id);
-            foreach($job as $j){
-                $jobName = Job::where('id', $j)->first();
-                $jobName = $jobName->job_name . ', ';
-                $jenisProduk .= $jobName;
-            }
-        }else{
-            $jenisProduk = 'Belum dipilih';
-        }
-
-        return response()->json([
-            'status' => 200,
-            'data' => $order,
-            'jenisProduk' => $jenisProduk
-        ]);
+        return view('page.antrian-desain.show', compact('order', 'barang'));
     }
 
     public function cobaPush()
@@ -139,7 +123,7 @@ class OrderController extends Controller
                 $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
             }
 
-            $button .= '<a href="javascript:void(0)" onclick="showDetailDesain('. $data->id .')" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
+            $button .= '<a href="'.route('order.show', $data->ticket_order).'" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
 
             if(auth()->user()->role == 'supervisor'){
             $button .= '<a href="javascript:void(0)" onclick="showDesainer('. $data->ticket_order .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Pilih Desainer</a>';
@@ -216,7 +200,7 @@ class OrderController extends Controller
         })
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
-            $button .= '<a href="javascript:void(0)" onclick="showDetailDesain('. $data->id .')" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
+            $button .= '<a href="'.route('order.show', $data->ticket_order).'" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
             if(auth()->user()->role == 'sales'){
                 $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
             }
@@ -316,12 +300,13 @@ class OrderController extends Controller
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
             if(auth()->user()->role == 'sales' && $data->toWorkshop == 0){
+                $button .= '<a href="'.route('order.show', $data->ticket_order).'" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
                 $button .= '<a href="'. route('order.toAntrian', $data->id) .'" class="btn btn-sm btn-danger"><i class="fas fa-fire"></i> Antrikan</a>';
             }elseif(auth()->user()->role == 'sales' && $data->toWorkshop == 1){
                 $button .= '<a href="'. route('order.notaOrderView', $data->ticket_order) .'" class="btn btn-sm btn-warning"><i class="fas fa-download"></i> Nota Order</a>';
             }
             else{
-                $button .= '<a href="javascript:void(0)" onclick="showDetailDesain('. $data->id .')" class="btn btn-sm btn-warning"><i class="fas fa-eye"></i> Detail</a>';
+                $button .= '<a href="'.route('order.show', $data->ticket_order).'" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
             }
             $button .= '</div>';
             return $button;
@@ -420,58 +405,21 @@ class OrderController extends Controller
         $sales = Sales::where('user_id', auth()->user()->id)->first();
         $job = Job::where('id', $order->job_id)->first();
         $jobs = Job::all();
+        $ticketOrder = $order->ticket_order;
 
         if($sales == null){
             return redirect()->back()->with('error', 'Oops! Akses "Ubah" hanya dapat diakses oleh Sales.');
         }
 
-        return view('page.order.edit', compact('order', 'sales', 'job', 'jobs'));
+        return view('page.order.edit', compact('order', 'sales', 'job', 'jobs', 'ticketOrder'));
     }
 
     public function update(Request $request, $id){
-        // Validasi form add.blade.php
-        $rules = [
-            'title' => 'required',
-            'sales' => 'required',
-            'job' => 'required',
-            'description' => 'required'
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        // Jika validasi gagal, kembali ke halaman add.blade.php dengan membawa pesan error
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator);
-        }
-
-        //ubah nama file
-        if($request->file('refdesain')){
-            //Hapus file lama / sebelumnya diupload
-            $orderLama = Order::find($id);
-            $oldFile = $orderLama->desain;
-            if($oldFile != '-'){
-                Storage::disk('public')->delete('ref-desain/' . $oldFile);
-            }
-
-            $file = $request->file('refdesain');
-            $fileName = time() . '.' . $orderLama->title . $file->getClientOriginalExtension();
-            $path = 'ref-desain/' . $fileName;
-            Storage::disk('public')->put($path, file_get_contents($file));
-        }
-
-        $job = $request->job;
-        $job = implode(',', $job);
 
         // Jika validasi berhasil, simpan data ke database
         $order = Order::find($id);
         $order->title = $request->title;
         $order->sales_id = $request->sales;
-        $order->job_id = $job;
-        $order->description = $request->description;
-        $order->type_work = $request->jenisPekerjaan;
-        if($request->file('refdesain')){
-            $order->desain = $fileName;
-        }
         $order->is_priority = $request->priority ? '1' : '0';
         $order->save();
 
@@ -482,60 +430,19 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-
-        $rules = [
-            'title' => 'required',
-            'sales' => 'required',
-            'job' => 'required',
-            'description' => 'required',
-            'jenisPekerjaan' => 'required'
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        // Jika validasi gagal, kembali ke halaman add.blade.php dengan membawa pesan error
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator);
-        }
-
-        $lastId = Order::latest()->first();
-        if($lastId == null){
-            $lastId = 1;
-        }else{
-            $lastId = $lastId->id + 1;
-        }
-        $ticketOrder = date('Ymd') . $lastId;
-
+        $ticketOrder = $request->ticketOrder;
         $checkTicket = Order::where('ticket_order', $ticketOrder)->first();
         if($checkTicket){
             return redirect()->back()->with('error', 'Oops! Tiket order sudah terdaftar, silahkan ulangi proses tambah order / refresh halaman');
         }else{
 
-        //ubah nama file
-        if($request->file('refdesain')){
-            $file = $request->file('refdesain');
-            $fileName = time() . '_' . $request->title . '.' . $file->getClientOriginalExtension();
-            $path = 'ref-desain/' . $fileName;
-            Storage::disk('public')->put($path, file_get_contents($file));
-        }else{
-            $fileName = '-';
-        }
-
-        //hasil input job from array to string
-        $job = $request->job;
-        $job = implode(',', $job);
-
         // Jika validasi berhasil, simpan data ke database
         $order = new Order;
-        $order->ticket_order = $ticketOrder;
+        $order->ticket_order = $request->ticket_order;
         $order->title = $request->title;
         $order->sales_id = $request->sales;
-        $order->job_id = $job;
-        $order->description = $request->description != null ? $request->description : '-';
-        $order->type_work = $request->jenisPekerjaan;
-        $order->desain = $fileName;
         $order->status = '0';
-        $order->is_priority = $request->priority ? '1' : '0';
+        $order->is_priority = $request->prioritas ? '1' : '0';
         $order->save();
 
         return redirect()->route('design.index')->with('success', 'Project berhasil ditambahkan !');

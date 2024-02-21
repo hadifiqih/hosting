@@ -33,7 +33,7 @@
                 <div class="form-group">
                     <label for="fileProduk">Referensi Desain<span class="text-danger">*</span></label>
                     <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="fileProduk" name="fileProduk" required>
+                        <input accept="image/*" type="file" class="custom-file-input" id="fileProduk" name="refdesain" required>
                         <label class="custom-file-label" for="fileProduk">Pilih file</label>
                     </div>
                 </div>

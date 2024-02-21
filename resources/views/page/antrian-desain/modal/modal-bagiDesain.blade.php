@@ -9,7 +9,8 @@
           </button>
         </div>
         <div class="modal-body">
-          <input type="hidden" id="ticket_order" name="ticket_order" value="">
+          <input type="hidden" id="ticket_order" name="ticket_order" value="{{ $order->ticket_order }}">
+          <input type="hidden" id="idBarang" name="barang_id" value="">
             <table id="tableDesainer" class="table table-bordered table-responsive" style="width: 100%">
                 <thead>
                     <tr>

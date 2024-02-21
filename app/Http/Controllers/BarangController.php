@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use App\Models\RefDesain;
 use Illuminate\Http\Request;
 use App\Helpers\CustomHelper;
 use Illuminate\Support\Facades\Storage;
@@ -191,12 +192,24 @@ class BarangController extends Controller
     public function destroy(string $id)
     {
         $barang = Barang::findOrFail($id);
+        
+        //hapus file acc_desain
+        if($barang->accdesain != null){
+            Storage::disk('public')->delete($barang->accdesain);
+        }
+
+        //hapus file refdesain
+        if($barang->refdesain != null){
+            Storage::disk('public')->delete($barang->refdesain->path);
+            $barang->refdesain->delete();
+        }
+
         $barang->delete();
 
         return response()->json([
             'success' => true,
             'message' => 'Barang berhasil dihapus !',
-        ]);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+        ]);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
     }
 
     public function getBarangById(string $id)
@@ -211,23 +224,71 @@ class BarangController extends Controller
 
     public function simpanBarangDariDesain(Request $request)
     {
-        $harga = CustomHelper::removeCurrencyFormat($request->harga);
+        $fileRefDesain = $request->file('refdesain');
+        $fileName = time().'_'.$fileRefDesain->getClientOriginalName();
+        $pathGambar = 'ref-desain/'.$fileName;
+
+        $refdesain = new RefDesain();
+        $refdesain->filename = $fileName;
+        $refdesain->path = $pathGambar;
+        $refdesain->ticket_order = $request->ticket_order;
+        $refdesain->save();
 
         $barang = new Barang();
         $barang->ticket_order = $request->ticket_order;
         $barang->kategori_id = $request->kategoriProduk;
-        $barang->job_id = $request->namaProduk;
+        $barang->job_id = $request->jenisProduk;
         $barang->user_id = auth()->user()->id;
-        $barang->price = $harga;
         $barang->qty = $request->qty;
-        $barang->note = $request->keterangan;
-        $barang->accdesain = $fileName;
-        $barang->iklan_id = $request->periode_iklan ? $request->periode_iklan : null;
+        $barang->note = $request->note;
+        $barang->refdesain_id = $refdesain->id;
         $barang->save();
+        
+        Storage::disk('public')->put($pathGambar, file_get_contents($fileRefDesain));
 
         return response()->json([
             'success' => true,
             'message' => 'Barang berhasil ditambahkan !',
         ]);
+    }
+
+    public function getBarangByTicket($id)
+    {
+        $barang = Barang::where('ticket_order', $id)->with('refdesain')->get();
+
+        return Datatables::of($barang)
+        ->addIndexColumn()
+        ->addColumn('jenis_produk', function($row){
+            return $row->job->job_name;
+        })
+        ->addColumn('kategori_produk', function($row){
+            return $row->job->kategori->nama_kategori;
+        })
+        ->addColumn('refdesain', function($row){
+            if($row->refdesain == null){
+                return '<span class="text-danger">Tidak ada file</span>';
+            }else{
+                return '<a href="'. asset('storage/'. $row->refdesain->path).'" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>';
+            }
+        })
+        ->addColumn('keterangan', function($row){
+            return $row->note;
+        })
+        ->addColumn('jumlah', function($row){
+            return $row->qty;
+        })
+        ->addColumn('action', function($row){
+            $btn = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBarang('.$row->id.')"><i class="fas fa-trash"></i></a>';
+            return $btn;
+        })
+        ->rawColumns(['refdesain', 'action'])
+        ->make(true);
+    }
+
+    public function uploadCetak($id)
+    {
+        $barang = Barang::where('ticket_order', $id)->with('refdesain')->get();
+
+        return 'upload cetak';
     }
 }

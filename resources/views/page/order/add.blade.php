@@ -26,7 +26,9 @@
       </div>
       {{-- Input Sales bertipe Hidden --}}
       <input type="hidden" name="sales" value="{{ $sales->id }}">
-
+      <input type="hidden" name="ticket_order" value="{{ $ticketOrder }}">
+      {{-- Inputan untuk deskripsi desain --}}
+      
       <div class="mb-3">
         <label for="job" class="form-label">Jenis Produk <span class="text-danger">*</span></label>
         <br>
@@ -36,11 +38,13 @@
         <table id="tableProduk" class="table table-bordered mt-3">
           <thead>
             <tr>
+              <th>No</th>
               <th>Jenis Produk</th>
               <th>Kategori Produk</th>
               <th>Referensi Desain</th>
               <th>Keterangan</th>
               <th>Jumlah</th>
+              <th>Aksi</th>
             </tr>
           </thead>
         </table>
@@ -65,8 +69,49 @@
 @endsection
 
 @section('script')
-
 <script>
+
+  function deleteBarang(id)
+  {
+    Swal.fire({
+      title: 'Apakah anda yakin?',
+      text: "Data yang dihapus tidak dapat dikembalikan!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: "/barang/" + id,
+          type: "DELETE",
+          data: {
+            "_token": "{{ csrf_token() }}",
+          },
+          success: function(data) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Berhasil',
+              text: data.message,
+              showConfirmButton: false,
+              timer: 3000
+            });
+            $('#tableProduk').DataTable().ajax.reload();
+          },
+          error: function(data) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Terjadi kesalahan!',
+            });
+          }
+        });
+      }
+    });
+  }
+
   $(document).ready(function() {
     bsCustomFileInput.init();
 
@@ -120,19 +165,25 @@
       paging: false,
       searching: false,
       info: false,
-      ajax: "{{ route('getAllJobs') }}",
+      ajax: "/barang/get-barang-by-ticket/{{ $ticketOrder }}",
       columns: [
+        { data: 'DT_RowIndex', name: 'DT_RowIndex' },
         { data: 'jenis_produk', name: 'jenis_produk' },
         { data: 'kategori_produk', name: 'kategori_produk' },
-        { data: 'referensi_desain', name: 'referensi_desain' },
+        { data: 'refdesain', name: 'refdesain' },
         { data: 'keterangan', name: 'keterangan' },
         { data: 'jumlah', name: 'jumlah' },
+        { data: 'action', name: 'action'}
       ]
     });
 
     //mengambil nilai kategori produk
     $('#kategoriProduk').on('change', function() {
       var kategoriProduk = $(this).val();
+
+      //mengosongkan inputan jenis produk
+      $('#jenisProduk').val(null).trigger('change');
+
       $('#jenisProduk').select2({
         placeholder: 'Pilih Jenis Produk',
         ajax : {
