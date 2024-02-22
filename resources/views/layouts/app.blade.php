@@ -177,7 +177,7 @@
                     @include('layouts.partials.menu-admin-workshop')
                 @elseif(Auth::user()->role_id == 19)
                     @include('layouts.partials.menu-admin')
-                @elseif(Auth::user()->role_id == 16 || Auth::user()->role_id == 17)
+                @elseif(Auth::user()->role_id == 16 || Auth::user()->role_id == 17 || Auth::user()->role_id == 5)
                     @include('layouts.partials.menu-desainer')
                 @elseif(Auth::user()->role_id == 13)
                     @include('layouts.partials.menu-produksi')

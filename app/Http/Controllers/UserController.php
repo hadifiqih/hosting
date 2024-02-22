@@ -72,4 +72,27 @@ class UserController extends Controller
     {
         //
     }
+
+    public function editDesainer()
+    {
+        //ambil data desainer dari table user dengan can_design = 1
+        $desainer = User::where('can_design', '1')->get();
+
+        return Datatables()->of($desainer)
+        ->addIndexColumn()
+        ->addColumn('nama_desainer', function($data){
+            return $data->name;
+        })
+        ->addColumn('jumlah_desain', function($data){
+            return $data->design_load;
+        })
+        ->addColumn('action', function($data){
+            $button = '<div class="btn-group">';
+            $button .= '<button href="javascript:void(0)" onclick="tugaskanDesainer('. $data->id .')" class="btn btn-sm btn-dark btnDesainer"><i class="fas fa-user"></i> Pilih</button>';
+            $button .= '</div>';
+            return $button;
+        })
+        ->rawColumns(['action'])
+        ->make(true);
+    }
 }

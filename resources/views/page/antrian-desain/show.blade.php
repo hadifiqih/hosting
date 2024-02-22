@@ -38,7 +38,7 @@
                             <h6><strong><i class="fas fa-list pr-1"></i> Daftar Desain</strong></h6>
                         </div>
                     </div>
-                    <div class="row mt-3">
+                    <div class="row mt-2">
                         @foreach($barang as $b)
                         <div class="col-md-3">
                             <div class="card">
@@ -46,16 +46,28 @@
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $b->job->job_name }}</h5>
                                     <p id="note" class="card-text">{{ $b->note }}</p>
-                                    <p class="card-text"><small class="text-muted">Jumlah : {{ $b->qty }}</small></p>
+                                    <p class="card-text"><small class="text-muted">Qty Produk : {{ $b->qty }}</small></p>
                                     @if($b->desainer_id != null)
+                                        <div class="btn-group">
                                         @if($b->desainer_id == Auth::user()->id)
                                             <a href="{{ route('barang.uploadCetak', $b->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-upload"></i> Upload File Cetak</a>
                                         @else
                                             <button class="btn btn-sm btn-secondary disabled"><i class="fas fa-upload"></i> Upload File Cetak</button>
                                         @endif
+
+                                        @if(Auth::user()->role_id == 5)
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-default dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a href="javascript:void(0)" onclick="gantiDesainer({{ $b->id }})" class="dropdown-item"><i class="fas fa-edit"></i> Ganti Desainer</a>
+                                                </div>
+                                            </div>
+                                        @endif
                                     @else
                                     <button onclick="pilihDesainer({{ $b->id }})" class="btn btn-sm btn-warning"><i class="fas fa-pen-nib"></i> Pilih Desainer</button>
                                     @endif
+                                    </div>
                                 </div>
                                 <div class="card-footer">
                                     <p><strong>Desainer : </strong><span>{{ !isset($b->desainer->name) ? '-' : $b->desainer->name }}</span></p>
@@ -69,7 +81,8 @@
         </div>
     </div>
 </div>
-@include('page.antrian-desain.modal.modal-bagiDesain')         
+@include('page.antrian-desain.modal.modal-bagiDesain')
+@include('page.antrian-desain.modal.modal-editDesain')
 @endsection
 
 @section('script')
@@ -77,6 +90,62 @@
     function pilihDesainer(id) {
         $('#modalBagiDesain').modal('show');
         $('#idBarang').val(id);
+    }
+
+    function gantiDesainer(id) {
+        $('#modalEditDesainer').modal('show');
+        $('#idBarang').val(id);
+    }
+
+    function tugaskanDesainer(id) {
+        $.ajax({
+            url: "{{ route('barang.tugaskanDesainer') }}",
+            type: "POST",
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "barang_id": $('#idBarang').val(),
+                "desainer_id": id,
+            },
+            success: function(response) {
+                $('#modalBagiDesain').modal('hide');
+                //swal success
+                Swal.fire({
+                    title: "Berhasil!",
+                    text: "Desainer berhasil ditugaskan",
+                    icon: "success",
+                });
+
+                setInterval(() => {
+                    location.reload();
+                }, 1500);
+            }
+        });
+    }
+
+    function changeDesainer()
+    {
+        $.ajax({
+            url: "{{ route('barang.changeDesainer') }}",
+            type: "PUT",
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "barang_id": $('#idBarang').val(),
+                "desainer_id": $('#desainer_id').val(),
+            },
+            success: function(response) {
+                $('#modalEditDesainer').modal('hide');
+                //swal success
+                Swal.fire({
+                    title: "Berhasil!",
+                    text: "Desainer berhasil diganti",
+                    icon: "success",
+                });
+
+                setInterval(() => {
+                    location.reload();
+                }, 1500);
+            }
+        });
     }
 
     $(document).ready(function() {
@@ -87,6 +156,22 @@
             serverSide: true,
             ajax: {
                 url: "{{ route('list.desainer') }}",
+            },
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                {data: 'nama_desainer', name: 'nama_desainer'},
+                {data: 'jumlah_desain', name: 'jumlah_desain'},
+                {data: 'action', name: 'action'},
+            ],
+        });
+
+        $("#gantiDesainer").DataTable({
+            responsive: true,
+            autoWidth: false,
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('edit.desainer') }}",
             },
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},

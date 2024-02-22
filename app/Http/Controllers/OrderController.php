@@ -972,12 +972,34 @@ class OrderController extends Controller
         })
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
-            $button .= '<button href="javascript:void(0)" onclick="pilihDesainer('. $data->id .')" class="btn btn-sm btn-dark btnDesainer"><i class="fas fa-user"></i> Pilih</button>';
+            $button .= '<button href="javascript:void(0)" onclick="tugaskanDesainer('. $data->id .')" class="btn btn-sm btn-dark btnDesainer"><i class="fas fa-user"></i> Pilih</button>';
             $button .= '</div>';
             return $button;
         })
         ->rawColumns(['action'])
         ->make(true);
+    }
+
+    public function changeDesainer(Request $request)
+    {
+        $barang = Barang::find($request->barang_id);
+        //kurangi design load desainer lama
+        $user = User::find($barang->desainer_id);
+        $user->design_load -= 1;
+        $user->save();
+
+        //tambah design load desainer baru
+        $user = User::find($request->desainer_id);
+        $user->design_load += 1;
+        $user->save();
+
+        $barang->desainer_id = $request->desainer_id;
+        $barang->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Desainer berhasil diganti !'
+        ]);
     }
 
     public function simpanDesainer(Request $request)

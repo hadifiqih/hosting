@@ -327,6 +327,7 @@ Route::controller(UserController::class)->group(function(){
     Route::get('/user/{id}/edit', 'edit')->middleware(['auth', 'checkrole:superadmin'])->name('user.edit');
     Route::put('/user/update/{id}', 'update')->middleware(['auth', 'checkrole:superadmin'])->name('user.update');
     Route::delete('/user/{id}', 'destroy')->middleware(['auth', 'checkrole:superadmin'])->name('user.destroy');
+    Route::get('/user/edit-desainer', 'editDesainer')->name('edit.desainer');//untuk menampilkan table daftar desainer
 });
 
 //Route Resource BarangController
@@ -352,6 +353,9 @@ Route::controller(BarangController::class)->group(function(){
     Route::post('/barang/simpan-barang-dari-desain', 'simpanBarangDariDesain')->name('simpanBarangDariDesain');
     Route::get('/barang/get-barang-by-ticket/{id}', 'getBarangByTicket')->name('getBarangByTicket');
     Route::get('/barang/upload-cetak/{id}', 'uploadCetak')->name('barang.uploadCetak');
+    Route::post('/barang/tugaskan-desainer', 'tugaskanDesainer')->name('barang.tugaskanDesainer');
+    //ganti desainer
+    Route::put('/barang/change-desainer', 'changeDesainer')->name('barang.changeDesainer');//untuk mengubah desainer
 });
 
 Route::get('/error', function () {

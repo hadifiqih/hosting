@@ -1,16 +1,16 @@
 {{-- Modal Bagi Desain --}}
-<div class="modal fade" id="modalBagiDesain">
+<div class="modal fade" id="modalEditDesainer">
     <div class="modal-dialog modal-md">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Pilih Desainer</h4>
+          <h4 class="modal-title">Ganti Desainer</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <input type="hidden" id="idBarang" name="barang_id" value="">
-            <table id="tableDesainer" class="table table-bordered table-responsive" style="width: 100%">
+            <table id="gantiDesainer" class="table table-bordered table-responsive" style="width: 100%">
                 <thead>
                     <tr>
                         <th>No</th>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Barang;
 use App\Models\RefDesain;
 use Illuminate\Http\Request;
@@ -290,5 +291,22 @@ class BarangController extends Controller
         $barang = Barang::where('ticket_order', $id)->with('refdesain')->get();
 
         return 'upload cetak';
+    }
+
+    public function tugaskanDesainer(Request $request)
+    {
+        $desainer = $request->desainer_id;
+        $barang = Barang::findOrFail($request->barang_id);
+        $barang->desainer_id = $desainer;
+        $barang->save();
+
+        $user = User::findOrFail($desainer);
+        $user->design_load += 1;
+        $user->save();
+
+        //return json response status success
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }
