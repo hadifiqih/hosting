@@ -73,10 +73,14 @@ class UserController extends Controller
         //
     }
 
-    public function editDesainer()
+    public function editDesainer(Request $request)   
     {
+        //ambil data barang_id dari ajax yang dikirimkan oleh datatable
+        $idBarang = Barang::where('id', $request->id)->first();
+        $nowDesainer = $idBarang->desainer_id;
         //ambil data desainer dari table user dengan can_design = 1
-        $desainer = User::where('can_design', '1')->get();
+        $desainer = User::where('can_design', '1')->where('id', '!=', $nowDesainer)->get();
+
 
         return Datatables()->of($desainer)
         ->addIndexColumn()
@@ -88,7 +92,7 @@ class UserController extends Controller
         })
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
-            $button .= '<button href="javascript:void(0)" onclick="tugaskanDesainer('. $data->id .')" class="btn btn-sm btn-dark btnDesainer"><i class="fas fa-user"></i> Pilih</button>';
+            $button .= '<button href="javascript:void(0)" onclick="ubahDesainer('. $data->id .')" class="btn btn-sm btn-dark btnDesainer"><i class="fas fa-user"></i> Pilih</button>';
             $button .= '</div>';
             return $button;
         })

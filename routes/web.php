@@ -355,7 +355,7 @@ Route::controller(BarangController::class)->group(function(){
     Route::get('/barang/upload-cetak/{id}', 'uploadCetak')->name('barang.uploadCetak');
     Route::post('/barang/tugaskan-desainer', 'tugaskanDesainer')->name('barang.tugaskanDesainer');
     //ganti desainer
-    Route::put('/barang/change-desainer', 'changeDesainer')->name('barang.changeDesainer');//untuk mengubah desainer
+    Route::post('/barang/ubah-desainer', 'ubahDesainer')->name('ubahDesainer');//untuk mengubah desainer
 });
 
 Route::get('/error', function () {

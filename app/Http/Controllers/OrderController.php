@@ -19,6 +19,7 @@ use App\Models\GambarAcc;
 use App\Models\PrintFile;
 use App\Models\DataAntrian;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Notifications\AntrianDesain;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
@@ -960,7 +961,7 @@ class OrderController extends Controller
 
     public function listDesainer()
     {
-        $desainer = Employee::with('user')->where('can_design', '1')->get();
+        $desainer = User::where('can_design', '1')->get();
 
         return Datatables()->of($desainer)
         ->addIndexColumn()
@@ -978,28 +979,6 @@ class OrderController extends Controller
         })
         ->rawColumns(['action'])
         ->make(true);
-    }
-
-    public function changeDesainer(Request $request)
-    {
-        $barang = Barang::find($request->barang_id);
-        //kurangi design load desainer lama
-        $user = User::find($barang->desainer_id);
-        $user->design_load -= 1;
-        $user->save();
-
-        //tambah design load desainer baru
-        $user = User::find($request->desainer_id);
-        $user->design_load += 1;
-        $user->save();
-
-        $barang->desainer_id = $request->desainer_id;
-        $barang->save();
-
-        return response()->json([
-            'status' => 200,
-            'message' => 'Desainer berhasil diganti !'
-        ]);
     }
 
     public function simpanDesainer(Request $request)

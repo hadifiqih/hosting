@@ -47,8 +47,8 @@
                                     <h5 class="card-title">{{ $b->job->job_name }}</h5>
                                     <p id="note" class="card-text">{{ $b->note }}</p>
                                     <p class="card-text"><small class="text-muted">Qty Produk : {{ $b->qty }}</small></p>
+                                    <div class="btn-group">
                                     @if($b->desainer_id != null)
-                                        <div class="btn-group">
                                         @if($b->desainer_id == Auth::user()->id)
                                             <a href="{{ route('barang.uploadCetak', $b->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-upload"></i> Upload File Cetak</a>
                                         @else
@@ -56,16 +56,10 @@
                                         @endif
 
                                         @if(Auth::user()->role_id == 5)
-                                            <div class="btn-group">
-                                                <button type="button" class="btn btn-default dropdown-toggle dropdown-icon" data-toggle="dropdown">
-                                                </button>
-                                                <div class="dropdown-menu">
-                                                    <a href="javascript:void(0)" onclick="gantiDesainer({{ $b->id }})" class="dropdown-item"><i class="fas fa-edit"></i> Ganti Desainer</a>
-                                                </div>
-                                            </div>
+                                            <a href="javascript:void(0)" onclick="sendIdBarangForChange({{ $b->id }})" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ganti Desainer</a>
                                         @endif
                                     @else
-                                    <button onclick="pilihDesainer({{ $b->id }})" class="btn btn-sm btn-warning"><i class="fas fa-pen-nib"></i> Pilih Desainer</button>
+                                        <button onclick="pilihDesainer({{ $b->id }})" class="btn btn-sm btn-warning"><i class="fas fa-pen-nib"></i> Pilih Desainer</button>
                                     @endif
                                     </div>
                                 </div>
@@ -92,7 +86,7 @@
         $('#idBarang').val(id);
     }
 
-    function gantiDesainer(id) {
+    function sendIdBarangForChange(id) {
         $('#modalEditDesainer').modal('show');
         $('#idBarang').val(id);
     }
@@ -122,28 +116,32 @@
         });
     }
 
-    function changeDesainer()
-    {
+    function ubahDesainer(id) {
         $.ajax({
-            url: "{{ route('barang.changeDesainer') }}",
-            type: "PUT",
+            url: "{{ route('ubahDesainer') }}",
+            type: "POST",
             data: {
-                "_token": "{{ csrf_token() }}",
-                "barang_id": $('#idBarang').val(),
-                "desainer_id": $('#desainer_id').val(),
+                "_token": $('meta[name="csrf-token"]').attr('content'), // Ambil token CSRF dari meta tag
+                "barangId": $('#idBarang').val(),
+                "desainer": id,
             },
-            success: function(response) {
+            success: function(data) {
                 $('#modalEditDesainer').modal('hide');
                 //swal success
                 Swal.fire({
                     title: "Berhasil!",
-                    text: "Desainer berhasil diganti",
+                    text: "Desainer berhasil diubah",
                     icon: "success",
                 });
 
                 setInterval(() => {
                     location.reload();
                 }, 1500);
+
+            },
+            error: function(xhr, status, error) {
+                // Tangani kesalahan di sini, misalnya menampilkan pesan kesalahan kepada pengguna
+                console.error(xhr.responseText);
             }
         });
     }
@@ -172,6 +170,10 @@
             serverSide: true,
             ajax: {
                 url: "{{ route('edit.desainer') }}",
+                //data tambahan
+                data: {
+                    barang: $('#idBarang').val(),
+                }
             },
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},

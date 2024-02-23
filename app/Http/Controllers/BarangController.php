@@ -7,6 +7,7 @@ use App\Models\Barang;
 use App\Models\RefDesain;
 use Illuminate\Http\Request;
 use App\Helpers\CustomHelper;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -308,5 +309,43 @@ class BarangController extends Controller
         return response()->json([
             'success' => true,
         ]);
+    }
+
+    public function ubahDesainer(Request $request)
+    {
+        try {
+            // Mulai transaksi database
+            DB::beginTransaction();
+
+            $barang = Barang::findOrFail($request->barangId);
+            
+            // Kurangi design load desainer lama
+            $oldDesainer = User::findOrFail($barang->desainer_id);
+            $oldDesainer->decrement('design_load');
+
+            // Tambah design load desainer baru
+            $newDesainer = User::findOrFail($request->desainer);
+            $newDesainer->increment('design_load');
+
+            // Ganti desainer pada barang
+            $barang->desainer_id = $request->desainer;
+            $barang->save();
+
+            // Commit transaksi
+            DB::commit();
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Desainer berhasil diganti!'
+            ]);
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi kesalahan
+            DB::rollback();
+
+            return response()->json([
+                'status' => 500,
+                'message' => 'Terjadi kesalahan saat mengganti desainer.'
+            ]);
+        }
     }
 }
