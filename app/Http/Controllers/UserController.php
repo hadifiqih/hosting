@@ -75,12 +75,8 @@ class UserController extends Controller
 
     public function editDesainer(Request $request)   
     {
-        //ambil data barang_id dari ajax yang dikirimkan oleh datatable
-        $idBarang = Barang::where('id', $request->id)->first();
-        $nowDesainer = $idBarang->desainer_id;
         //ambil data desainer dari table user dengan can_design = 1
-        $desainer = User::where('can_design', '1')->where('id', '!=', $nowDesainer)->get();
-
+        $desainer = User::where('can_design', '1')->get();
 
         return Datatables()->of($desainer)
         ->addIndexColumn()

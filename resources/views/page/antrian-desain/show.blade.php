@@ -39,6 +39,13 @@
                         </div>
                     </div>
                     <div class="row mt-2">
+                        @if($barang->isEmpty())
+                            <div class="col-md-12">
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="fas fa-exclamation-triangle"></i> Belum ada desain yang diinputkan
+                                </div>
+                            </div>
+                        @else
                         @foreach($barang as $b)
                         <div class="col-md-3">
                             <div class="card">
@@ -51,6 +58,7 @@
                                     @if($b->desainer_id != null)
                                         @if($b->desainer_id == Auth::user()->id)
                                             <a href="{{ route('barang.uploadCetak', $b->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-upload"></i> Upload File Cetak</a>
+
                                         @else
                                             <button class="btn btn-sm btn-secondary disabled"><i class="fas fa-upload"></i> Upload File Cetak</button>
                                         @endif
@@ -69,6 +77,7 @@
                             </div>
                         </div>
                         @endforeach
+                        @endif
                     </div>
                 </div>
             </div>
@@ -170,10 +179,6 @@
             serverSide: true,
             ajax: {
                 url: "{{ route('edit.desainer') }}",
-                //data tambahan
-                data: {
-                    barang: $('#idBarang').val(),
-                }
             },
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},

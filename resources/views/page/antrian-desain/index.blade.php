@@ -38,9 +38,6 @@
                 </li>
                 @endif
                 <li class="nav-item">
-                    <a class="nav-link {{Auth::user()->role == 'stempel' || Auth::user()->role == 'desain' ? 'active' : ''}}" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Progress Desain</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" id="custom-content-below-messages-tab" data-toggle="pill" href="#custom-content-below-messages" role="tab" aria-controls="custom-content-below-messages" aria-selected="false">Selesai Desain</a>
                 </li>
                 @if(auth()->user()->role == 'desain' || auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising' || auth()->user()->role == 'supervisor')
@@ -83,37 +80,6 @@
             </div>
             @endif
 
-            <div class="tab-pane fade {{ Auth::user()->role == 'stempel' || Auth::user()->role == 'desain' ? 'show active' : ''}}" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">
-                <div class="card">
-                    <div class="card-header">
-                      <h2 class="card-title">Antrian Desain</h2>
-                      {{-- Tombol tambah order --}}
-                        @if(Auth::user()->role == 'sales')
-                            <a href="{{ url('order/create') }}" class="btn btn-sm btn-warning float-right"><strong>Tambah Desain</strong></a>
-                        @endif
-                    </div>
-                    <div class="card-body">
-                    {{-- Menampilkan Antrian Desain --}}
-                    <table id="tableAntrianDikerjakan" class="table table-bordered table-hover table-responsive">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Ticket Order</th>
-                                <th>Sales</th>
-                                <th>Judul Project</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                        </tbody>
-                    </table>
-                    {{-- End Menampilkan Antrian Desain --}}
-                    {{-- Modal Upload --}}
-                  </div>
-                </div>
-            </div>
             <div class="tab-pane fade" id="custom-content-below-messages" role="tabpanel" aria-labelledby="custom-content-below-messages-tab">
                 <div class="card">
                     <div class="card-header">

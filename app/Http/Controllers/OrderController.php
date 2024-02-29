@@ -115,7 +115,18 @@ class OrderController extends Controller
             }
         })
         ->addColumn('status', function($data){
-            return $data->status == 0 ? '<span class="badge badge-primary">Menunggu</span>' : '<span class="badge badge-success">Dikerjakan</span>';
+            $barang = Barang::where('ticket_order', $data->ticket_order)->get();
+            $diproses = 0;
+
+            foreach($barang as $b){
+                if($b->desainer_id == null){
+                    $diproses += 0;
+                }else{
+                    $diproses += 1;
+                }
+            }
+
+            return '<span class="badge badge-warning">Diproses ('. $diproses .'/'. count($barang) .')</span>';
         })
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
@@ -125,12 +136,9 @@ class OrderController extends Controller
             }
 
             $button .= '<a href="'.route('order.show', $data->ticket_order).'" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
-
-            if(auth()->user()->role == 'supervisor'){
-            $button .= '<a href="javascript:void(0)" onclick="showDesainer('. $data->ticket_order .')" class="btn btn-sm btn-dark"><i class="fas fa-user"></i> Pilih Desainer</a>';
+            if(auth()->user()->role_id == 11){
+                $button .= '<a href="javascript:void(0)" onclick="deleteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
             }
-
-            $button .= '<a href="javascript:void(0)" onclick="deleteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
             $button .= '</div>';
             return $button;
         })
@@ -138,95 +146,11 @@ class OrderController extends Controller
         ->make(true);
     }
 
-    public function listDalamProses()
-    {
-        if(auth()->user()->role_id == 11){
-            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 1)->where('sales_id', auth()->user()->sales->id)->get();
-        }elseif(auth()->user()->role_id == 5){
-            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 1)->get();
-        }elseif(auth()->user()->role_id == 16 || auth()->user()->role_id == 17){
-            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 1)->where('employee_id', auth()->user()->employee->id)->get();
-        }
-
-        return Datatables()->of($listOrder)
-        ->addIndexColumn()
-        ->addColumn('ticket_order', function($data){
-            if($data->is_priority == 1){
-                return $data->ticket_order .'<span class="text-warning"><i class="fas fa-star"></i></span>';
-            }else{
-                return $data->ticket_order;
-            }
-        })
-        ->addColumn('title', function($data){
-            return $data->title;
-        })
-        ->addColumn('sales', function($data){
-            return $data->sales->sales_name;
-        })
-        ->addColumn('ref_desain', function($data){
-            if($data->desain == '-'){
-                return '-';
-            }else{
-                return '<a href="'. asset('storage/ref-desain/' . $data->desain) .'" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>';
-            }
-        })
-        ->addColumn('job_name', function($data){
-            //explode string to array
-            $job = explode(',', $data->job_id);
-            if($data->job_id == 0 || $data->job_id == null){
-                return 'Belum dipilih';
-            }else{
-                $jenisProduk = '';
-                foreach($job as $j){
-                    $jobName = Job::where('id', $j)->first();
-                    if(end($job) == $j){
-                        $jobName = $jobName->job_name;
-                    }else{
-                        $jobName = $jobName->job_name . ', ';
-                    }
-                    $jenisProduk .= $jobName;
-                }
-                return $jenisProduk;
-            }
-        })
-        ->addColumn('desainer', function($data){
-            if($data->employee_id == null){
-                return '<span class="badge badge-danger">Belum dipilih</span>';
-            }else{
-                return $data->employee->name;
-            }
-        })
-        ->addColumn('status', function($data){
-            return $data->status == 0 ? '<span class="badge badge-primary">Menunggu</span>' : '<span class="badge badge-warning">Dikerjakan</span>';
-        })
-        ->addColumn('action', function($data){
-            $button = '<div class="btn-group">';
-            $button .= '<a href="'.route('order.show', $data->ticket_order).'" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
-            if(auth()->user()->role == 'sales'){
-                $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
-            }
-            if(auth()->user()->employee->can_design == 1 && $data->employee_id == auth()->user()->employee->id){
-                $button .= '<a href="javascript:void(0)" onclick="showUploadCetak('. $data->ticket_order .')" class="btn btn-sm btn-dark"><i class="fas fa-upload"></i> File Cetak </a>';
-            }
-            if(auth()->user()->role == 'supervisor' || auth()->user()->role == 'sales'){
-                $button .= '<a href="javascript:void(0)" onclick="deleteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
-            }
-            $button .= '</div>';
-            return $button;
-        })
-        ->rawColumns(['action', 'ref_desain', 'status', 'desainer', 'job_name', 'ticket_order'])
-        ->make(true);
-    }
-
     public function listSelesai()
     {
-        if(auth()->user()->role_id == 11){
-            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 2)->where('sales_id', auth()->user()->sales->id)->get();
-        }elseif(auth()->user()->role_id == 5){
-            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 2)->get();
-        }elseif(auth()->user()->role_id == 16 || auth()->user()->role_id == 17){
-            $listOrder = Order::with('employee', 'sales', 'job', 'user')->orderByDesc('is_priority')->orderByDesc('created_at')->where('status', 2)->where('employee_id', auth()->user()->employee->id)->get();
-        }
+        $listOrder = Order::whereHas('barang', function($query) {
+            $query->whereNotNull('desainer_id');
+        })->get();
 
         return Datatables()->of($listOrder)
         ->addIndexColumn()
