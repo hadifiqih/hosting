@@ -53,25 +53,43 @@ class AntrianController extends Controller
 
     public function index()
     {
-        return view('page.antrian-workshop.index');
+        $jobs = Job::all();
+        $cabang = Cabang::all();
+        $sales = Sales::all();
+        return view('page.antrian-workshop.index', compact('jobs', 'cabang', 'sales'));
     }
 
     public function indexData(Request $request)
     {
-        $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile', 'cabang', 'buktiBayar')
-            ->orderByDesc('created_at')
-            ->where('status', '1')
-            ->get();
-        
-        if(request()->has('kategori')){
-            $jobType = $request->input('kategori');
-            $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile')
-            ->whereHas('barang', function ($query) use ($jobType) {
-                $query->where('kategori_id', $jobType);
-            })
-            ->where('status', '1')
-            ->get();
-        }
+            // Descriptive variable names
+            $productId = $request->get('produk');
+            $branchId = $request->get('cabang');
+            $salesId = $request->get('sales');
+
+            // Build the query with eager loading
+            $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile', 'cabang', 'buktiBayar')
+                ->where('status', 1) // Ensure active entries
+                ->orderByDesc('created_at');
+
+            // Apply filters if any parameters are provided
+            if ($request->has('kategori') || $request->has('cabang') || $request->has('sales')) {
+                if ($productId !== null) {
+                    $antrians->whereHas('barang', function ($query) use ($productId) {
+                        $query->where('job_id', $productId);
+                    });
+                }
+
+                if ($branchId !== null) {
+                    $antrians->where('cabang_id', $branchId);
+                }
+
+                if ($salesId !== null) {
+                    $antrians->where('sales_id', $salesId);
+                }
+            }
+
+            // Execute the query and return results
+            $antrians = $antrians->get();
 
         return DataTables::of($antrians)
             ->addIndexColumn()
@@ -193,20 +211,35 @@ class AntrianController extends Controller
 
     public function indexSelesai(Request $request)
     {
-        $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile')
-            ->orderByDesc('created_at')
-            ->where('status', '2')
-            ->get();
+        // Descriptive variable names
+        $productId = $request->get('produk');
+        $branchId = $request->get('cabang');
+        $salesId = $request->get('sales');
 
-        if(request()->has('kategori')){
-            $jobType = $request->input('kategori');
-            $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile')
-            ->whereHas('barang', function ($query) use ($jobType) {
-                $query->where('kategori_id', $jobType);
-            })
-            ->where('status', '2')
-            ->get();
+        // Build the query with eager loading
+        $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile', 'cabang', 'buktiBayar')
+            ->where('status', 2) // Ensure active entries
+            ->orderByDesc('created_at');
+
+        // Apply filters if any parameters are provided
+        if ($request->has('kategori') || $request->has('cabang') || $request->has('sales')) {
+            if ($productId !== null) {
+                $antrians->whereHas('barang', function ($query) use ($productId) {
+                    $query->where('job_id', $productId);
+                });
+            }
+
+            if ($branchId !== null) {
+                $antrians->where('cabang_id', $branchId);
+            }
+
+            if ($salesId !== null) {
+                $antrians->where('sales_id', $salesId);
+            }
         }
+
+        // Execute the query and return results
+        $antrians = $antrians->get();
 
         return DataTables::of($antrians)
             ->addIndexColumn()

@@ -16,33 +16,6 @@
 </div>
 @endif
 
-{{-- Alert success-update --}}
-@if(session('success-update'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('success-update') }}
-</div>
-@endif
-
-{{-- Alert successToAntrian --}}
-@if(session('successToAntrian'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('successToAntrian') }}
-</div>
-@endif
-
-{{-- Alert success-dokumentasi --}}
-@if(session('success-dokumentasi'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('success-dokumentasi') }}
-</div>
-@endif
-
-@if(session('success-progress'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('success-progress') }}
-</div>
-@endif
-
 @if(session('error'))
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     {{ session('error') }}
@@ -52,38 +25,47 @@
 {{-- Alert error --}}
 
 {{-- Content Table --}}
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+</style>
     <div class="container-fluid">
         <div class="row mb-3">
+            {{-- Filter Jenis Pekerjaan --}}
             <div class="col-md-4">
-            <form id="filterByCategory" action="{{ route('antrian.filterByCategory') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-                <label for="kategori">Kategori Pekerjaan</label>
-                    @if(isset($filtered))
-                    <select id="kategori" name="kategori" class="custom-select rounded-1" disabled>
-                        <option value="Semua">Semua</option>
-                        <option value="1" {{ $filtered == "1" ? "selected" : "" }}>Stempel</option>
-                        <option value="3" {{ $filtered == "3" ? "selected" : "" }}>Advertising</option>
-                        <option value="2" {{ $filtered == "2" ? "selected" : "" }}>Non Stempel</option>
-                        <option value="4" {{ $filtered == "4" ? "selected" : "" }}>Digital Printing</option>
+                <label for="jenisProduk">Jenis Pekerjaan</label>
+                    <select id="jenisProduk" class="form-control select2" name="jenisProduk" id="jenisProduk">
+                        <option value="">Semua</option>
+                        @foreach($jobs as $job)
+                            <option value="{{ $job->id }}">{{ $job->job_name }}</option>
+                        @endforeach
                     </select>
-                    @else
-                    <select id="kategori" name="kategori" class="custom-select rounded-1">
-                        <option value="Semua">Semua</option>
-                        <option value="1">Stempel</option>
-                        <option value="3">Advertising</option>
-                        <option value="2">Non Stempel</option>
-                        <option value="4">Digital Printing</option>
-                    </select>
-                    @endif
             </div>
-            <div class="col-md-2 align-self-end">
-                @if(isset($filtered))
-                <a href="{{ route('antrian.index') }}" class="btn btn-danger mt-1">Reset</a>
-                @else
-                <button type="submit" class="btn btn-primary mt-1">Filter</button>
-                @endif
+            {{-- Tempat Pengerjaan --}}
+            <div class="col-md-4">
+                <label for="cabang">Tempat Pengerjaan</label>
+                <select id="cabang" class="form-control select2" name="cabang" id="cabang">
+                    <option value="">Semua</option>
+                    @foreach($cabang as $c)
+                        <option value="{{ $c->id }}">{{ $c->nama_cabang }}</option>
+                    @endforeach
+                </select>
             </div>
-            </form>
+            {{-- Filter Sales --}}
+            <div class="col-md-4">
+                <label for="sales">Sales</label>
+                <select id="sales" class="form-control select2" name="sales" id="sales">
+                    <option value="">Semua</option>
+                    @foreach($sales as $s)
+                        <option value="{{ $s->id }}">{{ $s->sales_name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            {{-- Button Filter --}}
+            <div class="col-md-4 mt-3">
+                <button type="button" class="btn btn-primary" id="btnFilter">Filter</button>
+            </div>
         </div>
         <div class="row">
             <div class="col-12">
@@ -223,7 +205,7 @@
 
             $('.maskRupiah').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
             
-            $("#dataAntrian").DataTable({
+            var tableDikerjakan = $("#dataAntrian").DataTable({
                 responsive: true,
                 autoWidth: false,
                 processing: true,
@@ -247,7 +229,7 @@
                 ],
             });
 
-            $("#dataAntrianSelesai").DataTable({
+            var tableSelesai = $("#dataAntrianSelesai").DataTable({
                 responsive: true,
                 autoWidth: false,
                 processing: true,
@@ -322,6 +304,16 @@
                 }
                 });
             });
+
+            $('#btnFilter').on('click', function(){
+                var jenisProduk = $('#jenisProduk').val();
+                var cabang = $('#cabang').val();
+                var sales = $('#sales').val();
+                tableDikerjakan.ajax.url("{{ route('antrian.indexData') }}?produk=" + jenisProduk + "&cabang=" + cabang + "&sales=" + sales).load();
+                tableSelesai.ajax.url("{{ route('antrian.indexSelesai') }}?produk=" + jenisProduk + "&cabang=" + cabang + "&sales=" + sales).load();
+            });
+            //select2
+            $('.select2').select2();
         });
     </script>
 @endsection

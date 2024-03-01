@@ -11,6 +11,12 @@
     .spesifikasi {
         white-space: pre-line;
     }
+
+    @media (max-width: 767px) {
+        .col-sm h5, .col-sm h6 {
+            font-size: 14px;
+        }
+    }
 </style>
 <input type="hidden" id="ticket_order" value="{{ $antrian->ticket_order }}">
     <div class="card">
@@ -151,6 +157,22 @@
                 <h6>Dibayarkan<span class="float-right text-danger">-Rp{{ number_format($nominal, 0, ',', '.') }}</span></h6>
                 <h5><strong>Sisa Pembayaran : </strong><span class="float-right font-weight-bold text-danger">Rp{{ number_format($sisaBayar, 0, ',', '.') }}</span></h5>
             </div>
+        </div>
+        <div class="row">
+                {{-- Alert --}}
+                <div class="col-sm-12">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle mr-1"></i> <strong>Perhatian!</strong> Pesanan ini belum lunas, silahkan konfirmasi pelunasan.
+                        <button onclick="modalPelunasan({{ $antrian->ticket_order }})" type="button" class="btn btn-sm btn-danger float-right">Unggah Pelunasan</button>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="alert alert-success" role="alert">
+                        <i class="fas fa-check mr-1"></i> <strong>Terima Kasih!</strong> Pesanan ini sudah lunas.
+                    </div>
+                </div>
+                {{-- End Alert --}}
         </div>
     </div>
     </div>
@@ -434,7 +456,7 @@
                 </table>
                 <hr>
                 <div class="row">
-                    <div class="col">
+                    <div class="col-sm">
                         <h5 class="font-weight-bold">Profit Perusahaan : <span class="text-success float-right" id="profit">Rp{{ number_format($profit, 0, ',', '.') }}</span></h5>
                         <h6>Omset : <span class="text-dark float-right" id="profit">Rp{{ number_format($totalKeseluruhan, 0, ',', '.') }}</span></h6>
                         <h6>Total Biaya Produksi : <span class="text-danger float-right" id="totalProduksi">-Rp{{ number_format($totalBiaya, 0, ',', '.')}}</span></h6>
@@ -460,6 +482,7 @@
     @includeIf('page.antrian-workshop.modal.modal-ref-acc')
     @includeIf('page.antrian-workshop.modal.modal-tambah-bahan')
     @includeIf('page.antrian-workshop.modal.modal-bukti-pembayaran')
+    @includeIf('page.antrian-workshop.modal.modal-pelunasan')
 </div>
 
 @endsection
@@ -468,6 +491,11 @@
 <script src="{{ asset('adminlte/dist/js/maskMoney.min.js') }}"></script>
 
     <script>
+        //menampilkan modal pelunasan
+        function modalPelunasan(ticket_order) {
+            $('#modalPelunasan').modal('show');
+            $('#ticket_order_pelunasan').val(ticket_order);
+        }
         //menampilkan modal gambar acc desain
         function modalRefACC() {
             $('#modalRefACC').modal('show');
