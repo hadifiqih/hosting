@@ -7,6 +7,14 @@
 @section('page', 'Antrian')
 
 @section('content')
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
 <style>
     .spesifikasi {
         white-space: pre-line;
@@ -158,7 +166,8 @@
                 <h5><strong>Sisa Pembayaran : </strong><span class="float-right font-weight-bold text-danger">Rp{{ number_format($sisaBayar, 0, ',', '.') }}</span></h5>
             </div>
         </div>
-        <div class="row">
+        <div class="row mt-2">
+                @if($antrian->pembayaran->nominal_pelunasan == null)
                 {{-- Alert --}}
                 <div class="col-sm-12">
                     <div class="alert alert-warning" role="alert">
@@ -166,13 +175,14 @@
                         <button onclick="modalPelunasan({{ $antrian->ticket_order }})" type="button" class="btn btn-sm btn-danger float-right">Unggah Pelunasan</button>
                     </div>
                 </div>
-
+                @else
                 <div class="col-sm-12">
                     <div class="alert alert-success" role="alert">
                         <i class="fas fa-check mr-1"></i> <strong>Terima Kasih!</strong> Pesanan ini sudah lunas.
                     </div>
                 </div>
                 {{-- End Alert --}}
+                @endif
         </div>
     </div>
     </div>
@@ -492,9 +502,9 @@
 
     <script>
         //menampilkan modal pelunasan
-        function modalPelunasan(ticket_order) {
+        function modalPelunasan(id) {
             $('#modalPelunasan').modal('show');
-            $('#ticket_order_pelunasan').val(ticket_order);
+            $('#modalPelunasan #ticketPelunasan').val(id);
         }
         //menampilkan modal gambar acc desain
         function modalRefACC() {
@@ -651,6 +661,40 @@
         }
 
         $(document).ready(function() {
+            //maskMoney untuk nominal pelunasan pada modal
+            $('#nominal').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
+
+            //ONCHANGE JENIS PELUNASAN
+            $('#jenisPelunasan').on('change', function() {
+                var jenis = $(this).val();
+                if(jenis == 'TF'){
+                    $('#formFilePelunasan').show();
+                    $('#filePelunasan').attr('required', true);
+                }
+                else if(jenis == 'TU'){
+                    $('#formFilePelunasan').hide();
+                    $('#filePelunasan').attr('required', false);
+                }
+            });
+
+            $("#filePelunasan").on("change", function() {
+                const file = $(this)[0].files[0];
+
+                if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(event) {
+                    $("#judulTampilan").show();
+                    $("#preview-image").attr("src", event.target.result);
+                };
+
+                reader.readAsDataURL(file);
+                } else {
+                    $("#judulTampilan").hide();
+                    $("#preview-image").attr("src", "");
+                }
+            });
+
             //ajax untuk menampilkan total biaya bahan
             $.ajax({
                 url: "{{ route('bahan.total', $antrian->ticket_order) }}",
@@ -726,6 +770,20 @@
                     }
                 });
             })
+
+            $('#nominal').on('keyup', function() {
+                var nominal = $(this).val();
+                // hilangkan Rp dan titik lalu ubah ke integer
+                nominal = parseInt(nominal.replace(/Rp|\.|/g, ''));
+                var sisaBayar = {{ $sisaBayar }};
+                if(nominal > sisaBayar){
+                    $('#errorNominal').text('Nominal tidak boleh melebihi sisa pembayaran!');
+                    $('#btnPelunasan').attr('disabled', true);
+                }else{
+                    $('#errorNominal').text('');
+                    $('#btnPelunasan').attr('disabled', false);
+                }
+            });
 
             //ajax untuk menampilkan barang yang dipesan
             $('#tableItems').DataTable({

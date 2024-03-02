@@ -845,7 +845,9 @@ class AntrianController extends Controller
 
         $profit = $omset - $totalBiaya;
 
-        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'pembayaran' , 'bahan', 'totalBahan', 'biayaSales', 'biayaDesain', 'biayaPenanggungJawab', 'biayaPekerjaan', 'biayaBPJS', 'biayaTransportasi', 'biayaOverhead', 'biayaAlatListrik', 'totalBiaya', 'profit', 'pengiriman', 'ekspedisi'));
+        $sisaPembayaran = $total - $pembayaran->dibayarkan;
+
+        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'pembayaran' , 'bahan', 'totalBahan', 'biayaSales', 'biayaDesain', 'biayaPenanggungJawab', 'biayaPekerjaan', 'biayaBPJS', 'biayaTransportasi', 'biayaOverhead', 'biayaAlatListrik', 'totalBiaya', 'profit', 'pengiriman', 'ekspedisi', 'sisaPembayaran'));
     }
 
     public function updateDeadline(Request $request)

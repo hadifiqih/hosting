@@ -280,7 +280,8 @@ Route::controller(AntrianController::class)->group(function(){
 
 Route::controller(PaymentController::class)->group(function(){
     Route::get('/payment/{id}', 'show')->name('payment.show');
-    Route::post('/payment/pelunasan', 'updatePelunasan')->name('payment.pelunasan');
+    Route::post('/payment/pelunasan', 'updatePelunasan')->name('updatePelunasan');
+    Route::put('/payment/unggah-pelunasan', 'unggahPelunasan')->name('unggahPelunasan');
 });
 
 Route::resource('product', ProductController::class);

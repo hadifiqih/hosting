@@ -9,44 +9,49 @@
         </button>
         </div>
         <div class="modal-body">
-            <form id="formPelunasan" action="{{ route('payment.pelunasan') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('unggahPelunasan') }}" method="post" enctype="multipart/form-data">
                 @csrf
-                {{-- Jumlah Pembayaran --}}
-                <div class="form-group mb-1">
-                    <label class="form-label" for="metodePembayaran">Metode Pembayaran <span class="text-danger font-weight-bold">*</span></label>
-                        <select class="custom-select rounded-0 metodePembayaran" id="metodePembayaran" name="metodePembayaran">
-                            <option value="" disabled selected>-- Pilih Jenis Pembayaran --</option>
-                            <option value="Cash">Tunai</option>
-                            <option value="Transfer BCA">Transfer BCA</option>
-                            <option value="Transfer BNI">Transfer BNI</option>
-                            <option value="Transfer BRI">Transfer BRI</option>
-                            <option value="Transfer Mandiri">Transfer Mandiri</option>
-                        </select>
+                @method('PUT')
+                <input type="hidden" name="ticketPelunasan" id="ticketPelunasan">
+
+                {{-- Jenis Pelunasan --}}
+                <div class="form-group">
+                    <label for="jenisPelunasan">Jenis Pelunasan</label>
+                    <select class="form-control" id="jenisPelunasan" name="jenisPelunasan">
+                        <option value="TF" selected>Transfer</option>
+                        <option value="TU">Tunai</option>
+                    </select>
                 </div>
-                <div class="form-group mb-1">
-                    <label class="form-label" for="jumlahPembayaran">Jumlah Pembayaran <span class="text-danger font-weight-bold">*</span></label>
-                    <input id="jumlahPembayaran" type="text" class="form-control maskRupiah jumlahPembayaran" name="jumlahPembayaran" placeholder="Contoh : Rp 10.000" required>
-                </div>
-                    <p id="keterangan" class="my-1 keterangan"></p>
-                {{-- File Bukti Pembayaran --}}
-                <div class="filePelunasan">
-                <p class="mb-2"><strong>Bukti Pembayaran <span class="text-danger font-weight-bold">*</span></strong></p>
-                <div class="input-group">
-                    <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="filePelunasan" name="filePelunasan" />
-                    <label class="custom-file-label" for="filePelunasan">Pilih File</label>
+
+                <div id="formFilePelunasan" class="form-group">
+                    <label for="filePelunasan">Bukti Pembayaran</label>
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input type="file" name="buktiPelunasan" class="custom-file-input" id="filePelunasan" accept="image/jpg, image/jpeg, image/png, application/pdf">
+                            <label class="custom-file-label" for="filePelunasan">Pilih file</label>
+                        </div>
                     </div>
                 </div>
+
+                {{-- Sisa Pembayaran --}}
+                <div class="form-group">
+                    <label for="sisaPembayaran">Sisa Pembayaran : </label> <span id="sisaPembayaran" class="text-danger"> Rp{{ number_format($sisaBayar,0,',','.') }}</span>
                 </div>
-                <div class="form-group mt-1">
-                    <label class="form-label" for="sisaPembayaran">Sisa Pembayaran</label>
-                    <input class="form-control sisaPembayaran" type="text" id="sisaPembayaran" name="sisaPembayaran" value="Rp {{ number_format($antrian->payment->remaining_payment, 0, ',', '.') }}" disabled>
+                {{-- Nominal --}}
+                <div class="form-group">
+                    <label for="nominal">Nominal</label>
+                    <input type="text" class="form-control" id="nominal" name="nominal" placeholder="Nominal" required>
+                    <h6 id="errorNominal" class="text-danger mt-1"></h6>
                 </div>
-        </div>
-        <div class="modal-footer justify-content-between">
-            <input id="ticket_order_pelunasan" type="hidden" name="ticketAntrian" value="">
-            <input id="submitUnggahBayar" type="submit" class="btn btn-primary submitUnggahBayar" value="Unggah" disabled>
-        </form>
+                
+
+                <div class="form-group">
+                    <label id="judulTampilan" for="preview-image" style="display: none">Tampilan Bukti Pembayaran</label>
+                    <img id="preview-image" class="img-preview" width="100%"></img>
+                </div>
+
+                <button id="btnPelunasan" type="submit" class="btn btn-sm btn-primary">Unggah</button>
+            </form>
         </div>
     </div>
     <!-- /.modal-content -->

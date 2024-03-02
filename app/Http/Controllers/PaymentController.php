@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Throwable;
 use App\Models\Antrian;
 use App\Models\Payment;
+use App\Models\Pembayaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -45,7 +46,6 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-
         $antrian = Antrian::where('ticket_order', $request->order_number)->first();
 
         $status = $request->payment_amount == $request->omset ? 1 : 0;
@@ -92,6 +92,36 @@ class PaymentController extends Controller
 
         return view('antrian.payment.edit', compact('payments'));
     }
+
+    public function unggahPelunasan(Request $request)
+    {
+        $tiket = $request->ticketPelunasan;
+        $waktuSekarang = date('Y-m-d H:i:s');
+        $nominal = (int) str_replace(['Rp ', '.'], '', $request->nominal);
+
+        $payments = Pembayaran::where('ticket_order', $tiket)->first();
+
+        if ($payments) {
+            if ($request->hasFile('buktiPelunasan')) {
+                $buktiPelunasan = $request->file('buktiPelunasan');
+                $fileName = time() . '.' . $buktiPelunasan->getClientOriginalExtension();
+                $path = 'bukti-pembayaran/' . $fileName;
+                Storage::disk('public')->put($path, file_get_contents($buktiPelunasan));
+                $payments->file_pelunasan = $fileName;
+            } else {
+                $payments->file_pelunasan = null; // Set to null if no file uploaded
+            }
+
+            $payments->nominal_pelunasan = $nominal;
+            $payments->tanggal_pelunasan = $waktuSekarang;
+            $payments->save();
+
+            return redirect()->route('antrian.show', $payments->ticket_order)->with('success', 'Bukti pelunasan berhasil diunggah !');
+        } else {
+            return redirect()->back()->with('error', 'Pembayaran tidak ditemukan');
+        }
+    }
+
 
     public function updatePelunasan(Request $request)
     {
