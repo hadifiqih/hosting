@@ -112,6 +112,9 @@ class PaymentController extends Controller
                 $payments->file_pelunasan = null; // Set to null if no file uploaded
             }
 
+            $totalHarusDibayar = $payments->total_harga;
+            $dibayar = $payments->nominal_pelunasan + $nominal;
+
             $payments->nominal_pelunasan = $nominal;
             $payments->tanggal_pelunasan = $waktuSekarang;
             $payments->save();

@@ -2,9 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Job;
 use App\Models\User;
+use App\Models\Iklan;
+use App\Models\Order;
 use App\Models\Kategori;
+use App\Models\DataKerja;
 use App\Models\RefDesain;
+use App\Models\DataAntrian;
 use App\Models\Documentation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,11 +38,6 @@ class Barang extends Model
     public function documentation()
     {
         return $this->belongsTo(Documentation::class);
-    }
-
-    public function order()
-    {
-        return $this->belongsTo(Order::class, 'ticket_order', 'ticket_order');
     }
 
     public function job()

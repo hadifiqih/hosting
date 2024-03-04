@@ -55,20 +55,24 @@
                                     <p id="note" class="card-text">{{ $b->note }}</p>
                                     <p class="card-text"><small class="text-muted">Qty Produk : {{ $b->qty }}</small></p>
                                     <div class="btn-group">
-                                    @if($b->desainer_id != null)
-                                        @if($b->desainer_id == Auth::user()->id)
-                                            <a href="{{ route('barang.uploadCetak', $b->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-upload"></i> Upload File Cetak</a>
+                                        @if(auth()->user()->role_id == 5)
+                                            @if($b->desainer_id == null)
+                                                <button class="btn btn-sm btn-primary" onclick="pilihDesainer({{ $b->id }})"><i class="fas fa-user-plus"></i> Tugaskan Desainer</button>
+                                            @else
+                                                <button class="btn btn-sm btn-warning" onclick="sendIdBarangForChange({{ $b->id }})"><i class="fas fa-user-edit"></i> Ubah Desainer</button>
+                                            @endif
 
-                                        @else
-                                            <button class="btn btn-sm btn-secondary disabled"><i class="fas fa-upload"></i> Upload File Cetak</button>
+                                            @if($b->desainer_id == auth()->user()->id)
+                                                @if($b->file_cetak == null && $b->link_file_cetak == null)
+                                                    <a href="{{ route('unggahCetak', $b->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-upload"></i> Unggah File Cetak</a>
+                                                @else
+                                                    <button class="btn btn-sm btn-success"><i class="fas fa-check"></i>Sudah Diunggah</button>
+                                                @endif
+                                            @endif
+                                        @elseif(auth()->user()->role_id == 16 || auth()->user()->role_id == 17)
+                                            
+                                            <a href="{{ route('unggahCetak', $b->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-upload"></i> Unggah File Cetak</a>
                                         @endif
-
-                                        @if(Auth::user()->role_id == 5)
-                                            <a href="javascript:void(0)" onclick="sendIdBarangForChange({{ $b->id }})" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ganti Desainer</a>
-                                        @endif
-                                    @else
-                                        <button onclick="pilihDesainer({{ $b->id }})" class="btn btn-sm btn-warning"><i class="fas fa-pen-nib"></i> Pilih Desainer</button>
-                                    @endif
                                     </div>
                                 </div>
                                 <div class="card-footer">

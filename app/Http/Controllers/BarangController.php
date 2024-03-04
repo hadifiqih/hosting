@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Order;
 use App\Models\Barang;
 use App\Models\RefDesain;
 use Illuminate\Http\Request;
@@ -289,9 +290,54 @@ class BarangController extends Controller
 
     public function uploadCetak($id)
     {
-        $barang = Barang::where('ticket_order', $id)->with('refdesain')->get();
+        $barang = Barang::find($id);
 
-        return 'upload cetak';
+        return view('page.antrian-desain.upload-file-cetak', compact('barang'));
+    }
+
+    public function unggahCetak(Request $request)
+    {
+        if($request->file('fileCetak')){
+            $fileCetak = $request->file('fileCetak');
+            $namaFile = time().'_'.$fileCetak->getClientOriginalName();
+            $pathGambar = 'file-cetak/'.$namaFile;
+            Storage::disk('public')->put($pathGambar, file_get_contents($fileCetak));
+        }else{
+            $pathGambar = null;
+        }
+
+        if($request->linkFile){
+            $url = $request->linkFile;
+        }
+        else{
+            $url = null;
+        }
+
+        $barang = Barang::findOrFail($request->barangId);
+        $barang->file_cetak = $pathGambar;
+        $barang->link_file_cetak = $url;
+        $barang->save();
+
+        //check apakah file cetak sudah diunggah semua
+        $cekBarang = Barang::where('ticket_order', $barang->ticket_order)->get();
+        $cek = 0;
+        foreach($cekBarang as $item){
+            if($item->file_cetak != null || $item->link_file_cetak != null){
+                $cek++;
+            }
+        }
+
+        if($cek == $cekBarang->count()){
+            $order = Order::where('ticket_order', $barang->ticket_order)->first();
+            $order->status = 2;
+            $order->save();
+        }else{
+            $order = Order::where('ticket_order', $barang->ticket_order)->first();
+            $order->status = 1;
+            $order->save();
+        }
+
+        return redirect()->route('design.index')->with('success', 'File cetak berhasil diunggah !');
     }
 
     public function tugaskanDesainer(Request $request)

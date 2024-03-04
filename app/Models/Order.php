@@ -2,6 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Job;
+use App\Models\User;
+use App\Models\Sales;
+use App\Models\Design;
+use App\Models\Antrian;
+use App\Models\Employee;
 use App\Models\Kategori;
 use App\Models\PrintFile;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +19,10 @@ class Order extends Model
     use HasFactory, SoftDeletes;
 
     protected $table ='orders';
+
+    public function barang(){
+        return $this->hasMany(Barang::class, 'ticket_order', 'ticket_order');
+    }
 
     public function printfile(){
         return $this->belongsTo(PrintFile::class, 'ticket_order', 'ticket_order');
@@ -44,10 +54,6 @@ class Order extends Model
 
     public function payments(){
         return $this->hasOne(Payment::class, 'ticket_order');
-    }
-
-    public function barang(){
-        return $this->hasMany(Barang::class, 'ticket_order');
     }
 
     public function kategori(){

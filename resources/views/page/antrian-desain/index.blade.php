@@ -32,7 +32,7 @@
     <div class="row">
         <div class="col-12">
             <ul class="nav nav-tabs mb-2" id="custom-content-below-tab" role="tablist">
-                @if(Auth::user()->role == 'sales' || Auth::user()->role == 'supervisor')
+                @if(Auth::user()->role_id == 11 || Auth::user()->role_id == 5 || Auth::user()->role_id == 17 || Auth::user()->role_id == 16)
                 <li class="nav-item">
                     <a class="nav-link active" id="custom-content-below-home-tab" data-toggle="pill" href="#custom-content-below-home" role="tab" aria-controls="custom-content-below-home" aria-selected="true">Menunggu Desain</a>
                 </li>
@@ -47,7 +47,7 @@
                 @endif
             </ul>
             <div class="tab-content" id="custom-content-below-tabContent">
-            @if(Auth::user()->role == 'sales' || Auth::user()->role == 'supervisor')
+            @if(Auth::user()->role_id == 11 || Auth::user()->role_id == 5 || Auth::user()->role_id == 17 || Auth::user()->role_id == 16)
             <div class="tab-pane fade show active" id="custom-content-below-home" role="tabpanel" aria-labelledby="custom-content-below-home-tab">
                 <div class="card">
                 <div class="card-header">

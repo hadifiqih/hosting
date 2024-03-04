@@ -355,6 +355,7 @@ Route::controller(BarangController::class)->group(function(){
     Route::get('/barang/get-barang-by-ticket/{id}', 'getBarangByTicket')->name('getBarangByTicket');
     Route::get('/barang/upload-cetak/{id}', 'uploadCetak')->name('barang.uploadCetak');
     Route::post('/barang/tugaskan-desainer', 'tugaskanDesainer')->name('barang.tugaskanDesainer');
+    Route::put('barang/unggah-cetak/{id}', 'unggahCetak')->name('unggahCetak');
     //ganti desainer
     Route::post('/barang/ubah-desainer', 'ubahDesainer')->name('ubahDesainer');//untuk mengubah desainer
 });
