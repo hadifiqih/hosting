@@ -61,35 +61,30 @@ class AntrianController extends Controller
 
     public function indexData(Request $request)
     {
-            // Descriptive variable names
-            $productId = $request->get('produk');
-            $branchId = $request->get('cabang');
-            $salesId = $request->get('sales');
-
-            // Build the query with eager loading
-            $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile', 'cabang', 'buktiBayar')
-                ->where('status', 1) // Ensure active entries
-                ->orderByDesc('created_at');
-
-            // Apply filters if any parameters are provided
-            if ($request->has('kategori') || $request->has('cabang') || $request->has('sales')) {
-                if ($productId !== null) {
-                    $antrians->whereHas('barang', function ($query) use ($productId) {
-                        $query->where('job_id', $productId);
-                    });
-                }
-
-                if ($branchId !== null) {
-                    $antrians->where('cabang_id', $branchId);
-                }
-
-                if ($salesId !== null) {
-                    $antrians->where('sales_id', $salesId);
-                }
+        // Descriptive variable names
+        $productId = $request->get('produk');
+        $branchId = $request->get('cabang');
+        $salesId = $request->get('sales');
+     // Build the query with eager loading
+        $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'cabang', 'buktiBayar')
+            ->where('status', 1) // Ensure active entries
+            ->orderByDesc('created_at');
+     // Apply filters if any parameters are provided
+        if ($request->has('kategori') || $request->has('cabang') || $request->has('sales')) {
+            if ($productId !== null) {
+                $antrians->whereHas('barang', function ($query) use ($productId) {
+                    $query->where('job_id', $productId);
+                });
             }
-
-            // Execute the query and return results
-            $antrians = $antrians->get();
+         if ($branchId !== null) {
+                $antrians->where('cabang_id', $branchId);
+            }
+         if ($salesId !== null) {
+                $antrians->where('sales_id', $salesId);
+            }
+        }
+     // Execute the query and return results
+        $antrians = $antrians->get();
 
         return DataTables::of($antrians)
             ->addIndexColumn()
@@ -107,20 +102,6 @@ class AntrianController extends Controller
                     return '<span class="text-danger">BELUM DIANTRIKAN</span>';
                 }else{
                     return '<span class="text-danger">'. $antrian->dataKerja->tgl_selesai .'</span>';
-                }
-            })
-            ->addColumn('fileDesain', function ($antrian) {
-                if($antrian->printfile->nama_file == null){
-                    return '<span class="text-danger">!!FILE CETAK KOSONG!!</span>';
-                }else{
-                    return '<a class="btn btn-sm btn-primary" href="'. route('design.download', $antrian->id) .'">Download</a>';
-                }
-            })
-            ->addColumn('desainer', function ($antrian) {
-                if($antrian->printfile->desainer_id == null){
-                    return '<span class="text-danger">DESAINER KOSONG</span>';
-                }else{
-                    return $antrian->printfile->desainer->name;
                 }
             })
             ->addColumn('operator', function ($antrian) {
@@ -197,7 +178,7 @@ class AntrianController extends Controller
                     
                 }
                 elseif(auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising') {
-                    $btn .= '<a href="' . route('documentation.uploadProduksi', $antrian->ticket_order) . '" class="btn btn-warning btn-sm"><i class="fas fa-upload"></i> Proses</a>';
+                    $btn .= '<a href="' . route('documentation.uploadProduksi', $antrian->ticket_order) . '" class="btn btn-warning btn-sm"><i class="fas fa-camera"></i> Unggah Dokumentasi</a>';
                 }
                 else{
                     $btn .= '<a href="'.route('antrian.show', $antrian->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
@@ -205,7 +186,7 @@ class AntrianController extends Controller
                 $btn .= '</div>';
                 return $btn;
             })
-            ->rawColumns(['ticket_order', 'fileDesain', 'endJob', 'operator', 'finishing', 'qc', 'tempat', 'action'])
+            ->rawColumns(['ticket_order', 'endJob', 'operator', 'finishing', 'qc', 'tempat', 'action'])
             ->make(true);
     }
 
@@ -217,7 +198,7 @@ class AntrianController extends Controller
         $salesId = $request->get('sales');
 
         // Build the query with eager loading
-        $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile', 'cabang', 'buktiBayar')
+        $antrians = DataAntrian::with('sales', 'customer', 'job', 'barang', 'dataKerja', 'cabang', 'buktiBayar')
             ->where('status', 2) // Ensure active entries
             ->orderByDesc('created_at');
 
@@ -258,27 +239,13 @@ class AntrianController extends Controller
             ->addColumn('keyword', function ($antrian) {
                 return $antrian->order->title;
             })
-            ->addColumn('desain', function ($antrian) {
-                if($antrian->printfile->nama_file == null){
-                    return '<span class="text-danger">!!FILE CETAK KOSONG!!</span>';
-                }else{
-                    return '<a class="btn btn-sm btn-primary" href="'. route('design.download', $antrian->id) .'">Download</a>';
-                }
-            })
-            ->addColumn('desainer', function ($antrian) {
-                if($antrian->printfile->desainer_id == null){
-                    return '<span class="text-danger">DESAINER KOSONG</span>';
-                }else{
-                    return $antrian->printfile->desainer->name;
-                }
-            })
             ->addColumn('action', function ($antrian) {
                 $btn = '<div class="btn-group">';
                 $btn .= '<a href="'.route('antrian.show', $antrian->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
                 $btn .= '</div>';
                 return $btn;
             })
-            ->rawColumns(['action','ticket_order', 'desain', 'desainer'])
+            ->rawColumns(['action','ticket_order'])
             ->make(true);
         
     }
@@ -417,8 +384,8 @@ class AntrianController extends Controller
     }
 
     public function downloadPrintFile($id){
-        $antrian = DataAntrian::where('id', $id)->first();
-        $file = $antrian->printfile->nama_file;
+        $antrian = Barang::where('id', $id)->first();
+        $file = $antrian->barang->file_cetak;
         $path = storage_path('app/public/file-cetak/' . $file);
         return response()->download($path);
     }
@@ -799,7 +766,7 @@ class AntrianController extends Controller
 
     public function show($id)
     {
-        $antrian = DataAntrian::where('ticket_order', $id)->with('sales', 'customer', 'job', 'barang', 'dataKerja', 'printfile', 'pembayaran', 'estimator')->first();
+        $antrian = DataAntrian::where('ticket_order', $id)->with('sales', 'customer', 'job', 'barang', 'dataKerja', 'pembayaran', 'estimator')->first();
 
         $items = Barang::where('ticket_order', $id)->get();
 

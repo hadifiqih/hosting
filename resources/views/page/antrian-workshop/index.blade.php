@@ -93,8 +93,6 @@
                                             <th scope="col">Sales</th>
                                             <th scope="col">Nama Customer</th>
                                             <th scope="col">Deadline</th>
-                                            <th scope="col">File Desain</th>
-                                            <th scope="col">Desainer</th>
                                             <th scope="col">Operator</th>
                                             <th scope="col">Finishing</th>
                                             <th scope="col">QC</th>
@@ -130,8 +128,6 @@
                                             <th scope="col">Sales</th>
                                             <th scope="col">Nama Customer</th>
                                             <th scope="col">Keyword Project</th>
-                                            <th scope="col">Desain</th>
-                                            <th scope="col">Desainer</th>
                                             <th scope="col">Aksi</th>
                                         </tr>
                                     </thead>
@@ -219,8 +215,6 @@
                     {data: 'sales', name: 'sales'},
                     {data: 'customer', name: 'customer'},
                     {data: 'endJob', name: 'endJob'},
-                    {data: 'fileDesain', name: 'fileDesain'},
-                    {data: 'desainer', name: 'desainer'},
                     {data: 'operator', name: 'operator'},
                     {data: 'finishing', name: 'finishing'},
                     {data: 'qc', name: 'qc'},
@@ -244,8 +238,6 @@
                     {data: 'sales', name: 'sales'},
                     {data: 'customer', name: 'customer'},
                     {data: 'keyword', name: 'keyword'},
-                    {data: 'desain', name: 'desain'},
-                    {data: 'desainer', name: 'desainer'},
                     {data: 'action', name: 'action'},
                 ],
             });

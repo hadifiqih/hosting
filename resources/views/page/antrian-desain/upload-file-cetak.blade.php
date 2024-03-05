@@ -122,7 +122,8 @@
                 confirmButtonText: 'Ya, Unggah !'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $('#submitUnggahCetak').unbind('click').click();
+                    //proses submit form
+                    $('#submitUnggahCetak').off('click').click();                    
                 }
             });
         });

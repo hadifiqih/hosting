@@ -80,7 +80,7 @@ class OrderController extends Controller
             if(auth()->user()->role_id == 11){
                 $listOrder->where('sales_id', auth()->user()->sales->id);
             }elseif(auth()->user()->role_id == 5){
-                $listOrder->where('status', 0);
+                $listOrder->where('status', '!=', 2);
             }elseif(auth()->user()->role_id == 16 || auth()->user()->role_id == 17){
                 $listOrder->where('status', 1)
                 ->whereHas('barang', function($query) use ($userId){
@@ -238,13 +238,10 @@ class OrderController extends Controller
         ->addColumn('action', function($data){
             $button = '<div class="btn-group">';
 
-            if(auth()->user()->role == 'sales'){
-                $button .= '<a href="'. route('order.edit', $data->id) .'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Ubah</a>';
-            }
-
             $button .= '<a href="'.route('order.show', $data->ticket_order).'" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Detail</a>';
             if(auth()->user()->role_id == 11){
                 $button .= '<a href="javascript:void(0)" onclick="deleteOrder('. $data->id .')" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</a>';
+                $button .= '<a href="'.route('order.toAntrian', $data->id).'" class="btn btn-sm btn-warning"><i class="fas fa-check"></i> Antrikan</a>';
             }
             $button .= '</div>';
             return $button;

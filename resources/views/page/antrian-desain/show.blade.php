@@ -64,14 +64,21 @@
 
                                             @if($b->desainer_id == auth()->user()->id)
                                                 @if($b->file_cetak == null && $b->link_file_cetak == null)
-                                                    <a href="{{ route('unggahCetak', $b->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-upload"></i> Unggah File Cetak</a>
+                                                    <a href="{{ route('barang.uploadCetak', $b->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-upload"></i> Unggah File Cetak</a>
                                                 @else
-                                                    <button class="btn btn-sm btn-success"><i class="fas fa-check"></i>Sudah Diunggah</button>
+                                                    <button class="btn btn-sm btn-success disabled"><i class="fas fa-check"></i>Sudah Diunggah</button>
                                                 @endif
                                             @endif
                                         @elseif(auth()->user()->role_id == 16 || auth()->user()->role_id == 17)
-                                            
-                                            <a href="{{ route('unggahCetak', $b->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-upload"></i> Unggah File Cetak</a>
+                                            @if(auth()->user()->id == $b->desainer_id)
+                                                @if($b->file_cetak == null && $b->link_file_cetak == null)
+                                                    <a href="{{ route('barang.uploadCetak', $b->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-upload"></i> Unggah File Cetak</a>
+                                                @else
+                                                    <button class="btn btn-sm btn-success disabled"><i class="fas fa-check"></i> Sudah Diunggah</button>
+                                                @endif
+                                            @else
+                                                <button class="btn btn-sm btn-secondary disabled"><i class="fas fa-ban"></i> Bukan Desainer</button>
+                                            @endif
                                         @endif
                                     </div>
                                 </div>

@@ -24,10 +24,6 @@ class Order extends Model
         return $this->hasMany(Barang::class, 'ticket_order', 'ticket_order');
     }
 
-    public function printfile(){
-        return $this->belongsTo(PrintFile::class, 'ticket_order', 'ticket_order');
-    }
-
     public function employee(){
         return $this->belongsTo(Employee::class);
     }

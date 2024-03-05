@@ -44,7 +44,6 @@
                     <h6 id="errorNominal" class="text-danger mt-1"></h6>
                 </div>
                 
-
                 <div class="form-group">
                     <label id="judulTampilan" for="preview-image" style="display: none">Tampilan Bukti Pembayaran</label>
                     <img id="preview-image" class="img-preview" width="100%"></img>
