@@ -1,14 +1,14 @@
-<div class="modal fade" id="modalPilihProduk">
+<div class="modal fade" id="modalEditProduk">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Input Produk</h5>
+                <h5 class="modal-title">Edit Produk</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
         <div class="modal-body">
-            <form id="formTambahProduk" action="" enctype="multipart/form-data">
+            <form id="formEditProduk" action="" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
                     <h6 class="font-weight-bold">Kategori Produk</h6>
@@ -51,30 +51,28 @@
                 </style>
                 <div class="form-group mb-1">
                     <label for="infoPelanggan">Periode Iklan</label>
-                    <select class="form-control select2 periode_iklan" id="periode_iklan" name="periode_iklan" style="width: 100%">
+                    <select class="form-control select2 periode_iklan" id="periode_iklanEdit" name="periode_iklan" style="width: 100%">
                     </select>
                 </div>
 
-                <div class="form-check mb-3">
-                    <input class="form-check-input" id="not_iklan" type="checkbox" name="not_iklan">
-                    <label class="form-check-label">Tidak dari iklan</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="not_iklanEdit" name="not_iklan">
+                    <label class="form-check-label">Tidak dari Iklan</label>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-2 mb-1">
                     <label for="fileAccDesain">File ACC Desain</label>
                     <div class="input-group">
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="fileAccDesain" name="fileAccDesain" required>
-                            <label class="custom-file-label" for="fileAccDesain">Pilih File</label>
+                            <input type="file" class="custom-file-input" id="fileAccDesainEdit" name="fileAccDesainEdit" required>
+                            <label class="custom-file-label" for="fileAccDesainEdit">Pilih File</label>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input custom-control-input-danger" type="checkbox" id="kosongAcc" name="kosongAcc">
-                        <label for="kosongAcc" class="custom-control-label">Tidak Ada Gambar ACC</label>
-                    </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="kosongAccEdit" name="kosongAccEdit">
+                    <label class="form-check-label">Tidak ada ACC Desain</label>
                 </div>
 
                 <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">

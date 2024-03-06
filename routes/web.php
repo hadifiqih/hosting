@@ -349,6 +349,8 @@ Route::controller(GeneralController::class)->group(function(){
 Route::controller(BarangController::class)->group(function(){
     Route::get('/barang/getTotalHarga/{id}', 'getTotalHarga')->name('getTotalHarga');
     Route::get('/barang/show/{id}', 'showCreate')->name('barang.showCreate');
+    //edit barang
+    Route::get('/barang/edit/{id}', 'editCreate')->name('barang.editCreate');
     Route::get('/barang/getTotalBarang/{id}', 'getTotalBarang')->name('getTotalBarang');
     Route::get('/barang/getBarangById/{id}', 'getBarangById')->name('getBarangById');
     Route::post('/barang/simpan-barang-dari-desain', 'simpanBarangDariDesain')->name('simpanBarangDariDesain');

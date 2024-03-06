@@ -252,7 +252,7 @@
                             <div class="row">
                                 <div class="col-2 mt-2">
                                     @php
-                                        $fileCetak = $antrian->printfile->nama_file;
+                                        $fileCetak = $antrian->barang->file_cetak;
                                         $fileCetak = explode('.', $fileCetak);
                                         $fileCetak = end($fileCetak);
                                     @endphp

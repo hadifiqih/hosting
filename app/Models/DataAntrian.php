@@ -9,7 +9,6 @@ use App\Models\Cabang;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\DataKerja;
-use App\Models\PrintFile;
 use App\Models\Pembayaran;
 use App\Models\Pengiriman;
 use App\Models\BuktiPembayaran;
@@ -81,11 +80,6 @@ class DataAntrian extends Model
     public function dataKerja()
     {
         return $this->belongsTo(DataKerja::class, 'ticket_order', 'ticket_order');
-    }
-
-    public function printfile()
-    {
-        return $this->belongsTo(PrintFile::class, 'ticket_order', 'ticket_order');
     }
 
     public function cabang()

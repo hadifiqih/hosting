@@ -149,7 +149,10 @@ class BarangController extends Controller
             }
         })
         ->addColumn('action', function($row){
-            $btn = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBarang('.$row->id.')"><i class="fas fa-trash"></i></a>';
+            $btn = '<div class="btn-group">';
+            $btn .= '<a href="javascript:void(0)" class="btn btn-warning btn-sm" onclick="editBarang('.$row->id.')"><i class="fas fa-edit"></i></a>';
+            $btn .= '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBarang('.$row->id.')"><i class="fas fa-trash"></i></a>';
+            $btn .= '</div>';
             return $btn;
         })
         ->rawColumns(['action', 'hargaTotal', 'accdesain'])
@@ -176,9 +179,14 @@ class BarangController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function editCreate(string $id)
     {
-        //
+        $barang = Barang::with('job')->where('id', $id)->first();
+
+        return response()->json([
+            'success' => true,
+            'barang' => $barang,
+        ]);
     }
 
     /**

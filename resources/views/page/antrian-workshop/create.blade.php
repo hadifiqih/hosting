@@ -220,6 +220,7 @@
     </form>
     @includeIf('page.antrian-workshop.modal.modal-tambah-pelanggan')
     @includeIf('page.antrian-workshop.modal.modal-pilih-produk')
+    @includeIf('page.antrian-workshop.modal.modal-edit-produk')
 </div>
 @endsection
 
@@ -268,6 +269,76 @@
                 $('#sisaPembayaranInput').val(data.totalBarang);
             },
             error: function(xhr, status, error){
+                var err = eval("(" + xhr.responseText + ")");
+                alert(err.Message);
+            }
+        });
+    }
+
+    function editBarang(id) {
+        $.ajax({
+            url: "/barang/edit/" + id,
+            method: "GET",
+            success: function(data) {
+                // **Auto-fill the select element:**
+                var selectedKategori = data.barang.kategori_id;
+                var selectedJob = data.barang.job_id;
+                var selectedPeriodeIklan = data.barang.iklan_id;
+                var selectedAccDesain = data.barang.accdesain;
+                var ticketOrder = data.barang.ticket_order;
+
+                // Check if selectedValue exists in the options
+                if (selectedKategori) {
+                    $('#modalEditProduk #kategoriProduk').find('option[value="' + selectedKategori + '"]').prop('selected', true);
+                }
+
+                if(selectedJob){
+                    $('#modalEditProduk #namaProduk').append(`<option value="${selectedJob}" selected>${data.barang.job.job_name}</option>`);
+                    $('#modalEditProduk #namaProduk').select2({
+                        placeholder: 'Pilih Produk',
+                        ajax: {
+                            url: "{{ route('job.searchByCategory') }}",
+                            data: function (params) {
+                                return {
+                                    kategoriProduk: selectedKategori,
+                                    q: params.term // tambahkan jika ingin mencari berdasarkan keyword
+                                };
+                            },
+                            processResults: function (data) {
+                                return {
+                                    results: $.map(data, function (item) {
+                                        return {
+                                            id: item.id,
+                                            text: item.job_name
+                                        };
+                                    })
+                                };
+                            },
+                            cache: true
+                        }
+                    });
+                }
+
+                $('#kosongAccEdit').on('change', function(){
+                    if($(this).is(':checked')){
+                        //remove required
+                        $('#fileAccDesainEdit').removeAttr('required');
+                        $('#fileAccDesainEdit').attr('disabled', true);
+                    }else{
+                        //add required
+                        $('#fileAccDesainEdit').attr('required', true);
+                        $('#fileAccDesainEdit').attr('disabled', false);
+                    }
+                });
+
+                $('#modalEditProduk #qty').val(data.barang.qty);
+                $('#modalEditProduk #harga').val(data.barang.price);
+                $('#modalEditProduk #keterangan').val(data.barang.keterangan);
+
+                // Show the modal
+                $('#modalEditProduk').modal('show');
+            },
+            error: function(xhr, status, error) {
                 var err = eval("(" + xhr.responseText + ")");
                 alert(err.Message);
             }
@@ -328,7 +399,7 @@
         $('#not_iklan').on('change', function(){
             if($(this).is(':checked')){
                 $('#periode_iklan').val(null).trigger('change');
-                //disabled <select></select>
+
                 $('#periode_iklan').prop('disabled', true);
             }else{
                 $('#periode_iklan').prop('disabled', false);
@@ -405,9 +476,6 @@
 
         // function updateTotalBarang
         updateTotalBarang();
-
-        // Mask Money
-        $('#harga').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
 
         // Mask Money .maskRupiah
         $('.maskRupiah').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
@@ -513,7 +581,7 @@
                 $('#sisaPembayaran').html('Rp ' + sisaPembayaran + ' (Belum Lunas)');
             }
         });
-
+        
         //nama produk select2
         $('#modalPilihProduk #kategoriProduk').on('change', function(){
 
@@ -599,7 +667,7 @@
             }
         });
 
-        $('#periode_iklan').select2({
+        $('.periode_iklan').select2({
             placeholder: 'Pilih Periode Iklan',
             ajax: {
                 url: "{{ route('iklan.show', $order->sales_id) }}",
@@ -686,6 +754,10 @@
                     alert(err.Message);
                 }
             });
+        });
+
+        $('#formEditProduk').on('submit', function(){
+
         });
 
         // ketika isOngkir dicentang maka divAlamatKirim, divOngkir, divEkspedisi akan muncul
