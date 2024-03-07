@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Data Iklan | CV. Kassab Syariah')
+@section('title', 'Iklan Berjalan | CV. Kassab Syariah')
 
 @section('username', Auth::user()->name)
 
 @section('page', 'Iklan')
 
-@section('breadcrumb', 'Data Iklan')
+@section('breadcrumb', 'Iklan Berjalan')
 
 @section('content')
     <div class="row">
         <div class="col-md-12">
             <div class="card card-primary card-outline">
                 <div class="card-header">
-                    <h3 class="card-title">Data Iklan</h3>
+                    <h3 class="card-title">Iklan Berjalan</h3>
                     <div class="card-tools">
                         <div class="input-group input-group-sm justify-content-end pr-2" style="width: 150px;">
                             <a href="{{ route('iklan.create') }}" class="btn btn-primary btn-sm">Tambah Iklan</a>
@@ -29,6 +29,7 @@
                                 <th>Marol</th>
                                 <th>Tanggal Mulai</th>
                                 <th>Tanggal Selesai</th>
+                                <th>Kategori</th>
                                 <th>Nama Produk</th>
                                 <th>Nama Sales</th>
                                 <th>Platform</th>
@@ -93,13 +94,14 @@
             $('#tableDataIklan').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('getTableIklan') }}",
+                ajax: "{{ route('iklan.indexJson') }}",
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex' },
                     { data: 'nomor_iklan', name: 'nomor_iklan'},
                     { data: 'marol', name: 'marol' },
                     { data: 'tanggal_mulai', name: 'tanggal_mulai' },
                     { data: 'tanggal_selesai', name: 'tanggal_selesai' },
+                    { data: 'kategori', name: 'kategori'},
                     { data: 'nama_produk', name: 'nama_produk' },
                     { data: 'nama_sales', name: 'nama_sales' },
                     { data: 'platform', name: 'platform' },

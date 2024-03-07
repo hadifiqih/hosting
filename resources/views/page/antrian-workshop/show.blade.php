@@ -318,10 +318,6 @@
         <div class="card-body">
             <div class="row ml-1">
                 <div class="col">
-                    <h5><strong>Desain</strong></h5>
-                    <p class="text-dark"><i class="fas fa-circle"></i> {{ $antrian->order->employee->name }}</p>
-                </div>
-                <div class="col">
                     <h5><strong>Operator</strong></h5>
                     @if(isset($antrian->dataKerja->operator_id))
                         @php

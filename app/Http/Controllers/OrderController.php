@@ -835,7 +835,7 @@ class OrderController extends Controller
 
         $ekspedisi = Ekspedisi::all();
 
-        return view ('page.antrian-workshop.create', compact('order', 'totalBarang', 'ekspedisi'));
+        return view ('page.antrian-workshop.create', compact('order', 'barang', 'totalBarang', 'ekspedisi'));
     }
 
     //-------------------------------------------------------------------------------------------------------------

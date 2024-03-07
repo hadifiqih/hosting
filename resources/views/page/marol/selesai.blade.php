@@ -1,41 +1,41 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan Penjualan dari Iklan | CV. Kassab Syariah')
+@section('title', 'Iklan Selesai | CV. Kassab Syariah')
 
 @section('username', Auth::user()->name)
 
-@section('page', 'Laporan Iklan')
+@section('page', 'Iklan')
 
-@section('breadcrumb', 'Laporan Penjualan dari Iklan')
+@section('breadcrumb', 'Iklan Selesai')
 
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="col-md-3 col-sm-6 col-12">
-                <div class="info-box shadow">
-                  <span class="info-box-icon bg-success"><i class="fas fa-wallet"></i></span>
-    
-                  <div class="info-box-content">
-                    <span class="info-box-text">Total Omset</span>
-                    <span class="info-box-number"><h3 class="text-success"><strong>Rp {{ number_format($omset, 0, ',', '.') }}</strong></h3></span>
-                  </div>
-                  <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-              </div>
             <div class="card card-primary card-outline">
                 <div class="card-header">
-                    <h3 class="card-title">Laporan Penjualan dari Iklan</h3>
+                    <h3 class="card-title">Iklan Selesai</h3>
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm justify-content-end pr-2" style="width: 150px;">
+                            <a href="{{ route('iklan.create') }}" class="btn btn-primary btn-sm">Tambah Iklan</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <table id="tablePenjualan" class="table table-bordered table-striped">
+                    <table id="tableIklanSelesai" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Sales</th>
-                                <th>Kategori Produk</th>
+                                <th>Nomor Iklan</th>
+                                <th>Marol</th>
+                                <th>Tanggal Mulai</th>
+                                <th>Tanggal Selesai</th>
+                                <th>Kategori</th>
                                 <th>Nama Produk</th>
-                                <th>Omset</th>
+                                <th>Nama Sales</th>
+                                <th>Platform</th>
+                                <th>Biaya Iklan</th>
+                                <th>Status Iklan</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,13 +64,13 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             url: "iklan/" + id,
-                            type: "POST",
+                            type: "POST", 
                             data: {
                                 '_method': 'DELETE',
                                 '_token': '{{ csrf_token() }}'
                             },
                             success: function(data) {
-                                $('#tablePenjualan').DataTable().ajax.reload();
+                                $('#tableDataIklan').DataTable().ajax.reload();
                                 Swal.fire(
                                     'Terhapus!',
                                     'Data Iklan berhasil dihapus.',
@@ -91,23 +91,28 @@
 
         //datatable iklan
         $(document).ready(function() {
-            $('#tablePenjualan').DataTable({
+            $('#tableIklanSelesai').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('iklan.penjualanJson') }}",
+                ajax: "{{ route('iklan.selesaiJson') }}",
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                    { data: 'periode_iklan', name: 'periode_iklan'},
-                    { data: 'sales', name: 'sales' },
-                    { data: 'kategori_produk', name: 'kategori_produk' },
+                    { data: 'nomor_iklan', name: 'nomor_iklan'},
+                    { data: 'marol', name: 'marol' },
+                    { data: 'tanggal_mulai', name: 'tanggal_mulai' },
+                    { data: 'tanggal_selesai', name: 'tanggal_selesai' },
+                    { data: 'kategori', name: 'kategori'},
                     { data: 'nama_produk', name: 'nama_produk' },
-                    { data: 'omset', name: 'omset' },
+                    { data: 'nama_sales', name: 'nama_sales' },
+                    { data: 'platform', name: 'platform' },
+                    { data: 'biaya_iklan', name: 'biaya_iklan' },
+                    { data: 'status', name: 'status' },
+                    { data: 'action', name: 'action' }
                 ]
             });
-        });
 
-        //jika ada pesan sukses
-        @if(session('success'))
+            //jika ada pesan sukses
+            @if(session('success'))
                 Swal.fire({
                     icon: 'success',
                     title: 'Berhasil!',
@@ -120,5 +125,7 @@
                     text: '{{ session('error') }}'
                 });
             @endif
+        });
+
     </script>
 @endsection

@@ -244,19 +244,6 @@
         $('#modalPilihProduk').modal('show');
     }
 
-    //fungsi untuk menyembunyikan file acc desain saat kosoongAcc dicentang
-    $('#kosongAcc').on('change', function(){
-        if($(this).is(':checked')){
-            //remove required
-            $('#fileAccDesain').removeAttr('required');
-            $('#fileAccDesain').attr('disabled', true);
-        }else{
-            //add required
-            $('#fileAccDesain').attr('required', true);
-            $('#fileAccDesain').attr('disabled', false);
-        }
-    });
-
     function updateTotalBarang(){
         $.ajax({
             url: "{{ route('getTotalBarang', $order->ticket_order) }}",
@@ -287,14 +274,16 @@
                 var selectedAccDesain = data.barang.accdesain;
                 var ticketOrder = data.barang.ticket_order;
 
+                $('#modalEditProduk #idBarang').val(data.barang.id);
+
                 // Check if selectedValue exists in the options
                 if (selectedKategori) {
-                    $('#modalEditProduk #kategoriProduk').find('option[value="' + selectedKategori + '"]').prop('selected', true);
+                    $('#modalEditProduk #kategoriProdukEdit').find('option[value="' + selectedKategori + '"]').prop('selected', true);
                 }
 
                 if(selectedJob){
-                    $('#modalEditProduk #namaProduk').append(`<option value="${selectedJob}" selected>${data.barang.job.job_name}</option>`);
-                    $('#modalEditProduk #namaProduk').select2({
+                    $('#modalEditProduk #namaProdukEdit').append(`<option value="${selectedJob}" selected>${data.barang.job.job_name}</option>`);
+                    $('#modalEditProduk #namaProdukEdit').select2({
                         placeholder: 'Pilih Produk',
                         ajax: {
                             url: "{{ route('job.searchByCategory') }}",
@@ -331,9 +320,13 @@
                     }
                 });
 
-                $('#modalEditProduk #qty').val(data.barang.qty);
-                $('#modalEditProduk #harga').val(data.barang.price);
-                $('#modalEditProduk #keterangan').val(data.barang.keterangan);
+                $('#not_iklanEdit').on('change', function(){
+                    
+                })
+
+                $('#modalEditProduk #qtyEdit').val(data.barang.qty);
+                $('#modalEditProduk #hargaEdit').val(data.barang.price);
+                $('#modalEditProduk #keteranganEdit').val(data.barang.keterangan);
 
                 // Show the modal
                 $('#modalEditProduk').modal('show');
@@ -404,7 +397,20 @@
             }else{
                 $('#periode_iklan').prop('disabled', false);
             }
-        })
+        });
+
+        //fungsi untuk menyembunyikan file acc desain saat kosoongAcc dicentang
+        $('#kosongAcc').on('change', function(){
+            if($(this).is(':checked')){
+                //remove required
+                $('#fileAccDesain').removeAttr('required');
+                $('#fileAccDesain').attr('disabled', true);
+            }else{
+                //add required
+                $('#fileAccDesain').attr('required', true);
+                $('#fileAccDesain').attr('disabled', false);
+            }
+        });
 
         //function untuk membuat alamat pengiriman sama dengan alamat pada data pelanggan customer
         $('#alamatSama').on('change', function(){
@@ -667,19 +673,25 @@
             }
         });
 
-        $('.periode_iklan').select2({
-            placeholder: 'Pilih Periode Iklan',
+        $('#tahunIklanEdit').on('change', function(){
+            $('#bulanIklanEdit').show();
+        });
+
+        $('#bulanIklanEdit').on('change', function(){
+            $('.divNamaProduk').show();
+        });
+
+        $('#namaProdukIklanEdit').select2({
+            placeholder: 'Pilih Produk',
             ajax: {
-                url: "{{ route('iklan.show', $order->sales_id) }}",
-                dataType: 'json',
-                delay: 250,
+                url: "{{ route('getAllJobs') }}",
                 processResults: function (data) {
                     return {
-                        results:  $.map(data, function (item) {
+                        results: $.map(data, function (item) {
                             return {
-                                text: item.nomor_iklan + ' - ' + item.job.job_name + ' - ' + item.tanggal_mulai + ' -> ' + item.tanggal_selesai,
                                 id: item.id,
-                            }
+                                text: item.job_name
+                            };
                         })
                     };
                 },
@@ -756,8 +768,51 @@
             });
         });
 
-        $('#formEditProduk').on('submit', function(){
+        $('#formEditProduk').on('submit', function(e){
+            e.preventDefault();
 
+            var kosongAccEdit = ($('#kosongAccEdit').is(':checked')) ? 1 : 0;
+
+            var accdesain = ($('#fileAccDesainEdit')[0].files.length > 0) ? $('#fileAccDesainEdit')[0].files[0] : "";
+
+            var dataInputEdit = new FormData();
+            dataInputEdit.append('_token', "{{ csrf_token() }}");
+            dataInputEdit.append('_method', "PUT");
+            dataInputEdit.append('acc_desain', accdesain);
+            dataInputEdit.append('id', $('#idBarang').val());
+            dataInputEdit.append('namaProduk', $('#namaProdukEdit').val());
+            dataInputEdit.append('kategoriProduk', $('#kategoriProdukEdit').val());
+            dataInputEdit.append('qty', $('#qtyEdit').val());
+            dataInputEdit.append('harga', $('#hargaEdit').val());
+            dataInputEdit.append('keterangan', $('#keteranganEdit').val());
+            dataInputEdit.append('tahunIklan', $('#tahunIklanEdit').val());
+            dataInputEdit.append('bulanIklan', $('#bulanIklanEdit').val());
+            dataInputEdit.append('namaProdukIklan', $('#namaProdukIklanEdit').val());
+
+            $.ajax({
+                url: "/barang/update/" + $('#idBarang').val(),
+                method: "POST",
+                data: dataInputEdit,
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function(data){
+                    $('#modalEditProduk').modal('hide');
+                    $('#tableProduk').DataTable().ajax.reload();
+
+                    // function updateTotalBarang
+                    updateTotalBarang();
+
+                    //tampilkan toast sweet alert
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Produk berhasil diubah',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                },
+            });
         });
 
         // ketika isOngkir dicentang maka divAlamatKirim, divOngkir, divEkspedisi akan muncul

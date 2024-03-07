@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Job;
 use App\Models\User;
 use App\Models\Sales;
+use App\Models\Kategori;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,6 +29,11 @@ class Iklan extends Model
     public function sales()
     {
         return $this->belongsTo(Sales::class);
+    }
+
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class);
     }
 
 }

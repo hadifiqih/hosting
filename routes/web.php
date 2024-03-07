@@ -149,16 +149,19 @@ Route::controller(AuthController::class)->group(function(){
 
 Route::controller(IklanController::class)->group(function(){
     Route::get('/iklan', 'index')->name('iklan.index');
+    Route::get('/iklan/selesai', 'indexSelesai')->name('iklan.indexSelesai');
+    Route::get('/iklan/json', 'iklanJson')->name('iklan.indexJson');
+    Route::get('/iklan/selesai-json', 'selesaiJson')->name('iklan.selesaiJson');
+    Route::get('/iklan/getPeriodeIklan', 'getPeriodeIklan')->name('iklan.getPeriodeIklan');
+    Route::get('/iklan/penjualan-iklan', 'penjualanIklan')->name('iklan.penjualanIklan');
+    Route::get('/iklan/penjualan-iklan-json', 'penjualanJson')->name('iklan.penjualanJson');
     Route::get('/iklan/create', 'create')->name('iklan.create');
     Route::get('/iklan/{id}', 'show')->name('iklan.show');
     Route::post('/iklan', 'store')->name('iklan.store');
     Route::get('/iklan/{id}/edit', 'edit')->name('iklan.edit');
     Route::put('/iklan/{id}', 'update')->name('iklan.update');
     Route::delete('/iklan/{id}', 'destroy')->name('iklan.destroy');
-    Route::get('/iklan/getTableIklan', 'tableIklan')->name('getTableIklan');
-    Route::get('/iklan/getPeriodeIklan', 'getPeriodeIklan')->name('iklan.getPeriodeIklan');
-    Route::get('/iklan/penjualan-iklan', 'penjualanIklan')->name('iklan.penjualanIklan');
-    Route::get('/iklan/penjualan-iklan-json', 'penjualanJson')->name('iklan.penjualanJson');
+    
 });
 
 Route::controller(ReportController::class)->group(function(){
@@ -349,8 +352,10 @@ Route::controller(GeneralController::class)->group(function(){
 Route::controller(BarangController::class)->group(function(){
     Route::get('/barang/getTotalHarga/{id}', 'getTotalHarga')->name('getTotalHarga');
     Route::get('/barang/show/{id}', 'showCreate')->name('barang.showCreate');
+    Route::put('/barang/update/{id}', 'updateCreate')->name('barang.updateCreate');
     //edit barang
     Route::get('/barang/edit/{id}', 'editCreate')->name('barang.editCreate');
+    
     Route::get('/barang/getTotalBarang/{id}', 'getTotalBarang')->name('getTotalBarang');
     Route::get('/barang/getBarangById/{id}', 'getBarangById')->name('getBarangById');
     Route::post('/barang/simpan-barang-dari-desain', 'simpanBarangDariDesain')->name('simpanBarangDariDesain');

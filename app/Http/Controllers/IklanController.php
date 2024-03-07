@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Iklan;
 use App\Models\Sales;
 use App\Models\Barang;
+use App\Models\BarangIklan;
 use App\Models\DataAntrian;
 use Illuminate\Http\Request;
 use App\Models\SumberPelanggan;
@@ -27,9 +28,131 @@ class IklanController extends Controller
         return view('page.marol.index');
     }
 
+    public function indexSelesai()
+    {
+        $expiredAds = Iklan::where('tanggal_selesai', '<=', now())->where('status', 1)->get();
+
+        if($expiredAds != null){
+            foreach($expiredAds as $ads){
+                $ads->status = 2;
+                $ads->save();
+            }
+        }
+
+        return view('page.marol.selesai');
+    }
+
+    public function iklanJson()
+    {
+        $iklans = Iklan::with('user', 'job', 'sales')->where('status', 1)->get();
+        
+        return Datatables()->of($iklans)
+            ->addIndexColumn()
+            ->addColumn('marol', function($row){
+                return $row->user->name;
+            })
+            ->addColumn('nomor_iklan', function($row){
+                return $row->nomor_iklan;
+            })
+            ->addColumn('nomor_iklan', function($row){
+                return $row->nomor_iklan;
+            })
+            ->addColumn('tanggal_mulai', function($row){
+                return $row->tanggal_mulai;
+            })
+            ->addColumn('tanggal_selesai', function($row){
+                return $row->tanggal_selesai;
+            })
+            ->addColumn('kategori', function($row){
+                return $row->job->kategori->nama_kategori;
+            })
+            ->addColumn('nama_produk', function($row){
+                return $row->job->job_name;
+            })
+            ->addColumn('nama_sales', function($row){
+                return $row->sales->sales_name;
+            })
+            ->addColumn('platform', function($row){
+                $sumber = SumberPelanggan::where('code_sumber', 'LIKE', $row->platform)->first();
+                return $sumber->nama_sumber;
+            })
+            ->addColumn('biaya_iklan', function($row){
+                $biaya_iklan = 'Rp. '.number_format($row->biaya_iklan,0,',','.');
+                return $biaya_iklan;
+            })
+            ->addColumn('status', function($row){
+                $status = $row->status;
+                if($status == 1){
+                    return '<div class="text-center"><span class="badge bg-success">Aktif</span></div>';
+                }else{
+                    return '<div class="text-center"><span class="badge bg-secondary">Selesai</span></div>';
+                }
+            })
+            ->addColumn('action', function($row){
+                $actionBtn = '<a href="'. route('iklan.edit', $row->id) .'" class="edit btn btn-warning btn-sm"><i class="fas fa-pen"></i> Edit</a> <a onclick="deleteDataIklan('.$row->id.')" class="delete btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</a>';
+                return $actionBtn;
+            })
+            ->rawColumns(['marol', 'nama_sales', 'nama_produk', 'action', 'platform', 'status'])
+            ->make(true);
+    }
+
+    public function selesaiJson()
+    {
+        $iklans = Iklan::with('user', 'job', 'sales')->where('status', 2)->get();
+        
+        return Datatables()->of($iklans)
+            ->addIndexColumn()
+            ->addColumn('marol', function($row){
+                return $row->user->name;
+            })
+            ->addColumn('nomor_iklan', function($row){
+                return $row->nomor_iklan;
+            })
+            ->addColumn('nomor_iklan', function($row){
+                return $row->nomor_iklan;
+            })
+            ->addColumn('tanggal_mulai', function($row){
+                return $row->tanggal_mulai;
+            })
+            ->addColumn('tanggal_selesai', function($row){
+                return $row->tanggal_selesai;
+            })
+            ->addColumn('kategori', function($row){
+                return $row->job->kategori->nama_kategori;
+            })
+            ->addColumn('nama_produk', function($row){
+                return $row->job->job_name;
+            })
+            ->addColumn('nama_sales', function($row){
+                return $row->sales->sales_name;
+            })
+            ->addColumn('platform', function($row){
+                $sumber = SumberPelanggan::where('code_sumber', 'LIKE', $row->platform)->first();
+                return $sumber->nama_sumber;
+            })
+            ->addColumn('biaya_iklan', function($row){
+                $biaya_iklan = 'Rp. '.number_format($row->biaya_iklan,0,',','.');
+                return $biaya_iklan;
+            })
+            ->addColumn('status', function($row){
+                $status = $row->status;
+                if($status == 1){
+                    return '<div class="text-center"><span class="badge bg-success">Aktif</span></div>';
+                }else{
+                    return '<div class="text-center"><span class="badge bg-secondary">Selesai</span></div>';
+                }
+            })
+            ->addColumn('action', function($row){
+                $actionBtn = '<a href="'. route('iklan.edit', $row->id) .'" class="edit btn btn-warning btn-sm"><i class="fas fa-pen"></i> Edit</a> <a onclick="deleteDataIklan('.$row->id.')" class="delete btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</a>';
+                return $actionBtn;
+            })
+            ->rawColumns(['marol', 'nama_sales', 'nama_produk', 'action', 'platform', 'status'])
+            ->make(true);
+    }
+
     public function tableIklan()
     {
-        $iklans = Iklan::with('user','job','sales')->get();
+        $iklans = Iklan::with('user', 'job', 'sales')->get();
         
         return Datatables()->of($iklans)
             ->addIndexColumn()
@@ -199,28 +322,58 @@ class IklanController extends Controller
 
     public function penjualanJson()
     {
-        $barangs = Barang::with('user', 'job', 'iklan')->where('iklan_id', '!=', null)->get();
+        $iklans = BarangIklan::with('iklan', 'barang', 'iklan.job', 'iklan.sales')->get();
         
         return Datatables()->of($barangs)
             ->addIndexColumn()
-            ->addColumn('nomor_iklan', function($row){
-                return $row->iklan->nomor_iklan;
-            })
-            ->addColumn('tanggal_order', function($row){
-                return $row->created_at->format('d-m-Y');
-            })
-            ->addColumn('marol', function($row){
-                return $row->iklan->user->name;
+            ->addColumn('periode', function($row){
+                $periode = $row->periode_iklan;
+                //pisahkan menjadi 2 string dengan delimiter '-'
+                $periode = explode('-', $periode);
+                //ambil bulan dari periode
+                $bulan = $periode[1];
+                //tampilkan nama bulan
+                if($bulan == '1'){
+                    $bulan = 'Januari';
+                }elseif($bulan == '2'){
+                    $bulan = 'Februari';
+                }elseif($bulan == '3'){
+                    $bulan = 'Maret';
+                }elseif($bulan == '4'){
+                    $bulan = 'April';
+                }elseif($bulan == '5'){
+                    $bulan = 'Mei';
+                }elseif($bulan == '6'){
+                    $bulan = 'Juni';
+                }elseif($bulan == '7'){
+                    $bulan = 'Juli';
+                }elseif($bulan == '8'){
+                    $bulan = 'Agustus';
+                }elseif($bulan == '9'){
+                    $bulan = 'September';
+                }elseif($bulan == '10'){
+                    $bulan = 'Oktober';
+                }elseif($bulan == '11'){
+                    $bulan = 'November';
+                }elseif($bulan == '12'){
+                    $bulan = 'Desember';
+                }
+                //ambil tahun dari periode
+                $tahun = $periode[0];
+                //gabungkan bulan dan tahun
+                $periode = $bulan.'-'.$tahun;
+
+                return $periode;
+
             })
             ->addColumn('sales', function($row){
                 return $row->iklan->sales->sales_name;
             })
+            ->addColumn('kategori_produk', function($row){
+                return $row->iklan->job->kategori->nama_kategori;
+            })
             ->addColumn('nama_produk', function($row){
                 return $row->iklan->job->job_name;
-            })
-            ->addColumn('sumber_pelanggan', function($row){
-                $sumber = SumberPelanggan::where('code_sumber', 'LIKE', $row->sumber_pelanggan)->first();
-                return $sumber->nama_sumber;
             })
             ->addColumn('omset', function($row){
                 $omset = $row->price * $row->qty;

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Barang;
 use App\Models\RefDesain;
+use App\Models\BarangIklan;
 use Illuminate\Http\Request;
 use App\Helpers\CustomHelper;
 use Illuminate\Support\Facades\DB;
@@ -55,7 +56,6 @@ class BarangController extends Controller
         }
 
         //cek apakah user memiliki relasi dengan tabel sales
-        
         
         $barang = new Barang();
         $barang->ticket_order = $request->ticket_order;
@@ -192,9 +192,59 @@ class BarangController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function updateCreate(Request $request)
     {
-        //
+        $harga = CustomHelper::removeCurrencyFormat($request->harga);
+
+        //rename file acc_desain
+        if($request->file('acc_desain') == null ){
+            $fileName = null;
+        }
+        else{
+            $file = $request->file('acc_desain');
+            $fileName = time().'_'.$file->getClientOriginalName();
+            $pathGambar = 'acc_desain/'.$fileName;
+            Storage::disk('public')->put($pathGambar, file_get_contents($file));
+        }
+        
+        //cek apakah user memiliki relasi dengan tabel sales
+        $barang = Barang::find($request->id);
+        if($barang != null){
+            $barang->price = $harga;
+            $barang->qty = $request->qty;
+            $barang->note = $request->keterangan;
+            $barang->accdesain = $fileName;
+            $barang->save();
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'Barang tidak ditemukan !',
+            ]);
+        }
+
+        if(isset($request->tahunIklan) || $request->tahunIklan != null){
+            $tahun = $request->tahunIklan;
+            $bulan = $request->bulanIklan;
+            $periode = $tahun.'-'.$bulan;
+
+            $cekIklan = BarangIklan::where('barang_id', $request->id)->first();
+            if($cekIklan != null){
+                $iklan = BarangIklan::find($cekIklan->id);
+                $iklan->periode_iklan = $periode;
+                $iklan->save();
+            }else{
+                $iklan = new BarangIklan;
+                $iklan->periode_iklan = $periode;
+                $iklan->barang_id = $request->id;
+                $iklan->sales_id = $barang->user->sales->id;
+                $iklan->save();
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Barang berhasil diperbarui !',
+        ]);
     }
 
     /**
@@ -220,7 +270,7 @@ class BarangController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Barang berhasil dihapus !',
-        ]);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+        ]);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
     }
 
     public function getBarangById(string $id)
