@@ -23,4 +23,9 @@ class BarangIklan extends Model
     {
         return $this->belongsTo(Barang::class);
     }
+
+    public function sales()
+    {
+        return $this->belongsTo(Sales::class);
+    }
 }

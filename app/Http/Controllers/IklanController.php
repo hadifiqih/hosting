@@ -309,47 +309,78 @@ class IklanController extends Controller
         }
     }
 
-    public function penjualanIklan()
+    public function penjualanIklan(Request $request)
     {
-        $bulan = date('m');
-        $barangs = Barang::with('user', 'job', 'iklan')->where('iklan_id', '!=', null)->whereMonth('created_at', $bulan)->get();
+        $iklans = BarangIklan::with('barang')->get();
+
         $omset = 0;
-        foreach($barangs as $barang){
-            $omset += $barang->price * $barang->qty;
+        foreach($iklans as $iklan){
+            $omset += $iklan->barang->price * $iklan->barang->qty;
         }
-        return view('page.marol.penjualan', compact('omset'));
+
+        $sales = Sales::all();
+        return view('page.marol.penjualan', compact('omset', 'sales'));
     }
 
-    public function penjualanJson()
+    public function totalOmset(Request $request)
     {
-        $iklans = BarangIklan::with('iklan', 'barang', 'iklan.job', 'iklan.sales')->get();
-        
-        return Datatables()->of($barangs)
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+
+        if($request->bulan != null || $request->tahun != null){
+            $bulan = $request->bulan;
+            $tahun = $request->tahun;
+            $iklans = BarangIklan::with('barang')->where('periode_iklan', 'LIKE', '%'.$tahun.'-'.$bulan.'%')->get();
+        }else{
+            $iklans = BarangIklan::with('barang')->get();
+        }
+
+        $omset = 0;
+        foreach($iklans as $iklan){
+            $omset += $iklan->barang->price * $iklan->barang->qty;
+        }
+
+        $omset = 'Rp '.number_format($omset,0,',','.');
+
+        return response()->json($omset);
+    }
+
+    public function penjualanJson(Request $request)
+    {
+        if($request->bulan != null || $request->tahun != null){
+            $bulan = $request->bulan;
+            $tahun = $request->tahun;
+            $iklans = BarangIklan::with('barang')->where('periode_iklan', 'LIKE', '%'.$tahun.'-'.$bulan.'%')->get();
+        }else{
+            $iklans = BarangIklan::with('barang')->get();
+        }
+
+        return Datatables()->of($iklans)
             ->addIndexColumn()
-            ->addColumn('periode', function($row){
+            ->addColumn('periode_iklan', function($row){
                 $periode = $row->periode_iklan;
                 //pisahkan menjadi 2 string dengan delimiter '-'
                 $periode = explode('-', $periode);
                 //ambil bulan dari periode
                 $bulan = $periode[1];
                 //tampilkan nama bulan
-                if($bulan == '1'){
+                if($bulan == '01'){
                     $bulan = 'Januari';
-                }elseif($bulan == '2'){
+                }elseif($bulan == '02'){
                     $bulan = 'Februari';
-                }elseif($bulan == '3'){
+                }elseif($bulan == '03'){
                     $bulan = 'Maret';
-                }elseif($bulan == '4'){
+                }elseif($bulan == '04'){
                     $bulan = 'April';
-                }elseif($bulan == '5'){
+                }elseif($bulan == '05'){
                     $bulan = 'Mei';
-                }elseif($bulan == '6'){
+                }elseif($bulan == '06'){
                     $bulan = 'Juni';
-                }elseif($bulan == '7'){
+                }elseif($bulan == '07'){
                     $bulan = 'Juli';
-                }elseif($bulan == '8'){
+                }elseif($bulan == '08'){
                     $bulan = 'Agustus';
-                }elseif($bulan == '9'){
+                }elseif($bulan == '09'){
                     $bulan = 'September';
                 }elseif($bulan == '10'){
                     $bulan = 'Oktober';
@@ -361,23 +392,21 @@ class IklanController extends Controller
                 //ambil tahun dari periode
                 $tahun = $periode[0];
                 //gabungkan bulan dan tahun
-                $periode = $bulan.'-'.$tahun;
-
+                $periode = $bulan.' - '.$tahun;
                 return $periode;
-
             })
             ->addColumn('sales', function($row){
-                return $row->iklan->sales->sales_name;
+                return $row->sales->sales_name;
             })
-            ->addColumn('kategori_produk', function($row){
-                return $row->iklan->job->kategori->nama_kategori;
+            ->addColumn('kategori', function($row){
+                return $row->barang->job->kategori->nama_kategori;
             })
             ->addColumn('nama_produk', function($row){
-                return $row->iklan->job->job_name;
+                return $row->barang->job->job_name;
             })
             ->addColumn('omset', function($row){
-                $omset = $row->price * $row->qty;
-                return '<strong>Rp. '.number_format($omset,0,',','.') .'</strong>';
+                $omset = $row->barang->price * $row->barang->qty;
+                return '<strong>Rp '.number_format($omset,0,',','.') .'</strong>';
             })
             ->rawColumns(['omset'])
             ->make(true);
