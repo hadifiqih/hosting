@@ -151,7 +151,6 @@ Route::controller(IklanController::class)->group(function(){
     Route::get('/iklan/json', 'iklanJson')->name('iklan.indexJson');
     Route::get('/iklan/selesai-json', 'selesaiJson')->name('iklan.selesaiJson');
     Route::get('/iklan', 'index')->name('iklan.index');
-    Route::get('/iklan/selesai', 'indexSelesai')->name('iklan.indexSelesai');
     Route::get('/iklan-total-omset', 'totalOmset')->name('iklan.totalOmset');
     Route::get('/iklan/getPeriodeIklan', 'getPeriodeIklan')->name('iklan.getPeriodeIklan');
     Route::get('/iklan/penjualan-iklan', 'penjualanIklan')->name('iklan.penjualanIklan');

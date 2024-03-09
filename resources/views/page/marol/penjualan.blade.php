@@ -11,18 +11,27 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <div class="col-md-3 col-sm-6 col-12">
+        <div class="col-md-4 col-sm-6">
                 <div class="info-box shadow">
                 <span class="info-box-icon bg-success"><i class="fas fa-wallet"></i></span>
                      <div class="info-box-content">
                     <span class="info-box-text">Total Omset</span>
-                    <span class="info-box-number"><h3 class="text-success"><strong>Rp {{ number_format($omset, 0, ',', '.') }}</strong></h3></span>
+                    <span class="info-box-number"><h3 class="text-success"><strong id="omset">Rp {{ number_format($omset, 0, ',', '.') }}</strong></h3></span>
                 </div>
                 <!-- /.info-box-content -->
                 </div>
                 <!-- /.info-box -->
             </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="info-box shadow">
+                <span class="info-box-icon bg-danger"><i class="fas fa-money-bill-wave"></i></span>
+                     <div class="info-box-content">
+                    <span class="info-box-text">Total Spending Budget</span>
+                    <span class="info-box-number"><h3 class="text-danger"><strong id="spendingIklan">Rp {{ number_format($spendingIklan, 0, ',', '.') }}</strong></h3></span>
+                </div>
+                <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
         </div>
     </div>
     <div class="row mb-3">
@@ -60,6 +69,7 @@
             <button type="button" class="btn btn-primary" id="btnFilter">Filter</button>
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-12">
             <div class="card card-primary card-outline">
@@ -158,8 +168,9 @@
                         "tahun": $('#tahun').val(),
                         "bulan": $('#bulan').val()
                     },
-                    success: function(response) {
-                        $('.info-box-number').html('<h3 class="text-success"><strong>' + response + '</strong></h3>');
+                    success: function(data) {
+                        $('#omset').text('Rp ' + data.omset);
+                        $('#spendingIklan').text('Rp ' + data.spendingIklan);
                     }
                 });
             });

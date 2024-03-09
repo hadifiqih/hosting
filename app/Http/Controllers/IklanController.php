@@ -318,8 +318,15 @@ class IklanController extends Controller
             $omset += $iklan->barang->price * $iklan->barang->qty;
         }
 
+        $daftarIklan = Iklan::all();
+
+        $spendingIklan = 0;
+        foreach($daftarIklan as $iklan){
+            $spendingIklan += $iklan->biaya_iklan;
+        }
+
         $sales = Sales::all();
-        return view('page.marol.penjualan', compact('omset', 'sales'));
+        return view('page.marol.penjualan', compact('omset', 'sales', 'spendingIklan'));
     }
 
     public function totalOmset(Request $request)
@@ -340,9 +347,33 @@ class IklanController extends Controller
             $omset += $iklan->barang->price * $iklan->barang->qty;
         }
 
-        $omset = 'Rp '.number_format($omset,0,',','.');
+        $omset = number_format($omset,0,',','.');
 
-        return response()->json($omset);
+        if($request->bulan != null && $request->tahun == null){
+            $bulan = $request->bulan;
+            $daftarIklan = Iklan::whereMonth('tanggal_mulai', $bulan)->get();
+        }elseif($request->bulan == null && $request->tahun != null){
+            $tahun = $request->tahun;
+            $daftarIklan = Iklan::whereYear('tanggal_mulai', $tahun)->get();
+        }elseif($request->bulan != null && $request->tahun != null){
+            $bulan = $request->bulan;
+            $tahun = $request->tahun;
+            $daftarIklan = Iklan::whereYear('tanggal_mulai', $tahun)->whereMonth('tanggal_mulai', $bulan)->get();
+        }elseif($request->bulan == null && $request->tahun == null){
+            $daftarIklan = Iklan::all();
+        }else{
+            $daftarIklan = Iklan::all();
+        }
+
+        $spendingIklan = 0;
+        foreach($daftarIklan as $iklan){
+            $spendingIklan += $iklan->biaya_iklan;
+        }
+
+        $spendingIklan = number_format($spendingIklan,0,',','.');
+        
+
+        return response()->json(['omset' => $omset, 'spendingIklan' => $spendingIklan]);
     }
 
     public function penjualanJson(Request $request)

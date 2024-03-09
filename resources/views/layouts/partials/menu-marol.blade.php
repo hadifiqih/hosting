@@ -17,12 +17,6 @@
               </a>
           </li>
           <li class="nav-item">
-            <a href="{{ route('iklan.indexSelesai') }}" class="nav-link {{ request()->routeIs('iklan.indexSelesai') ? 'active' : '' }}">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Selesai Iklan</p>
-            </a>
-          </li>
-          <li class="nav-item">
               <a href="{{ route('iklan.create') }}" class="nav-link {{ request()->routeIs('iklan.create') ? 'active' : '' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Tambah Iklan</p>
@@ -43,7 +37,7 @@
           <li class="nav-item">
               <a href="{{ route('iklan.penjualanIklan') }}" class="nav-link {{ request()->routeIs('iklan.penjualanIklan') ? 'active' : '' }}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Resume Iklan</p>
+                  <p>Ringkasan Iklan</p>
               </a>
           </li>
       </ul>
