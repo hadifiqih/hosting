@@ -28,6 +28,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Notification;
+use App\Http\Controllers\EstimatorController;
 use App\Http\Controllers\DocumentationController;
 
 /*
@@ -145,6 +146,11 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('/register', 'store')->name('auth.store');
     Route::get('/logout', 'logout')->name('auth.logout');
     Route::get('/beams-generateToken', 'generateToken')->name('beams.auth');
+});
+
+Route::controller(EstimatorController::class)->group(function(){
+    Route::get('/estimator/laporan-penugasan', 'laporanPenugasan')->name('estimator.laporanPenugasan');
+    Route::get('/estimator/laporan-penugasan-json', 'laporanPenugasanJson')->name('estimator.laporanPenugasanJson');
 });
 
 Route::controller(IklanController::class)->group(function(){

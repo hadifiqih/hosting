@@ -173,7 +173,7 @@
                     @include('layouts.partials.menu-sales')
                 @elseif(Auth::user()->role_id == 12 || Auth::user()->role_id == 20)
                     @include('layouts.partials.menu-marol')
-                @elseif(Auth::user()->role_id == 10 || Auth::user()->role_id == 15)
+                @elseif(Auth::user()->role_id == 15)
                     @include('layouts.partials.menu-admin-workshop')
                 @elseif(Auth::user()->role_id == 19)
                     @include('layouts.partials.menu-admin')
@@ -183,6 +183,8 @@
                     @include('layouts.partials.menu-produksi')
                 @elseif(Auth::user()->role_id == 21)
                     @include('layouts.partials.menu-dokumentasi')
+                @elseif(Auth::user()->role_id == 10)
+                    @include('layouts.partials.menu-estimator')
                 @else
                     <li class="nav-item">
                         <a href="{{ route('antrian.index') }}" class="nav-link {{ request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') ? 'active' : '' }}">

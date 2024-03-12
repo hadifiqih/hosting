@@ -123,31 +123,31 @@
               <tr>
                 <td class="text-center">Nama Pekerjaan</td>
                 <td class="text-center">Jumlah</td>
-                <td colspan="2" class="text-center">Keterangan</td>
+                <td class="text-center">Keterangan</td>
+                <td class="text-center">Desainer</td>
               </tr>
   
               @foreach ($barang as $item)
               <tr>
                 <td>{{ $item->job->job_name }}</td>
                 <td class="text-center">{{ $item->qty }}</td>
-                <td colspan="2" class="spesifikasi">{{ $item->note }}</td>
+                <td class="spesifikasi">{{ $item->note }}</td>
+                <td>{{ isset($item->desainer->name) ? $item->desainer->name : '-' }}</td>
               </tr>
               @endforeach
 
               <tr class="bg-dark text-white">
-                <td colspan="4" class="text-center">Penugasan</td>
+                <td colspan="4" class="text-center text-white">Penugasan</td>
               </tr>
   
               <tr>
-                <td>Desain</td>
                 <td>Operator</td>
-                <td>Finishing</td>
+                <td colspan="2">Finishing</td>
                 <td>Quality Control</td>
                 
               </tr>
   
               <tr>
-                <td>{{ $order->employee->name }}</td>
                 <td>
                   @php
                       $operator = $dataKerja->operator_id;
@@ -173,7 +173,7 @@
                       }
                   @endphp
                 </td>
-                <td>
+                <td colspan="2">
                   @php
                       $finishing = $dataKerja->finishing_id;
                       //explode string

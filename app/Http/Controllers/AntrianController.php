@@ -385,6 +385,9 @@ class AntrianController extends Controller
 
     public function downloadPrintFile($id){
         $antrian = Barang::where('id', $id)->first();
+        if($antrian->file_cetak == null){
+            return redirect()->back()->with('error', 'File cetak tidak ditemukan !');
+        }
         $file = $antrian->barang->file_cetak;
         $path = storage_path('app/public/file-cetak/' . $file);
         return response()->download($path);
@@ -413,21 +416,6 @@ class AntrianController extends Controller
 
     public function simpanAntrian(Request $request)
     {
-        //Validasi inputan
-        $validator = Validator::make($request->all(),[
-            'ticket_order' => 'required',
-            'customer_id' => 'required',
-            'metodePembayaran' => 'required',
-            'statusPembayaran' => 'required',
-            'jumlahPembayaran' => 'required',
-            'sales_id' => 'required',
-        ]);
-
-        //Jika validasi gagal, kembali ke halaman sebelumnya dengan error
-        if($validator->fails()){
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
         //simpan antrian
         $antrian = new DataAntrian();
         $antrian->ticket_order = $request->input('ticket_order');
@@ -458,6 +446,9 @@ class AntrianController extends Controller
             $pengiriman->no_resi = $request->input('noResi');
             $pengiriman->ekspedisi = $request->input('ekspedisi');
             $pengiriman->alamat_pengiriman = $request->input('alamatKirim');
+            if($request->input('ekspedisi') == 'LAIN'){
+                $pengiriman->nama_ekspedisi = $request->input('namaEkspedisi');
+            }
             $pengiriman->save();
         }
 
