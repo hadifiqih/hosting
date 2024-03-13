@@ -7,7 +7,10 @@ use App\Models\Barang;
 use App\Models\DataKerja;
 
 use App\Models\DataAntrian;
+use App\Exports\UsersExport;
 use Illuminate\Http\Request;
+use App\Exports\AntrianExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
 class EstimatorController extends Controller
@@ -15,6 +18,17 @@ class EstimatorController extends Controller
     public function laporanPenugasan()
     {
         return view('page.estimator.laporan-penugasan');
+    }
+
+    public function laporanWorkshopExcel()
+    {
+        $awal = date('Y-m-01');
+        $akhir = date('Y-m-d');
+        // return Excel::download(new AntrianExport, 'laporan-workshop.xls');
+        $barangs = Barang::whereHas('antrian', function($query) use ($awal, $akhir){
+            $query->whereBetween('created_at', [$awal, $akhir]);
+        })->get();
+        return view('page.report.laporan-workshop-excel', compact('barangs'));
     }
 
     public function laporanPenugasanJson()

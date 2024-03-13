@@ -4,19 +4,20 @@ namespace Maatwebsite\Excel\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Laravel\Scout\Builder as ScoutBuilder;
 use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Events\AfterChunk;
 use Maatwebsite\Excel\Files\TemporaryFile;
-use Maatwebsite\Excel\HasEventBus;
 use Maatwebsite\Excel\Jobs\Middleware\LocalizeJob;
 use Maatwebsite\Excel\Writer;
 
-class AppendQueryToSheet implements ShouldQueue
+class AppendPaginatedToSheet implements ShouldQueue
 {
-    use Queueable, Dispatchable, ProxyFailures, InteractsWithQueue, HasEventBus;
+    use Queueable, Dispatchable, ProxyFailures, InteractsWithQueue;
 
     /**
      * @var TemporaryFile
@@ -46,7 +47,7 @@ class AppendQueryToSheet implements ShouldQueue
     /**
      * @var int
      */
-    public $chunkSize;
+    public $perPage;
 
     /**
      * @param  FromQuery  $sheetExport
@@ -54,7 +55,7 @@ class AppendQueryToSheet implements ShouldQueue
      * @param  string  $writerType
      * @param  int  $sheetIndex
      * @param  int  $page
-     * @param  int  $chunkSize
+     * @param  int  $perPage
      */
     public function __construct(
         FromQuery $sheetExport,
@@ -62,14 +63,14 @@ class AppendQueryToSheet implements ShouldQueue
         string $writerType,
         int $sheetIndex,
         int $page,
-        int $chunkSize
+        int $perPage
     ) {
         $this->sheetExport   = $sheetExport;
         $this->temporaryFile = $temporaryFile;
         $this->writerType    = $writerType;
         $this->sheetIndex    = $sheetIndex;
         $this->page          = $page;
-        $this->chunkSize     = $chunkSize;
+        $this->perPage       = $perPage;
     }
 
     /**
@@ -91,22 +92,26 @@ class AppendQueryToSheet implements ShouldQueue
     public function handle(Writer $writer)
     {
         (new LocalizeJob($this->sheetExport))->handle($this, function () use ($writer) {
-            if ($this->sheetExport instanceof WithEvents) {
-                $this->registerListeners($this->sheetExport->registerEvents());
-            }
-
             $writer = $writer->reopen($this->temporaryFile, $this->writerType);
 
             $sheet = $writer->getSheetByIndex($this->sheetIndex);
 
-            $query = $this->sheetExport->query()->forPage($this->page, $this->chunkSize);
-
-            $sheet->appendRows($query->get(), $this->sheetExport);
+            $sheet->appendRows($this->chunk($this->sheetExport->query()), $this->sheetExport);
 
             $writer->write($this->sheetExport, $this->temporaryFile, $this->writerType);
-
-            $this->raise(new AfterChunk($sheet, $this->sheetExport, ($this->page - 1) * $this->chunkSize));
-            $this->clearListeners();
         });
+    }
+
+    /**
+     * @param  Builder|Relation|EloquentBuilder|ScoutBuilder  $query
+     */
+    protected function chunk($query)
+    {
+        if ($query instanceof \Laravel\Scout\Builder) {
+            return $query->paginate($this->perPage, 'page', $this->page)->items();
+        }
+
+        // Fallback
+        return $query->forPage($this->page, $this->perPage)->get();
     }
 }
