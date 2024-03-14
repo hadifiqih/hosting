@@ -9,24 +9,31 @@
 @section('breadcrumb', 'Laporan Penugasan')
 
 @section('content')
-
+<link href="https://cdn.datatables.net/rowgroup/1.5.0/css/rowGroup.dataTables.css" rel="stylesheet">
 <div class="container">
     <div class="row">
         <div class="col-md-12">
             <div class="card card-primary card-outline">
                 <div class="card-header">
-                    <h3 class="card-title">Laporan Penugasan</h3>
+                    <h3 class="card-title">Laporan SPK Bulan {{ date('F - Y') }}</h3>
+                    <a href="#"><i class=""></i></a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="tableSpk" class="table table-bordered table-striped">
+                        <table id="table" class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>No</th>
+                                    <th>Nomer Tiket</th>
+                                    <th>Sales</th>
                                     <th>Nama Produk</th>
                                     <th>Qty</th>
-                                    <th>Jumlah SPK</th>
-                                    <th>Nama Pekerja</th>
+                                    <th>Mulai</th>
+                                    <th>Selesai</th>
+                                    <th>Desainer</th>
+                                    <th>Operator</th>
+                                    <th>Finishing</th>
+                                    <th>QC</th>
                                     <th>Omset</th>
                                 </tr>
                             </thead>
@@ -36,9 +43,6 @@
                         </table>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <a href="#" class="btn btn-sm btn-success"><i class="fas fa-file-excel"></i> Unduh</a>
-                </div>
             </div>
         </div>
     </div>
@@ -46,25 +50,29 @@
 @endsection
 
 @section('script')
+<script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
+<script src="https://cdn.datatables.net/rowgroup/1.5.0/js/rowGroup.dataTables.js"></script>
 <script>
+    //DATA TABLE
     $(document).ready(function() {
-        $('#tableSpk').DataTable({
-            responsive: true,
-            autoWidth: false,
+        $('#table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: {
-                    url: "{{ route('estimator.laporanPenugasanJson') }}",
-                },
-                columns: [
-                    {data: 'DT_RowIndex', name: 'id'},
-                    {data: 'ticket_order', name: 'ticket_order'}
-                    {data: 'nama_produk', name: 'nama_produk'},
-                    {data: 'qty', name: 'qty'},
-                    {data: 'jumlah_spk', name: 'jumlah_spk'},
-                    {data: 'nama_pekerja', name: 'nama_pekerja'},
-                    {data: 'harga', name: 'harga'},
-                ],
+            ajax: "{{ route('estimator.laporanPenugasanJson') }}",
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                {data: 'ticket_order', name: 'ticket_order'},
+                {data: 'sales', name: 'sales'},
+                {data: 'nama_produk', name: 'nama_produk'},
+                {data: 'qty', name: 'qty'},
+                {data: 'tgl_mulai', name: 'tgl_mulai'},
+                {data: 'tgl_selesai', name: 'tgl_selesai'},
+                {data: 'desainer', name: 'desainer'},
+                {data: 'operator', name: 'operator'},
+                {data: 'finishing', name: 'finishing'},
+                {data: 'qc', name: 'qc'},
+                {data: 'omset', name: 'omset'},
+            ],
         });
     });
 </script>

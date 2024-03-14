@@ -4,6 +4,7 @@
         border-collapse: collapse;
     }
 </style>
+
 <table>
     <thead>
         <tr>
@@ -22,13 +23,15 @@
         </tr>
     </thead>
     <tbody>
+        @php
+            $prevTicket = '';
+        @endphp
         @foreach ($barangs as $item)
             @php
-                $rowspan = 1;
                 $currentTicket = $item->ticket_order;
-                $countTicket = \App\Models\Barang::where('ticket_order', $item->ticket_order)->count();
+                $countTicket = \App\Models\Barang::where('ticket_order', $currentTicket)->count(); 
             @endphp
-            @if ($countTicket > 1 && $currentTicket == $prevTicket)
+            @if($currentTicket != $prevTicket)
                 <tr>
                     <td rowspan="{{ $countTicket }}">{{ $loop->iteration }}</td>
                     <td rowspan="{{ $countTicket }}">{{ $item->ticket_order }}</td>
@@ -93,11 +96,12 @@
                     <td>Rp{{ $item->price * $item->qty }}</td>
                     </tr>
             
-                @php $prevTicket = $item->ticket_order; @endphp
+                    @php 
+                        $prevTicket = $item->ticket_order; 
+                    @endphp
+
             @else
                 <tr>
-                    <td>{{ $item->iteration }}</td>
-                    <td>{{ $item->ticket_order }}</td>
                     <td>{{ $item->user->sales->sales_name }}</td>
                     <td>{{ $item->job->job_name }}</td>
                     <td>{{ $item->qty }}</td>

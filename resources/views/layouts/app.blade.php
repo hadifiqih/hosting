@@ -17,7 +17,7 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('adminlte') }}/dist/css/adminlte.min.css">
   
-  <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.css" rel="stylesheet">
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href="{{ asset('adminlte') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
   <!-- Select2 -->
@@ -254,7 +254,7 @@
 <script src="{{ asset('adminlte') }}/plugins/pdfmake/pdfmake.min.js"></script>
 <script src="{{ asset('adminlte') }}/plugins/pdfmake/vfs_fonts.js"></script>
 
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>
 
 @yield('script')
 {{-- Select2 --}}
