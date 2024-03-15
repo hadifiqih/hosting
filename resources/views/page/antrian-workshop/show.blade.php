@@ -172,7 +172,7 @@
                 <div class="col-sm-12">
                     <div class="alert alert-warning" role="alert">
                         <i class="fas fa-exclamation-triangle mr-1"></i> <strong>Perhatian!</strong> Pesanan ini belum lunas, silahkan konfirmasi pelunasan.
-                        <button onclick="modalPelunasan({{ $antrian->ticket_order }})" type="button" class="btn btn-sm btn-danger float-right">Unggah Pelunasan</button>
+                        <button onclick="modalPelunasan({{ $antrian->ticket_order }})" type="button" class="btn btn-sm btn-danger float-right" style="display: {{ auth()->user()->role_id != 11 ? 'none' : '' }}" >Unggah Pelunasan</button>
                     </div>
                 </div>
                 @else
@@ -255,12 +255,15 @@
                                         $fileCetak = $antrian->barang->file_cetak;
                                         $fileCetak = explode('.', $fileCetak);
                                         $fileCetak = end($fileCetak);
+                                        if($fileCetak == null){
+                                            $fileCetak = '-';
+                                        }
                                     @endphp
                                     <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper($fileCetak) }}</div>
                                 </div>
                                 <div class="col-4 my-auto">
-                                    <a href="{{ route('design.download', $antrian->id) }}" class="font-weight-bold my-0">File Cetak</a>
-                                    <p class="text-muted">{{ date_format($antrian->order->updated_at, 'd F Y - H:i') }}</p>
+                                    <a id="btnDownloadFileCetak" href="{{ route('design.download', $antrian->id) }}" class="font-weight-bold my-0">{{ $fileCetak == '-' ? 'File Cetak Kosong' : 'File Cetak' }}</a>
+                                    <p class="text-muted">{{ date_format($antrian->barang->created_at, 'd F Y - H:i') }}</p>
                                 </div>
                             </div>
                         </div>

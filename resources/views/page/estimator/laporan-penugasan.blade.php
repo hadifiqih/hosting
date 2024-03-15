@@ -16,7 +16,7 @@
             <div class="card card-primary card-outline">
                 <div class="card-header">
                     <h3 class="card-title">Laporan SPK Bulan {{ date('F - Y') }}</h3>
-                    <a href="#"><i class=""></i></a>
+                    <a class="btn btn-sm btn-success float-right" href="{{ route('estimator.laporanWorkshopExcel') }}"><i class="fas fa-file-excel"></i> Unduh Excel</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

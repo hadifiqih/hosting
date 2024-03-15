@@ -149,9 +149,9 @@ Route::controller(AuthController::class)->group(function(){
 });
 
 Route::controller(EstimatorController::class)->group(function(){
-    Route::get('/estimator/laporan-penugasan', 'laporanPenugasan')->name('estimator.laporanPenugasan');
-    Route::get('/estimator/laporan-penugasan-json', 'laporanPenugasanJson')->name('estimator.laporanPenugasanJson');
-    Route::get('/estimator/laporan-workshop-excel', 'laporanWorkshopExcel')->name('estimator.laporanWorkshopExcel');
+    Route::get('/estimator/laporan-penugasan', 'laporanPenugasan')->middleware(['auth'])->name('estimator.laporanPenugasan');
+    Route::get('/estimator/laporan-penugasan-json', 'laporanPenugasanJson')->middleware(['auth'])->name('estimator.laporanPenugasanJson');
+    Route::get('/estimator/laporan-workshop-excel', 'laporanWorkshopExcel')->middleware(['auth'])->name('estimator.laporanWorkshopExcel');
 });
 
 Route::controller(IklanController::class)->group(function(){

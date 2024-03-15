@@ -15,12 +15,6 @@
                     <p>List Pekerjaan</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('laporan.workshop') }}" class="nav-link {{ request()->routeIs('laporan.workshop') ? 'active' : '' }}">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Laporan Workshop</p>
-                    </a>
-                </li>
             </ul>
             </li>
             <li class="nav-item">
