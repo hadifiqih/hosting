@@ -131,6 +131,12 @@
       </li>
     </ul>
   </nav>
+  <div class="container-fluid" id="pengumuman">
+    {{-- Membuat Pengumuman Berjalan menggunakan marquee --}}
+    <marquee behavior="scroll" direction="left" class="text-secondary">
+        <strong>Pengumuman!</strong> --- Libur Hari Raya dimulai pada tanggal <strong>10 April - 15 April</strong>, masuk kembali pada 16 April --- Selamat Lebaran ! 🎂🥳🎉🎊 ---
+    </marquee>
+  </div>
   <!-- /.navbar -->
 
   <!-- Main Sidebar Container -->

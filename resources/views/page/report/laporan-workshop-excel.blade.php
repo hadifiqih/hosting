@@ -48,7 +48,7 @@
                     </tr>
             
                     @php 
-                        $prevTicket = $item->ticket_order; 
+                        $prevTicket = $item->ticket_order;
                     @endphp
 
             @else
