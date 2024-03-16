@@ -47,6 +47,29 @@
                     </a>
                 </li>
             </ul>
-            </li>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url('/dashboard') }}" class="nav-link {{ request()->routeIs('pos.addOrder') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-cash-register"></i>
+                <p>
+                    POS Bahan
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="{{ route('pos.addOrder') }}" class="nav-link {{ request()->routeIs('pos.addOrder') ? 'active' : '' }}">
+                    <i class="fas fa-plus-circle"></i>
+                    <p style="margin-left:7px">Tambah Transaksi</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('pos.manageProduct') }}" class="nav-link {{ request()->routeIs('pos.manageProduct') ? 'active' : '' }}">
+                    <i class="fas fa-plus-circle"></i>
+                    <p style="margin-left:7px">Daftar Produk</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
     </ul>
 </nav>

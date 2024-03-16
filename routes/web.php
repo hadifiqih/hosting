@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Events\SendGlobalNotification;
 use App\Notifications\AntrianWorkshop;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\PosController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use Illuminate\Notifications\Notifiable;
@@ -16,10 +17,10 @@ use App\Http\Controllers\BahanController;
 use App\Http\Controllers\IklanController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Auth\Events\PasswordReset;
+
 use App\Http\Controllers\BarangController;
 
 use App\Http\Controllers\DesignController;
-
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AntrianController;
 use App\Http\Controllers\GeneralController;
@@ -257,6 +258,17 @@ Route::controller(OrderController::class)->group(function(){
     Route::get('/design/submit-reupload-file/{id}', 'submitReuploadFile')->name('submit.reupload');
     Route::post('/design/submit-reupload-link', 'submitLinkReupload')->name('submitLinkReupload');
     //--------------------------------------------
+});
+
+Route::controller(PosController::class)->group(function(){
+    Route::get('/pos/add-order', 'addOrder')->middleware('auth')->name('pos.addOrder');
+    Route::get('/pos/manage-product', 'manageProduct')->name('pos.manageProduct');
+    Route::get('/pos/manage-product-json', 'manageProductJson')->name('pos.manageProductJson');
+    Route::get('/pos/manage-product/create', 'createProduct')->name('pos.createProduct');
+    Route::post('/pos/manage-product/store', 'storeProduct')->name('pos.storeProduct');
+    Route::get('/pos/manage-product/{id}/edit', 'editProduct')->name('pos.editProduct');
+    Route::put('/pos/manage-product/{id}', 'updateProduct')->name('pos.updateProduct');
+    Route::delete('/pos/manage-product/{id}', 'destroyProduct')->name('pos.destroyProduct');
 });
 
 Route::controller(AntrianController::class)->group(function(){

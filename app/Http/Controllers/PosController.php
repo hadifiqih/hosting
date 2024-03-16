@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Job;
 
-class ProductController extends Controller
+class PosController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function addOrder()
     {
-        //
+        return view('page.kasir.pos');
     }
 
     /**
