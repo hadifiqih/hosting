@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('id_sales');
             $table->integer('id_cabang');
-            $table->in
+            $table->integer('id_produk');
             $table->timestamps();
         });
     }
