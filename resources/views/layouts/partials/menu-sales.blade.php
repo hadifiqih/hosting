@@ -49,7 +49,7 @@
             </ul>
         </li>
         <li class="nav-item">
-            <a href="{{ url('/dashboard') }}" class="nav-link {{ request()->routeIs('pos.addOrder') ? 'active' : '' }}">
+            <a href="{{ url('/dashboard') }}" class="nav-link {{ request()->routeIs('pos.addOrder') || request()->routeIs('pos.manageProduct') ? 'active' : '' }}">
             <i class="nav-icon fas fa-cash-register"></i>
                 <p>
                     POS Bahan

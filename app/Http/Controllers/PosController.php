@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Produk;
 use Illuminate\Http\Request;
+use App\Helpers\CustomHelper;
 
 class PosController extends Controller
 {
@@ -12,6 +14,21 @@ class PosController extends Controller
     public function addOrder()
     {
         return view('page.kasir.pos');
+    }
+
+    public function manageProduct()
+    {
+        //Give example 5 data for product with id, kode_produk, nama_produk, price, sell price, stok
+        $products = Produk::getProducts();
+
+        return Datatables::of($products)
+            ->addIndexColumn()
+            ->addColumn('action', function($row){
+                $actionBtn = '<a href="javascript:void(0)" class="edit btn btn-success btn-sm">Edit</a> <a href="javascript:void(0)" class="delete btn btn-danger btn-sm">Delete</a>';
+                return $actionBtn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
 
     /**
@@ -25,9 +42,16 @@ class PosController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function storeProduct(Request $request)
     {
-        //
+        $harga_kulak = CustomHelper::removeCurrencyFormat($request->harga_kulak);
+        $harga_jual = CustomHelper::removeCurrencyFormat($request->harga_jual);
+
+        //Validation
+
+
+        //Save to database
+        return redirect()->route('manage.product')->with('success', 'Product has been added');
     }
 
     /**
