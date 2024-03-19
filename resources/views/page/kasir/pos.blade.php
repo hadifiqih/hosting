@@ -11,6 +11,11 @@
 @section('breadcrumb', 'Tambah Transaksi')
 
 @section('content')
+<style>
+    .select2-selection {
+        height: 38px !important;
+    }
+</style>
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -22,11 +27,13 @@
             <form>
                 <div class="form-group mb-3">
                     <label for="product" class="form-label">{{ __('Nama Pelanggan') }}</label>
-                    <input type="text" class="form-control" id="nama_pelanggan" placeholder="Masukkan nama pelanggan">
+                    <input type="text" class="form-control" id="nama_pelanggan" placeholder="Contoh : Bambang Sumanto">
                 </div>
                 <div class="form-group mb-3">
                     <label for="product" class="form-label">{{ __('Nama Produk') }}</label>
-                    <input type="text" class="form-control" id="product" placeholder="Masukkan nama produk">
+                    <select class="form-control select2" id="produk">
+                        <option value="">Pilih Produk</option>
+                    </select>
                 </div>
                 <button type="submit" class="btn btn-primary btn-sm">{{ __('Tambah Keranjang') }}</button>
             </form>
@@ -89,7 +96,7 @@
             </div>
             <div class="row mt-1">
                 <div class="col-md-6 col-sm-5">
-                    <h4 class="font-weight-bold bg-success p-2">{{ __('Total: Rp ') }}<span id="total">0</span></h4>
+                    <h4 class="font-weight-bold bg-dark p-2">{{ __('Total: Rp ') }}<span id="total">0</span></h4>
                 </div>
                 <div class="col-md-6 col-sm-5 py-2">
                     <h6 class="font-weight-bold align-middle">{{ __('Kembali: Rp ') }}<span id="kembali">0</span></h6>
@@ -107,5 +114,34 @@
     </div>
 </div>
 
-  
+@endsection
+
+@section('script')
+
+<script>
+    $(document).ready(function() {
+        $('#produk').select2({
+            placeholder: "Pilih Produk",
+            allowClear: true,
+            ajax : {
+                url: "{{ route('pos.getProductName') }}",
+                type: "GET",
+                dataType: "json",
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                text: item.nama_produk,
+                                id: item.id
+                            }
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+    });
+</script>
+
 @endsection

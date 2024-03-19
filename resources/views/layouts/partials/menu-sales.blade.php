@@ -65,7 +65,7 @@
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('pos.manageProduct') }}" class="nav-link {{ request()->routeIs('pos.manageProduct') ? 'active' : '' }}">
-                    <i class="fas fa-plus-circle"></i>
+                    <i class="fas fa-clipboard-list"></i>
                     <p style="margin-left:7px">Daftar Produk</p>
                     </a>
                 </li>
