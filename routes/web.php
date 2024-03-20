@@ -270,6 +270,12 @@ Route::controller(PosController::class)->group(function(){
     Route::get('/pos/manage-product/{id}/edit', 'editProduct')->name('pos.editProduct');
     Route::put('/pos/manage-product/update/{id}', 'updateProduct')->name('pos.updateProduct');
     Route::get('/pos/manage-product/delete/{id}', 'destroyProduct')->name('pos.destroyProduct');
+    Route::get('/pos/get-product-by-id/{id}', 'getProductById')->name('pos.getProductById');
+    Route::get('/pos/pilih-produk', 'pilihProduk')->name('pos.pilihProduk');
+    //Keranjang
+    //tambah keranjang
+    Route::post('/pos/tambah-keranjang', 'tambahKeranjang')->name('pos.tambahKeranjang');
+    Route::get('/pos/keranjang-item/{id_cart}', 'tampilkanKeranjang')->name('pos.tampilkanKeranjang');
 });
 
 Route::controller(AntrianController::class)->group(function(){

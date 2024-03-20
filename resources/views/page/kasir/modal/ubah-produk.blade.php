@@ -32,7 +32,7 @@
                         <label for="harga_jual">Harga Jual</label>
                         <input type="text" class="form-control maskMoney" id="harga_jual" name="harga_jual" placeholder="Contoh : Rp 12.000">
                     </div>
-                    <button id="btnTambahProduk" type="submit" class="btn btn-sm btn-primary">Tambah</button>
+                    <button id="btnTambahProduk" type="submit" class="btn btn-sm btn-primary">Perbarui</button>
                 </form>
             </div>
         </div>

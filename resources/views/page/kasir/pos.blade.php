@@ -24,56 +24,37 @@
                     {{ __('Kasir POS Bahan') }}
                 </div>
             <div class="card-body">
-            <form>
+            <form id="formKeranjangItem">
+                @csrf
                 <div class="form-group mb-3">
                     <label for="product" class="form-label">{{ __('Nama Pelanggan') }}</label>
                     <input type="text" class="form-control" id="nama_pelanggan" placeholder="Contoh : Bambang Sumanto">
                 </div>
-                <div class="form-group mb-3">
-                    <label for="product" class="form-label">{{ __('Nama Produk') }}</label>
-                    <select class="form-control select2" id="produk">
-                        <option value="">Pilih Produk</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary btn-sm">{{ __('Tambah Keranjang') }}</button>
+                <input type="hidden" id="user" name="user_id" value="{{ $user }}">
+                <input type="hidden" id="cabang" name="cabang_id" value="{{ $cabang }}">
+                <input type="hidden" id="sales" name="sales_id" value="{{ $sales }}">
+                <input type="hidden" id="id_produk" name="produk_id">
+                <input type="hidden" id="kode_produk" name="kode_produk">
+                <input type="hidden" id="keranjang_id" name="keranjang_id" value="{{ $keranjang_id }}">
             </form>
+                <button id="btnTambahProduk" onclick="modalPilihProduk()" class="btn btn-primary btn-sm">{{ __('Tambah Produk') }}</button>
 
             <div class="table-responsive">
-            <table class="table table-striped mt-3">
-                <thead>
-                    <tr>
-                        <th scope="col">{{ __('Nama Produk') }}</th>
-                        <th scope="col">{{ __('Harga') }}</th>
-                        <th scope="col">{{ __('Qty') }}</th>
-                        <th scope="col">{{ __('Diskon') }}</th>
-                        <th scope="col">{{ __('Total') }}</th>
-                        <th scope="col">{{ __('Aksi') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{-- Give Example Content --}}
-                    <tr>
-                        <td>Produk 1</td>
-                        <td>Rp 10.000</td>
-                        <td><input class="form-control" type="text" value="5000" style="width: 75px"/></td>
-                        <td><input class="form-control" type="text" value="Rp1.000.000" style="width: 120px"/></td>
-                        <td>Rp 20.000</td>
-                        <td>
-                            <a href="#" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Produk 2</td>
-                        <td>Rp 20.000</td>
-                        <td><input class="form-control" type="text" value="2" style="width: 75px"/></td>
-                        <td><input class="form-control" type="text" value="Rp10.000.000" style="width: 120px"/></td>
-                        <td>Rp 40.000</td>
-                        <td>
-                            <a href="#" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                <table id="tableItems" class="table table-striped mt-3">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ __('Nama Produk') }}</th>
+                            <th scope="col">{{ __('Harga') }}</th>
+                            <th scope="col">{{ __('Qty') }}</th>
+                            <th scope="col">{{ __('Diskon') }}</th>
+                            <th scope="col">{{ __('Total') }}</th>
+                            <th scope="col">{{ __('Aksi') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
             </div>
 
             <div class="row mt-3">
@@ -87,9 +68,11 @@
                     <div class="form-group">
                         <label for="cash" class="form-label">{{ __('Metode Pembayaran') }}</label>
                         <select class="form-control" id="metode">
-                            <option value="tunai">{{ __('Tunai') }}</option>
-                            <option value="debit">{{ __('Debit') }}</option>
-                            <option value="kredit">{{ __('Kredit') }}</option>
+                            <option value="CASH">{{ __('Tunai') }}</option>
+                            <option value="BCA">{{ __('Transfer BCA') }}</option>
+                            <option value="BNI">{{ __('Transfer BNI') }}</option>
+                            <option value="BRI">{{ __('Transfer BRI') }}</option>
+                            <option value="Mandiri">{{ __('Transfer Mandiri') }}</option>
                         </select>
                     </div>
                 </div>
@@ -113,33 +96,64 @@
         </div>
     </div>
 </div>
-
+@includeIf('page.kasir.modal.pilih-produk')
 @endsection
 
 @section('script')
-
 <script>
+    function modalPilihProduk() {
+        $('#pilihProduk').modal('show');
+    }
+
+    function pilihProduk(id, kode){
+        $('#id_produk').val(id);
+        $('#kode_produk').val(kode);
+        $('#pilihProduk').modal('hide');
+        tambahKeranjang();
+    }
+
+    function tambahKeranjang(){
+        $.post("{{ route('pos.tambahKeranjang') }}", $('#formKeranjangItem').serialize())
+        .done((response) => {
+            $('#tableItems').DataTable().ajax.reload();
+        })
+        .fail(errors => {
+            console.log(errors);
+            alert('Gagal menambahkan produk ke keranjang!');
+        }); 
+    }
+
     $(document).ready(function() {
-        $('#produk').select2({
-            placeholder: "Pilih Produk",
-            allowClear: true,
-            ajax : {
-                url: "{{ route('pos.getProductName') }}",
-                type: "GET",
-                dataType: "json",
-                delay: 250,
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                text: item.nama_produk,
-                                id: item.id
-                            }
-                        })
-                    };
-                },
-                cache: true
-            }
+        $('#tableItems').DataTable({
+            processing: true,
+            serverSide: true,
+            searching: false,
+            ordering: false,
+            paging: false,
+            info: false,
+            ajax: "/pos/keranjang-item/" + $('#keranjang_id').val(),
+            columns: [
+                { data: 'nama_produk', name: 'nama_produk' },
+                { data: 'harga', name: 'harga' },
+                { data: 'qty', name: 'qty' },
+                { data: 'diskon', name: 'diskon' },
+                { data: 'total', name: 'total' },
+                { data: 'action', name: 'action' }
+            ]
+        });
+
+        $('#tableProduct').DataTable({
+            processing: true,
+            serverSide: true,
+            autoWidth: false,
+            ajax: "{{ route('pos.pilihProduk') }}",
+            columns: [
+                {data: 'kode_produk', name: 'kode_produk'},
+                {data: 'nama_produk', name: 'nama_produk'},
+                {data: 'harga_jual', name: 'harga_jual'},
+                {data: 'stok', name: 'stok'},
+                {data: 'action', name: 'action', orderable: false, searchable: false}
+            ],
         });
     });
 </script>

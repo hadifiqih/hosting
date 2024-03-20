@@ -72,4 +72,15 @@ class Produk extends Model
             ];
         });
     }
+
+    public static function chooseStok($id, $cabang_id)
+    {
+        $field_stok = "stok_" . $cabang_id;
+        return Produk::find($id)->$field_stok;
+    }
+
+    public static function stockByBranch($cabang_id)
+    {
+        return $cabang_id;
+    }
 }
