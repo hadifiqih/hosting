@@ -32,7 +32,7 @@
             <div class="card card-primary card-outline">
                 <div class="card-header">
                     <h3 class="card-title">Daftar Produk</h3>
-                    <button class="btn btn-sm btn-primary float-right" onclick="modalTambahProduk()"><i class="fas fa-plus-circle"></i> Tambah Produk</button>
+                    <a href="{{ route('pos.createProduct') }}" class="btn btn-sm btn-primary float-right"><i class="fas fa-plus-circle"></i> Tambah Produk</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

@@ -43,6 +43,9 @@ class EstimatorController extends Controller
             ->addColumn('sales', function ($antrian) {
                 return $antrian->user->sales->sales_name;
             })
+            ->addColumn('kategori', function ($antrian) {
+                return $antrian->kategori->nama_kategori;
+            })
             ->addColumn('nama_produk', function ($antrian) {
                 return $antrian->job->job_name;
             })
@@ -111,6 +114,13 @@ class EstimatorController extends Controller
             })
             ->addColumn('omset', function ($antrian) {
                 return 'Rp'. number_format($antrian->qty * $antrian->price,0,',','.');
+            })
+            ->addColumn('status', function ($antrian) {
+                if($antrian->status == 1){
+                    return '<span class="font-weight-bold text-warning">DIPROSES</span>';
+                }else{
+                    return '<span class="font-weight-bold text-success">SELESAI</span>';
+                }
             })
             ->rawColumns(['ticket_order','operator', 'finishing', 'qc'])
             ->make();

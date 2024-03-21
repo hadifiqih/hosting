@@ -26,6 +26,7 @@
                                     <th>No</th>
                                     <th>Nomer Tiket</th>
                                     <th>Sales</th>
+                                    <th>Kategori</th>
                                     <th>Nama Produk</th>
                                     <th>Qty</th>
                                     <th>Mulai</th>
@@ -63,6 +64,7 @@
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                 {data: 'ticket_order', name: 'ticket_order'},
                 {data: 'sales', name: 'sales'},
+                {data: 'kategori', name: 'kategori'},
                 {data: 'nama_produk', name: 'nama_produk'},
                 {data: 'qty', name: 'qty'},
                 {data: 'tgl_mulai', name: 'tgl_mulai'},

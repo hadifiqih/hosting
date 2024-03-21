@@ -16,13 +16,35 @@ class AntrianExport implements FromView, ShouldAutoSize
     {
         $awal = date('Y-m-01');
         $akhir = date('Y-m-d');
-        $barangs = Barang::whereHas('antrian', function($query) use ($awal, $akhir){
+        $stempels = Barang::whereHas('antrian', function($query) use ($awal, $akhir){
             $query->whereBetween('created_at', [$awal, $akhir]);
         })
+        ->where('kategori_id', 1)
+        ->get();
+
+        $nonStempels = Barang::whereHas('antrian', function($query) use ($awal, $akhir){
+            $query->whereBetween('created_at', [$awal, $akhir]);
+        })
+        ->where('kategori_id', 2)
+        ->get();
+
+        $advertisings = Barang::whereHas('antrian', function($query) use ($awal, $akhir){
+            $query->whereBetween('created_at', [$awal, $akhir]);
+        })
+        ->where('kategori_id', 3)
+        ->get();
+
+        $digitals = Barang::whereHas('antrian', function($query) use ($awal, $akhir){
+            $query->whereBetween('created_at', [$awal, $akhir]);
+        })
+        ->where('kategori_id', 4)
         ->get();
 
         return view('page.report.laporan-workshop-excel', [
-            'barangs' => $barangs
+            'stempels' => $stempels,
+            'nonStempels' => $nonStempels,
+            'advertisings' => $advertisings,
+            'digitals' => $digitals
         ]);
     }
 }

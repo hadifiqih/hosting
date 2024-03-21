@@ -102,9 +102,9 @@ class PosController extends Controller
             ->make(true);
     }
 
-    public function create()
+    public function createProduct()
     {
-        //
+        return view('page.kasir.tambah-produk');
     }
 
     public function storeProduct(Request $request)
