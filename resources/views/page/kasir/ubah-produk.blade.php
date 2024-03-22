@@ -6,7 +6,7 @@
 
 @section('page', 'POS')
 
-@section('breadcrumb', 'Tambah Produk')
+@section('breadcrumb', 'Ubah Produk')
 
 @section('content')
 <div class="container">
@@ -14,30 +14,32 @@
         <div class="col-md-12">
             <div class="card card-primary card-outline">
                 <div class="card-header">
-                    <h3 class="card-title">Tambah Produk</h3>
+                    <h3 class="card-title">Ubah Produk</h3>
                 </div>
                 <div class="card-body">
-                    <form id="formTambahProduk" action="" enctype="text/plain" method="POST">
+                    <form id="formUbahProduk" action="" enctype="text/plain" method="POST">
                         @csrf
+                        @method('PUT')
+                        <input type="hidden" name="id_produk" value="{{ $produk->id }}">
                         <div class="form-group">
                             <label for="kode_produk">Kode Produk</label>
-                            <input type="text" class="form-control" id="kode_produk" name="kode_produk" placeholder="Contoh : P01214140023">
+                            <input type="text" class="form-control" id="kode_produk" name="kode_produk" value="{{ $produk->kode_produk }}">
                         </div>
                         <div class="form-group">
                             <label for="nama_produk">Nama Produk</label>
-                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" placeholder="Contoh : Gagang Flash 4040">
+                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" value="{{ $produk->nama_produk }}">
                         </div>
                         <div class="form-group">
                             <label for="harga_kulak">Harga Kulak</label>
-                            <input type="text" class="form-control maskMoney" id="harga_kulak" name="harga_kulak" placeholder="Contoh : Rp 8.000">
+                            <input type="text" class="form-control maskMoney" id="harga_kulak" name="harga_kulak" value="{{ isset($harga->harga_kulak) ? $harga->harga_kulak : '' }}">
                         </div>
                         <div class="form-group">
                             <label for="harga_jual">Harga Jual</label>
-                            <input type="text" class="form-control maskMoney" id="harga_jual" name="harga_jual" placeholder="Contoh : Rp 12.000">
+                            <input type="text" class="form-control maskMoney" id="harga_jual" name="harga_jual" value="{{ isset($harga->harga_jual) ? $harga->harga_jual : '' }}">
                         </div>
                         <div class="form-group">
                             <label for="stok">Stok</label>
-                            <input type="number" class="form-control" id="stok" name="stok" placeholder="Contoh : 8">
+                            <input type="number" class="form-control" id="stok" name="stok" value="{{ isset($stok->jumlah_stok) ? $stok->jumlah_stok : '' }}">
                         </div>
 
                         <div class="form-group">
@@ -45,7 +47,7 @@
                             <button id="btnTambahGrosir" type="button" class="btn btn-sm btn-outline-primary ml-2"><i class="fas fa-plus"></i> Tambah Harga Grosir</button>
                         </div>
                         <div class="table-responsive">
-                            <table id="tabelGrosir" class="table table-bordered" style="display: none;">
+                            <table id="tabelGrosir" class="table table-bordered" @if(!isset($grosir)) style="display: none;" @endif>
                                 <thead>
                                     <tr>
                                         <th>No.</th>
@@ -56,7 +58,17 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    
+                                    @if($grosir != null)
+                                        @foreach($grosir as $g)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td><input type="number" class="form-control" name="min[]" value="{{ $g->min_qty }}"></td>
+                                            <td><input type="number" class="form-control" name="max[]" value="{{ $g->max_qty }}"></td>
+                                            <td><input type="text" class="form-control maskMoney" name="harga[]" value="{{ $g->harga_grosir }}"></td>
+                                            <td><button type="button" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button></td>
+                                        </tr>
+                                        @endforeach
+                                    @endif
                                 </tbody>
                             </table>
                         </div>
@@ -111,6 +123,7 @@
         $('#formTambahProduk').submit(function(e) {
             e.preventDefault();
             var token = $('meta[name="csrf-token"]').attr('content');
+            var id_produk = $('#id_produk').val();
             var kode_produk = $('#kode_produk').val();
             var nama_produk = $('#nama_produk').val();
             var harga_kulak = removeCurrency($('#harga_kulak').val());
@@ -126,10 +139,11 @@
             });
 
             $.ajax({
-                url: "{{ route('pos.simpanProduk') }}",
+                url: "{{ route('pos.updateProduct') }}",
                 type: "POST",
                 data: {
                     _token: token,
+                    id_produk: id_produk,
                     kode_produk: kode_produk,
                     nama_produk: nama_produk,
                     harga_kulak: harga_kulak,

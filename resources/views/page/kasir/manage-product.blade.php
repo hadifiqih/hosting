@@ -44,7 +44,6 @@
                                     <th>Nama Produk</th>
                                     <th>Harga Kulak</th>
                                     <th>Harga Jual</th>
-                                    <th>Stok Pusat</th>
                                     <th>Stok</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -59,7 +58,6 @@
         </div>
     </div>
 </div>
-@includeIf('page.kasir.modal.tambah-produk')
 @includeIf('page.kasir.modal.ubah-produk')
 @endsection
 
@@ -102,21 +100,6 @@
         });
     }
 
-    function ubahProduk(id) {
-        $.ajax({
-            url: "/pos/manage-product/" + id + "/edit",
-            type: "GET",
-            success: function(response) {
-                $('#ubahProduk').modal('show');
-                $('#ubahProduk #id').val(response.id);
-                $('#ubahProduk #kode_produk').val(response.kode_produk);
-                $('#ubahProduk #nama_produk').val(response.nama_produk);
-                $('#ubahProduk #harga_kulak').val(response.harga_kulak);
-                $('#ubahProduk #harga_jual').val(response.harga_jual);
-            }
-        });
-    }
-
     $(document).ready(function() {
         $('.maskMoney').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
 
@@ -130,38 +113,9 @@
                 {data: 'nama_produk', name: 'nama_produk'},
                 {data: 'harga_kulak', name: 'harga_kulak'},
                 {data: 'harga_jual', name: 'harga_jual'},
-                {data: 'stok_pusat', name: 'stok_pusat'},
-                {data: 'stok', name: 'stok'},
+                {data: 'stok_bahan', name: 'stok_bahan'},
                 {data: 'action', name: 'action', orderable: false, searchable: false}
             ],
-        });
-
-        $('#formTambahProduk').on('submit', function(e) {
-            e.preventDefault();
-            var token = $("input[name='_token']").val();
-            var kode_produk = $('#kode_produk').val();
-            var nama_produk = $('#nama_produk').val();
-            var harga_kulak = $('#harga_kulak').val();
-            var harga_jual = $('#harga_jual').val();
-            var stok = $('#stok').val();
-
-            $.ajax({
-                url: "{{ route('pos.storeProduct') }}",
-                type: "POST",
-                data: {
-                    _token: token,
-                    kode_produk: kode_produk,
-                    nama_produk: nama_produk,
-                    harga_kulak: harga_kulak,
-                    harga_jual: harga_jual,
-                    stok: stok
-                },
-                success: function(response) {
-                    $('#tambahProduk').modal('hide');
-                    $('#formTambahProduk').trigger('reset');
-                    $('#tableProduct').DataTable().ajax.reload();
-                }
-            });
         });
 
         $('#formUbahProduk').on('submit', function(e) {

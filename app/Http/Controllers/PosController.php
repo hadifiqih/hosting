@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Produk;
 use App\Models\Keranjang;
+use App\Models\StokBahan;
+use App\Models\ProdukHarga;
+use App\Models\ProdukGrosir;
 use Illuminate\Http\Request;
 use App\Helpers\CustomHelper;
 use App\Models\KeranjangItem;
@@ -37,37 +40,56 @@ class PosController extends Controller
 
         return Datatables::of($products)
             ->addIndexColumn()
+            ->addColumn('kode_produk', function($row){
+                return $row->kode_produk;
+            })
+            ->addColumn('nama_produk', function($row){
+                return $row->nama_produk;
+            })
             ->addColumn('harga_kulak', function($row){
-                return CustomHelper::addCurrencyFormat($row->harga_kulak);
+                $cabang = auth()->user()->cabang_id;
+                if($cabang == 1){
+                    $kulak = ProdukHarga::where('produk_id', $row->id)->where('cabang_id', 1)->first();
+                }else{
+                    $kulak = ProdukHarga::where('produk_id', $row->id)->where('cabang_id', 2)->first();
+                }
+
+                if($kulak == null){
+                    return 'Belum Diatur';
+                }else{
+                    return CustomHelper::addCurrencyFormat($kulak->harga_kulak);
+                }
             })
             ->addColumn('harga_jual', function($row){
-                return CustomHelper::addCurrencyFormat($row->harga_jual);
+                $cabang = auth()->user()->cabang_id;
+                if($cabang == 1){
+                    $jual = ProdukHarga::where('produk_id', $row->id)->where('cabang_id', 1)->first();
+                }else{
+                    $jual = ProdukHarga::where('produk_id', $row->id)->where('cabang_id', 2)->first();
+                }
+
+                if($jual == null){
+                    return 'Belum Diatur';
+                }else{
+                    return CustomHelper::addCurrencyFormat($jual->harga_jual);
+                }
             })
-            ->addColumn('stok_pusat', function($row){
-                return $row->stok_1;
-            })
-            ->addColumn('stok', function($row){
-                if(auth()->user()->cabang_id == 1){
-                    return $row->stok_1;
+            ->addColumn('stok_bahan', function($row){
+                $cabang = auth()->user()->cabang_id;
+                $stok = StokBahan::where('produk_id', $row->id)->where('cabang_id', $cabang)->first();
+                if($stok == null){
+                    return 'Belum Diatur';
                 }
-                elseif(auth()->user()->cabang_id == 2){
-                    return $row->stok_2;
-                }
-                elseif(auth()->user()->cabang_id == 3){
-                    return $row->stok_3;
-                }
-                elseif(auth()->user()->cabang_id == 4){
-                    return $row->stok_4;
-                }
+                return $stok->jumlah_stok;
             })
             ->addColumn('action', function($row){
                 $actionBtn = '<div class="btn-group">';
-                $actionBtn .= '<button type="button" class="edit btn btn-warning btn-sm" onclick="ubahProduk('.$row->id.')"><i class="fas fa-edit"></i> Ubah</button>';
+                $actionBtn .= '<a href="'.route('pos.editProduct', $row->id).'" class="edit btn btn-warning btn-sm"><i class="fas fa-edit"></i> Ubah</a>';
                 $actionBtn .= '<button type="button" class="delete btn btn-danger btn-sm" onclick="hapusProduk('.$row->id.')"><i class="fas fa-trash"></i> Hapus</button>';
                 $actionBtn .= '</div>';
                 return $actionBtn;
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'stok_bahan'])
             ->make(true);
     }
 
@@ -107,24 +129,56 @@ class PosController extends Controller
         return view('page.kasir.tambah-produk');
     }
 
-    public function storeProduct(Request $request)
+    public function simpanProduk(Request $request)
     {
-        $harga_kulak = CustomHelper::removeCurrencyFormat($request->harga_kulak);
-        $harga_jual = CustomHelper::removeCurrencyFormat($request->harga_jual);
+        $validated = $request->validate([
+            'kode_produk' => 'required|unique:produk,kode_produk',
+            'nama_produk' => 'required|max:255',
+            'harga_kulak' => 'required|numeric',
+            'harga_jual' => 'required|numeric',
+            'stok' => 'required|integer'
+        ]);
+
+        $cabang_id = auth()->user()->cabang_id;
 
         $produk = new Produk;
-        $produk->kode_produk = $request->kode_produk;
-        $produk->nama_produk = ucwords(strtolower($request->nama_produk));
-        $produk->harga_kulak = $harga_kulak;
-        $produk->harga_jual = $harga_jual;
-        
-        $cabang_id = auth()->user()->cabang_id;
-        $field_stok = "stok_" . $cabang_id;
-        $produk->$field_stok = $request->stok;
-
+        $produk->kode_produk = $validated['kode_produk'];
+        $produk->nama_produk = ucwords(strtolower($validated['nama_produk']));
         $produk->save();
 
-        return redirect()->route('pos.manageProduct')->with('success', 'Produk berhasil ditambahkan');
+        $harga = new ProdukHarga;
+        $harga->produk_id = $produk->id;
+        $harga->cabang_id = $cabang_id;
+        $harga->harga_kulak = $validated['harga_kulak'];
+        $harga->harga_jual = $validated['harga_jual'];
+        $harga->save();
+
+        $stok = new StokBahan;
+        $stok->produk_id = $produk->id;
+        $stok->cabang_id = $cabang_id;
+        $stok->jumlah_stok = $validated['stok'];
+        $stok->save();
+
+        if(isset($request->min) && isset($request->max)){
+            //perulangan untuk menambahkan harga grosir
+            for($i = 0; $i < count($request->min); $i++){
+                $grosir = new ProdukGrosir;
+                $grosir->produk_id = $produk->id;
+                $grosir->cabang_id = $cabang_id;
+                $grosir->min_qty = $request->min[$i];
+                $grosir->max_qty = $request->max[$i];
+                $grosir->harga_grosir = $request->harga[$i];
+                $grosir->save();
+            }
+        }
+
+        if($produk->save() && $harga->save() && $stok->save() && $grosir->save()){
+            return redirect()->route('pos.manageProduct')->with('success', 'Produk berhasil ditambahkan');
+        }elseif($produk->save() && $harga->save() && $stok->save()){
+            return redirect()->route('pos.manageProduct')->with('success', 'Produk berhasil ditambahkan');
+        }else{
+            return redirect()->route('pos.manageProduct')->with('error', 'Produk gagal ditambahkan');
+        }
     }
 
 
@@ -136,23 +190,60 @@ class PosController extends Controller
     public function editProduct(string $id)
     {
         $produk = Produk::getProduct($id);
-        return response()->json($produk);
+        $cabang = auth()->user()->cabang_id;
+        $harga = ProdukHarga::where('produk_id', $id)->where('cabang_id', $cabang)->first();
+        $grosir = ProdukGrosir::where('produk_id', $id)->where('cabang_id', $cabang)->get();
+        $stok = StokBahan::where('produk_id', $id)->where('cabang_id', $cabang)->first();
+
+        return view('page.kasir.ubah-produk', compact('produk', 'cabang', 'harga', 'grosir', 'stok'));
     }
 
     public function updateProduct(Request $request, string $id)
     {
-        $harga_kulak = CustomHelper::removeCurrencyFormat($request->harga_kulak);
-        $harga_jual = CustomHelper::removeCurrencyFormat($request->harga_jual);
+        $validated = $request->validate([
+            'id_produk' => 'required',
+            'kode_produk' => 'required|unique:produk,kode_produk',
+            'nama_produk' => 'required|max:255',
+            'harga_kulak' => 'required|numeric',
+            'harga_jual' => 'required|numeric',
+            'stok' => 'required|integer'
+        ]);
 
-        $produk = Produk::find($id);
-        $produk->kode_produk = $request->kode_produk;
-        $produk->nama_produk = ucwords(strtolower($request->nama_produk));
-        $produk->harga_kulak = $harga_kulak;
-        $produk->harga_jual = $harga_jual;
+        $cabang_id = auth()->user()->cabang_id;
+        $idProduk = $validated['id_produk'];
 
+        $produk = Produk::find($idProduk);
+        $produk->kode_produk = $validated['kode_produk'];
+        $produk->nama_produk = ucwords(strtolower($validated['nama_produk']));
         $produk->save();
 
-        return response()->json($produk);
+        $harga = ProdukHarga::where('produk_id', $idProduk)->where('cabang_id', $cabang_id)->first();
+        $harga->harga_kulak = $validated['harga_kulak'];
+        $harga->harga_jual = $validated['harga_jual'];
+        $harga->save();
+
+        $stok = StokBahan::where('produk_id', $idProduk)->where('cabang_id', $cabang_id)->first();
+        $stok->jumlah_stok = $validated['stok'];
+        $stok->save();
+
+        if(isset($request->min) && isset($request->max)){
+            //perulangan untuk menambahkan harga grosir
+            for($i = 0; $i < count($request->min); $i++){
+                $grosir = ProdukGrosir::where('produk_id', $idProduk)->where('cabang_id', $cabang_id)->get();
+                $grosir[$i]->min_qty = $request->min[$i];
+                $grosir[$i]->max_qty = $request->max[$i];
+                $grosir[$i]->harga_grosir = $request->harga[$i];
+                $grosir[$i]->save();
+            }
+        }
+
+        if($produk->save() && $harga->save() && $stok->save() && $grosir->save()){
+            return redirect()->route('pos.manageProduct')->with('success', 'Produk berhasil ditambahkan');
+        }elseif($produk->save() && $harga->save() && $stok->save()){
+            return redirect()->route('pos.manageProduct')->with('success', 'Produk berhasil ditambahkan');
+        }else{
+            return redirect()->route('pos.manageProduct')->with('error', 'Produk gagal ditambahkan');
+        }
     }
 
     public function destroyProduct(string $id)

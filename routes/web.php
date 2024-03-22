@@ -266,7 +266,7 @@ Route::controller(PosController::class)->group(function(){
     Route::get('/pos/manage-product-json', 'manageProductJson')->name('pos.manageProductJson');
     Route::get('/pos/get-product-name', 'getProductName')->name('pos.getProductName');
     Route::get('/pos/manage-product/create', 'createProduct')->name('pos.createProduct');
-    Route::post('/pos/manage-product/store', 'storeProduct')->name('pos.storeProduct');
+    Route::post('/pos/manage-product/store', 'simpanProduk')->name('pos.simpanProduk');
     Route::get('/pos/manage-product/{id}/edit', 'editProduct')->name('pos.editProduct');
     Route::put('/pos/manage-product/update/{id}', 'updateProduct')->name('pos.updateProduct');
     Route::get('/pos/manage-product/delete/{id}', 'destroyProduct')->name('pos.destroyProduct');

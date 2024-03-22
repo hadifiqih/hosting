@@ -30,10 +30,6 @@
                             <option value="" selected>Pilih Pelanggan</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="sumberPelanggan">Status Pelanggan</label>
-                        <input type="text" class="form-control" id="statusPelanggan" name="statusPelanggan" placeholder="Status Pelanggan" value="{{ old('statusPelanggan') }}" readonly>
-                    </div>
             </div>
             </div>
         </div>
@@ -697,18 +693,6 @@
                 },
                 cache: true
             }
-        });
-
-        //onchange nama pelanggan
-        $('#customer_id').on('change', function(){
-            var id = $(this).val();
-            $.ajax({
-                url: "/pelanggan/status/" + id,
-                method: "GET",
-                success: function(data){
-                    $('#statusPelanggan').val(data.status);
-                }
-            });
         });
 
         // Nama Pelanggan Old
