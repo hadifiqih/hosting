@@ -316,10 +316,6 @@
                     }
                 });
 
-                $('#not_iklanEdit').on('change', function(){
-                    
-                })
-
                 $('#modalEditProduk #qtyEdit').val(data.barang.qty);
                 $('#modalEditProduk #hargaEdit').val(data.barang.price);
                 $('#modalEditProduk #keteranganEdit').val(data.barang.keterangan);
@@ -384,6 +380,50 @@
         $('.divEkspedisi').hide();
         $('.divEksLain').hide();
         $('.divResi').hide();
+
+        $('#not_iklan').on('change', function(){
+            if($(this).is(':checked')){
+                $('#namaProdukIklan').val(null).trigger('change');
+                $('#tahunIklan').val('');
+                $('#bulanIklan').val('');
+                $('#tahunIklan').prop('disabled', true);
+                $('#bulanIklan').prop('disabled', true);
+                $('#namaProdukIklan').prop('disabled', true);
+                $('#bulanIklan').hide();
+                $('.divNamaProduk').hide();
+            }else{
+                $('#namaProdukIklan').val(null).trigger('change');
+                $('#tahunIklan').val('');
+                $('#bulanIklan').val('');
+                $('#tahunIklan').prop('disabled', false);
+                $('#bulanIklan').prop('disabled', false);
+                $('#namaProdukIklan').prop('disabled', false);
+                $('#bulanIklan').show();
+                $('.divNamaProduk').show();
+            }
+        });
+
+        $('#not_iklanEdit').on('change', function(){
+            if($(this).is(':checked')){
+                $('#namaProdukIklanEdit').val(null).trigger('change');
+                $('#tahunIklanEdit').val('');
+                $('#bulanIklanEdit').val('');
+                $('#tahunIklanEdit').prop('disabled', true);
+                $('#bulanIklanEdit').prop('disabled', true);
+                $('#namaProdukIklanEdit').prop('disabled', true);
+                $('#bulanIklanEdit').hide();
+                $('.divNamaProdukEdit').hide();
+            }else{
+                $('#namaProdukIklanEdit').val(null).trigger('change');
+                $('#tahunIklanEdit').val('');
+                $('#bulanIklanEdit').val('');
+                $('#tahunIklanEdit').prop('disabled', false);
+                $('#bulanIklanEdit').prop('disabled', false);
+                $('#namaProdukIklanEdit').prop('disabled', false);
+                $('#bulanIklanEdit').show();
+                $('.divNamaProdukEdit').show();
+            }
+        });
 
         $('#not_iklan').on('change', function(){
             if($(this).is(':checked')){
@@ -673,12 +713,40 @@
             $('#bulanIklanEdit').show();
         });
 
+        $('#tahunIklan').on('change', function(){
+            $('#bulanIklan').show();
+        });
+
+        $('#bulanIklan').on('change', function(){
+            $('#modalPilihProduk .divNamaProduk').show();
+        });
+
         $('#bulanIklanEdit').on('change', function(){
-            $('.divNamaProduk').show();
+            $('#modalEditProduk .divNamaProdukEdit').show();
         });
 
         $('#namaProdukIklanEdit').select2({
             placeholder: 'Pilih Produk',
+            allowClear: true,
+            ajax: {
+                url: "{{ route('getAllJobs') }}",
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.job_name
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+
+        $('#namaProdukIklan').select2({
+            placeholder: 'Pilih Produk',
+            allowClear: true,
             ajax: {
                 url: "{{ route('getAllJobs') }}",
                 processResults: function (data) {
@@ -718,7 +786,9 @@
             dataInput.append('qty', $('#qty').val());
             dataInput.append('harga', $('#harga').val());
             dataInput.append('keterangan', $('#keterangan').val());
-            dataInput.append('periode_iklan', $('#periode_iklan').val());
+            dataInput.append('tahunIklan', $('#tahunIklan').val());
+            dataInput.append('bulanIklan', $('#bulanIklan').val());
+            dataInput.append('namaProdukIklan', $('#namaProdukIklan').val());
 
             $.ajax({
                 url: "{{ route('barang.store') }}",

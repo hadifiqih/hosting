@@ -78,8 +78,8 @@
                         </select>
                     </div>
 
-                    <div class="form-group divNamaProduk" style="display: none">
-                        <select style="display: none; width: 100%" class="form-control select2" id="namaProdukIklanEdit" name="namaProdukIklanEdit">
+                    <div class="form-group divNamaProdukEdit" style="display: none">
+                        <select style="display: none; width: 100%" class="form-control select2 divNamaProdukEdit" id="namaProdukIklanEdit" name="namaProdukIklanEdit">
                             {{-- Nama Produk --}}
                         </select>
                     </div>
