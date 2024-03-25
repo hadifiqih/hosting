@@ -54,7 +54,7 @@
                   <h2 class="card-title">Antrian Desain</h2>
                   {{-- Tombol tambah order --}}
                     @if(Auth::user()->role == 'sales')
-                        <a href="{{ url('order/create') }}" class="btn btn-sm btn-warning float-right"><strong>Tambah Desain</strong></a>
+                        <a href="{{ route('design.tambahDesain') }}" class="btn btn-sm btn-warning float-right"><strong>Tambah Desain</strong></a>
                     @endif
                 </div>
                 <div class="card-body">

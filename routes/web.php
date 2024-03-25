@@ -203,6 +203,12 @@ Route::controller(ReportController::class)->group(function(){
 Route::controller(DesignController::class)->group(function(){
     Route::post('/design/simpan-file-produksi', 'simpanFileProduksi')->name('simpanFileProduksi');
     Route::get('/design/download-file-produksi/{id}', 'downloadFileProduksi')->name('downloadFileProduksi');
+
+    Route::get('/design/tambah-desain', 'tambahDesain')->name('design.tambahDesain');
+    Route::get('/design/edit-desain/{id}', 'editDesain')->name('design.editDesain');
+    Route::post('/design/simpan-desain', 'storeAddDesain')->name('storeAddDesain');
+    Route::get('/daftar-antrian-desain', 'indexDesain')->name('design.indexDesain');
+    Route::get('/json-antrian-desain', 'indexDatatables')->name('design.indexDatatables');
 });
 
 Route::controller(EmployeeController::class)->group(function(){
