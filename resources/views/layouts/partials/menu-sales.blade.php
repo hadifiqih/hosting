@@ -12,7 +12,7 @@
         </a>
         <ul class="nav nav-treeview">
             <li class="nav-item">
-                <a href="{{ route('design.index') }}" class="nav-link {{ request()->routeIs('design.index') || request()->routeIs('order.edit') ? 'active' : '' }}">
+                <a href="{{ route('design.indexDesain') }}" class="nav-link {{ request()->routeIs('design.index') || request()->routeIs('order.edit') ? 'active' : '' }}">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Submit Project</p>
                 </a>

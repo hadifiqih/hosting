@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Job;
 use App\Models\Order;
 use App\Models\Design;
 use App\Models\Antrian;
 use App\Models\Employee;
 use App\Models\DesignQueue;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 
 class DesignController extends Controller
@@ -27,7 +28,7 @@ class DesignController extends Controller
 
     public function indexDatatables()
     {
-        $designs = DesignQueue::all();
+        $designs = DesignQueue::orderBy('created_at', 'desc')->get();
         
         return Datatables::of($designs)
             ->addIndexColumn()
@@ -38,22 +39,55 @@ class DesignController extends Controller
                 return $design->job->job_name;
             })
             ->addColumn('ref_desain', function($design){
-                return '<a class="btn btn-sm btn-primary" href="'.asset('storage/ref-desain/'.$design->ref_desain).'" target="_blank">Lihat</a>';
+                $btn = '<div class="btn-group">';
+                if($design->ref_desain == null){
+                    $btn .= '<span class="btn btn-sm btn-secondary disabled">Ref. Desain</span>';
+                }else{
+                    $btn .= '<a class="btn btn-sm btn-primary" href="'.asset('storage/ref-desain/'.$design->ref_desain).'" target="_blank">Ref. Desain</a>';
+                }
+
+                if($design->file_cetak == null){
+                    $btn .= '<span class="btn btn-sm btn-secondary disabled">File Cetak</span>';
+                }else{
+                    $btn .= '<a class="btn btn-sm btn-primary p-1" href="'.asset('storage/file-cetak/'.$design->file_cetak).'" target="_blank">File Cetak</a>';
+                }
+
+                if($design->acc_desain == null){
+                    $btn .= '<span class="btn btn-sm btn-secondary disabled">Acc Desain</span>';
+                }else{
+                    $btn .= '<a class="btn btn-sm btn-primary p-1" href="'.asset('storage/acc-desain/'.$design->acc_desain).'" target="_blank">Acc Desain</a>';
+                }
+                $btn .= '</div>';
+                return $btn;
             })
             ->addColumn('prioritas', function($design){
-                return $design->prioritas == 1 ? 'Prioritas' : 'Biasa';
+                return $design->prioritas == 1 ? '<span id="prioritas" class="badge badge-warning">Prioritas</span>' : 'Biasa';
+            })
+            ->addColumn('status', function($design){
+                $status = $design->statusDesain($design->status);
+                return $status;
             })
             ->addColumn('action', function($design){
-                return '<a href="'.route('design.editDesain', $design->id).'" class="btn btn-sm btn-warning">Edit</a>';
+                if($design->status == 0 || $design->status == 1){
+                    $btn = '<div class="btn-group">';
+                    $btn .= '<a href="'.route('design.editDesain', $design->id).'" class="btn btn-sm btn-warning">Edit</a>';
+                    $btn .= '<button onclick="deleteData('. $design->id .')" class="btn btn-sm btn-danger">Hapus</button>';
+                    $btn .= '</div>';
+                }else if($design->status == 2){
+                    $btn = '<a href="'.route('design.editDesain', $design->id).'" class="btn btn-sm btn-success"><i class="fas fa-check"></i> Selesai</a>';
+                }
+
+                return $btn;
             })
-            ->rawColumns(['action', 'ref_desain'])
+            ->rawColumns(['action', 'ref_desain', 'status', 'prioritas'])
             ->make(true);
     }
 
     public function editDesain($id)
     {
         $design = DesignQueue::find($id);
-        return view('page.antrian-desain.edit-desain', compact('design'));
+        $jobs = Job::all();
+        return view('page.antrian-desain.edit-desain', compact('design', 'jobs'));
     }
 
     public function tambahDesain()
@@ -83,47 +117,39 @@ class DesignController extends Controller
         return redirect()->route('design.indexDesain')->with('success', 'Desain berhasil ditambahkan');
     }
 
-    public function index(){
-        $antrians = Antrian::where('status', '1')->with('design')->get();
-        $designs = Design::all();
-        return view('antrian.design.index', compact('antrians', 'designs'));
-    }
+    public function updateDesain(Request $request, $id)
+    {
+        $rules = [
+            'judul' => 'required',
+            'sales_id' => 'required',
+            'job_id' => 'required',
+            'note' => 'required',
+            'prioritas' => 'required',
+        ];
 
-    public function edit($id){
-        $employees = Employee::where('can_design', '1')->get();
-        $antrian = Antrian::find($id);
-        $designs = Design::with('employee')->get();
+        $validator = Validator::make($request->all(), $rules);
 
-        return view('antrian.design.create', compact('employees', 'antrian', 'designs'));
-    }
-
-    public function update(Request $request, $id){
-        // File Upload
-        $file = $request->file('designFile');
-        $nama_file = time()."_".$file->getClientOriginalName();
-        $tujuan_upload = 'storage/print-file';
-        $file->move($tujuan_upload,$nama_file);
-
-        if($file->move($tujuan_upload,$nama_file)){
-            "File berhasil diupload";
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput($request->all);
         }
 
-        // Create Design
-        $design = new Design;
-        $design->title = $request->title;
-        $design->description = $request->description;
-        $design->file_name = $nama_file;
-        $design->antrian_id = $id;
-        $design->employee_id = $request->designer;
-        $design->save();
+        $design = DesignQueue::find($id);
+        $design->hapusRefDesain();
+        $design->simpanEditDesain($request);
 
-        // Update Antrian
-        $antrian = Antrian::find($id);
-        $antrian->design_id = $design->id;
-        $antrian->save();
-
-        return redirect('/design')->with('success', 'Design berhasil diupload');
+        return redirect()->route('design.indexDesain')->with('success', 'Desain berhasil diubah');
     }
+
+    public function deleteDesain($id)
+    {
+        $design = DesignQueue::find($id);
+        $design->hapusRefDesain();
+        $design->delete();
+
+        return redirect()->route('design.indexDesain')->with('success', 'Desain berhasil dihapus');
+    }
+
+    ///---------------------------------------
 
     public function simpanFileProduksi(Request $request)
     {

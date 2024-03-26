@@ -9,12 +9,16 @@
 @section('breadcrumb', 'Antrian Desain')
 
 @section('content')
-
+<style>
+    .badge {
+        font-size: 14px;
+    }
+</style>
 <div class="container">
     <div class="card">
         <div class="card-header">
             <h5 class="card-title">Antrian Desain</h5>
-            <button class="btn btn-sm btn-primary float-right">Tambah Desain</button>
+            <a href="{{ route('design.tambahDesain') }}" class="btn btn-sm btn-primary float-right">Tambah Desain</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -25,7 +29,7 @@
                             <th>Sales</th>
                             <th>Judul Desain</th>
                             <th>Jenis Produk</th>
-                            <th>Referensi Desain</th>
+                            <th>File</th>
                             <th>Keterangan</th>
                             <th>Status</th>
                             <th>Prioritas</th>
@@ -44,6 +48,48 @@
 
 @section('script')
 <script>
+    function deleteData(id) {
+        let csrf_token = $('meta[name="csrf-token"]').attr('content');
+        
+        //Swal.fire confirm delete
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Data yang dihapus tidak dapat dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "{{ url('/design/hapus-desain') }}" + '/' + id,
+                    type: "POST",
+                    data: {
+                        '_method': 'DELETE',
+                        '_token': csrf_token
+                    },
+                    success: function(data) {
+                        $('#tableAntrianDesain').DataTable().ajax.reload();
+                        Swal.fire(
+                            'Terhapus!',
+                            'Data berhasil dihapus.',
+                            'success'
+                        )
+                    },
+                    error: function() {
+                        Swal.fire(
+                            'Gagal!',
+                            'Data gagal dihapus.',
+                            'error'
+                        )
+                    }
+                });
+            }
+        });
+    }
+
     $(document).ready(function() {
         $('#tableAntrianDesain').DataTable({
             processing: true,
@@ -62,5 +108,7 @@
             ]
         });
     });
+
+
 </script>
 @endsection

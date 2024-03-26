@@ -207,6 +207,8 @@ Route::controller(DesignController::class)->group(function(){
     Route::get('/design/tambah-desain', 'tambahDesain')->name('design.tambahDesain');
     Route::get('/design/edit-desain/{id}', 'editDesain')->name('design.editDesain');
     Route::post('/design/simpan-desain', 'storeAddDesain')->name('storeAddDesain');
+    Route::put('/design/update-desain/{id}', 'updateDesain')->name('updateDesain');
+    Route::delete('/design/hapus-desain/{id}', 'deleteDesain')->name('deleteDesain');
     Route::get('/daftar-antrian-desain', 'indexDesain')->name('design.indexDesain');
     Route::get('/json-antrian-desain', 'indexDatatables')->name('design.indexDatatables');
 });
