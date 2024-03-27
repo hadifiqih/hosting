@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\DesignQueue;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -51,12 +52,22 @@ class User extends Authenticatable
 
     public function isSales()
     {
-        return $this->role === 'sales';
+        return $this->role_id == 11;
+    }
+
+    public function isDesigner()
+    {
+        return $this->can_design == 1;
+    }
+
+    public function isSpvDesain()
+    {
+        return $this->role_id == 17;
     }
 
     public function isCustomer()
     {
-        return $this->role === 'customer';
+        return $this->role == 'customer';
     }
 
     public function employee()
@@ -72,5 +83,16 @@ class User extends Authenticatable
     public function order()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function designQueue()
+    {
+        return $this->hasMany(DesignQueue::class, 'designer_id', 'id');
+    }
+
+    public function ambilJumlahAntrian($idUser)
+    {
+        $jumlahAntrian = $this->designQueue()->where('designer_id', $idUser)->where('status', 1)->count();
+        return $jumlahAntrian;
     }
 }

@@ -17,16 +17,9 @@
                     <h5>Upload File Cetak</h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('unggahCetak', $barang->id) }}" method="post" enctype="multipart/form-data">
+                    <form action="{{ route('design.simpanFile', $design->id) }}" method="post" enctype="multipart/form-data" id="simpanFile">
                         @csrf
                         @method('PUT')
-                        <input type="hidden" name="barangId" id="barangId" value="{{ $barang->id }}">
-
-                        <div class="form-group">
-                            <label for="judulDesain">Jenis Produk</label>
-                            <input type="text" class="form-control" id="judulDesain" name="judulDesain" value="{{ $barang->job->job_name }}" readonly>
-                        </div>
-
                         <div class="form-group">
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input" id="aktifLink">
@@ -123,7 +116,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     //proses submit form
-                    $('#submitUnggahCetak').off('click').click();                    
+                    $('#simpanFile').submit();  
                 }
             });
         });

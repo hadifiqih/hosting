@@ -97,7 +97,7 @@ class DesignQueue extends Model
         $this->save();
     }
 
-    public function simpanFileProduksi($request)
+    public function simpanFileCetak($request)
     {
         if($request->hasFile('file_cetak')){
             $file = $request->file('file_cetak');

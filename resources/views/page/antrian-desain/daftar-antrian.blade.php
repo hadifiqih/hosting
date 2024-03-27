@@ -21,36 +21,70 @@
             <a href="{{ route('design.tambahDesain') }}" class="btn btn-sm btn-primary float-right">Tambah Desain</a>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="tableAntrianDesain">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Sales</th>
-                            <th>Judul Desain</th>
-                            <th>Jenis Produk</th>
-                            <th>File</th>
-                            <th>Keterangan</th>
-                            <th>Status</th>
-                            <th>Prioritas</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
+            <ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="custom-content-below-proses-tab" data-toggle="pill" href="#custom-content-below-proses" role="tab" aria-controls="custom-content-below-proses" aria-selected="true">Proses Desain</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="custom-content-below-selesai-tab" data-toggle="pill" href="#custom-content-below-selesai" role="tab" aria-controls="custom-content-below-selesai" aria-selected="false">Selesai Desain</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="custom-content-below-tabContent">
+                <div class="tab-pane fade show active" id="custom-content-below-proses" role="tabpanel" aria-labelledby="custom-content-below-proses-tab">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="tableAntrianDesain">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Sales</th>
+                                    <th>Judul Desain</th>
+                                    <th>Jenis Produk</th>
+                                    <th>File</th>
+                                    <th>Keterangan</th>
+                                    <th>Status</th>
+                                    <th>Prioritas</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+        
+                            </tbody>
+                        </table>
+        
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="custom-content-below-selesai" role="tabpanel" aria-labelledby="custom-content-below-selesai-tab">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="tableSelesaiDesain">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Sales</th>
+                                    <th>Judul Desain</th>
+                                    <th>Jenis Produk</th>
+                                    <th>File</th>
+                                    <th>Keterangan</th>
+                                    <th>Status</th>
+                                    <th>Prioritas</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+        
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
 
 @section('script')
 <script>
     function deleteData(id) {
         let csrf_token = $('meta[name="csrf-token"]').attr('content');
-        
         //Swal.fire confirm delete
         Swal.fire({
             title: 'Apakah Anda Yakin?',
@@ -72,6 +106,7 @@
                     },
                     success: function(data) {
                         $('#tableAntrianDesain').DataTable().ajax.reload();
+                        $('#tableSelesaiDesain').DataTable().ajax.reload();
                         Swal.fire(
                             'Terhapus!',
                             'Data berhasil dihapus.',
@@ -107,8 +142,23 @@
                 { data: 'action', name: 'action' }
             ]
         });
+
+        $('#tableSelesaiDesain').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('design.indexSelesaiDatatables') }}",
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                { data: 'sales', name: 'sales'},
+                { data: 'judul', name: 'judul' },
+                { data: 'job', name: 'job' },
+                { data: 'ref_desain', name: 'ref_desain' },
+                { data: 'note', name: 'note' },
+                { data: 'status', name: 'status' },
+                { data: 'prioritas', name: 'prioritas' },
+                { data: 'action', name: 'action' }
+            ]
+        });
     });
-
-
 </script>
 @endsection

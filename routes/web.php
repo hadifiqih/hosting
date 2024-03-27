@@ -210,7 +210,16 @@ Route::controller(DesignController::class)->group(function(){
     Route::put('/design/update-desain/{id}', 'updateDesain')->name('updateDesain');
     Route::delete('/design/hapus-desain/{id}', 'deleteDesain')->name('deleteDesain');
     Route::get('/daftar-antrian-desain', 'indexDesain')->name('design.indexDesain');
+    //Daftar Penugasan
+    Route::get('/design/daftar-penugasan', 'daftarPenugasan')->name('design.daftarPenugasan');
+    Route::get('/design/show-penugasan/{id}', 'showPenugasan')->name('design.showPenugasan');
+    Route::post('/design/pilih-desainer', 'pilihDesainer')->name('design.pilihDesainer');
+    Route::get('/design/upload-file/{id}', 'uploadFile')->name('design.uploadFile');
+    Route::put('/design/simpan-file/{id}', 'simpanFile')->name('design.simpanFile');
+    //JSON
     Route::get('/json-antrian-desain', 'indexDatatables')->name('design.indexDatatables');
+    Route::get('/json-antrian-selesai', 'indexSelesaiDatatables')->name('design.indexSelesaiDatatables');
+    Route::get('/json-antrian-penugasan-desain', 'indexPenugasanDatatables')->name('design.indexPenugasanDatatables');
 });
 
 Route::controller(EmployeeController::class)->group(function(){
