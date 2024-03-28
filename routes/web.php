@@ -220,6 +220,7 @@ Route::controller(DesignController::class)->group(function(){
     Route::get('/json-antrian-desain', 'indexDatatables')->name('design.indexDatatables');
     Route::get('/json-antrian-selesai', 'indexSelesaiDatatables')->name('design.indexSelesaiDatatables');
     Route::get('/json-antrian-penugasan-desain', 'indexPenugasanDatatables')->name('design.indexPenugasanDatatables');
+    Route::get('/json-antrian-penugasan-selesai', 'indexPenugasanSelesaiDatatables')->name('design.indexPenugasanSelesaiDatatables');
 });
 
 Route::controller(EmployeeController::class)->group(function(){
@@ -299,6 +300,8 @@ Route::controller(AntrianController::class)->group(function(){
     Route::get('/antrian/indexAntrian', 'indexData')->middleware('auth')->name('antrian.indexData');
     Route::get('/antrian/selesai', 'indexSelesai')->middleware('auth')->name('antrian.indexSelesai');
     Route::post('/antrian/simpan-antrian', 'simpanAntrian')->middleware('auth')->name('antrian.simpanAntrian');
+
+    Route::get('/antrian/create', 'buatAntrianWorkshop')->middleware('auth')->name('buatAntrianWorkshop');
 
     Route::post('/antrian/storeToAntrian', 'store')->middleware('auth')->name('antrian.store');
     Route::get('/antrian/show/{id}', 'show')->middleware('auth')->name('antrian.show');

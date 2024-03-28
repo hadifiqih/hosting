@@ -99,11 +99,17 @@ class DesignQueue extends Model
 
     public function simpanFileCetak($request)
     {
-        if($request->hasFile('file_cetak')){
-            $file = $request->file('file_cetak');
+        $nama_file = null;
+
+        if($request->hasFile('fileCetak')){
+            $file = $request->file('fileCetak');
             $nama_file = time()."_".$file->getClientOriginalName();
             $tujuan_upload = 'storage/file-cetak';
             $file->move($tujuan_upload,$nama_file);
+        }
+
+        if($request->input('linkFile')){
+            $nama_file = $request->input('linkFile');
         }
 
         $this->file_cetak = $nama_file;

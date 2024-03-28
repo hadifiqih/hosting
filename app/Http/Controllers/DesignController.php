@@ -39,6 +39,9 @@ class DesignController extends Controller
         
         return Datatables::of($designs)
             ->addIndexColumn()
+            ->addColumn('desainer', function($design){
+                return $design->designer->name ?? '-';
+            })
             ->addColumn('sales', function($design){
                 return $design->sales->sales_name;
             })
@@ -111,6 +114,9 @@ class DesignController extends Controller
         
         return Datatables::of($designs)
             ->addIndexColumn()
+            ->addColumn('desainer', function($design){
+                return $design->designer->name ?? '-';
+            })
             ->addColumn('sales', function($design){
                 return $design->sales->sales_name;
             })
@@ -179,7 +185,6 @@ class DesignController extends Controller
 
     public function simpanFile(Request $request, $id)
     {
-        dd($request->all());
         $design = DesignQueue::find($id);
         $design->simpanFileCetak($request);
         return redirect()->route('design.indexDesain')->with('success', 'File berhasil diupload');
@@ -222,6 +227,83 @@ class DesignController extends Controller
                 return $btn;
             })
             ->rawColumns(['action', 'status', 'prioritas'])
+            ->make(true);
+    }
+
+    public function indexPenugasanSelesaiDatatables()
+    {
+        $designs = DesignQueue::where('status', 2)->orderBy('created_at', 'desc')->get();
+
+        return Datatables::of($designs)
+            ->addIndexColumn()
+            ->addColumn('judul', function($design){
+                return $design->judul;
+            })
+            ->addColumn('desainer', function($design){
+                return $design->designer->name ?? '-';
+            })
+            ->addColumn('sales', function($design){
+                return $design->sales->sales_name;
+            })
+            ->addColumn('job', function($design){
+                return $design->job->job_name;
+            })
+            ->addColumn('ref_desain', function($design){
+                $text = $design->file_cetak;
+                $linkPattern = '/https?:\/\/(?:www\.)?\w+(?:\.\w+)+\S*/';
+                $fileNamePattern = '/[a-zA-Z0-9_\-.]+\.(cdr|jpeg|jpg|txt|pdf|docx)/';
+
+                $btn = '<div class="btn-group">';
+                if($design->ref_desain == null){
+                    $btn .= '<span class="btn btn-sm btn-secondary disabled">Ref. Desain</span>';
+                }else{
+                    $btn .= '<a class="btn btn-sm btn-primary" href="'.asset('storage/ref-desain/'.$design->ref_desain).'" target="_blank">Ref. Desain</a>';
+                }
+
+                if($design->file_cetak == null){
+                    $btn .= '<span class="btn btn-sm btn-secondary disabled">File Cetak</span>';
+                }else{
+                    $isLink = preg_match($linkPattern, $text);
+                    $isFileName = preg_match($fileNamePattern, $text);
+
+                    if($isLink){
+                        $btn .= '<a class="btn btn-sm btn-primary p-1" href="'.$design->file_cetak.'" target="_blank">File Cetak</a>';
+                    }else{
+                        $btn .= '<a class="btn btn-sm btn-primary p-1" href="'.asset('storage/file-cetak/'.$design->file_cetak).'" target="_blank" download="'.$design->file_cetak.'">File Cetak</a>';
+                    }
+                }
+
+                if($design->acc_desain == null){
+                    $btn .= '<span class="btn btn-sm btn-secondary disabled">Acc Desain</span>';
+                }else{
+                    $btn .= '<a class="btn btn-sm btn-primary p-1" href="'.asset('storage/acc-desain/'.$design->acc_desain).'" target="_blank">Acc Desain</a>';
+                }
+                $btn .= '</div>';
+                return $btn;
+            })
+            ->addColumn('note', function($design){
+                return $design->note;
+            })
+            ->addColumn('prioritas', function($design){
+                return $design->prioritas == 1 ? '<span id="prioritas" class="badge badge-warning">Prioritas</span>' : 'Biasa';
+            })
+            ->addColumn('status', function($design){
+                $status = $design->statusDesain($design->status);
+                return $status;
+            })
+            ->addColumn('mulai_penugasan', function($design){
+                return $design->start_design;
+            })
+            ->addColumn('diselesaikan', function($design){
+                return $design->end_design;
+            })
+            ->addColumn('action', function($design){
+                $btn = '<div class="btn-group">';
+                $btn .= '<a href="'.route('design.showPenugasan', $design->id).'" class="btn btn-sm btn-success">Selesai</a>';
+                $btn .= '</div>';
+                return $btn;
+            })
+            ->rawColumns(['action', 'status', 'prioritas', 'ref_desain'])
             ->make(true);
     }
 

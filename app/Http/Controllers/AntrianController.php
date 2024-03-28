@@ -250,6 +250,12 @@ class AntrianController extends Controller
         
     }
 
+    public function buatAntrianWorkshop()
+    {
+        $ekspedisi = Ekspedisi::all();
+        return view('page.antrian-workshop.create', compact('ekspedisi'));
+    }
+
     public function printeSpk($id){
         $antrian = DataAntrian::where('ticket_order', $id)->first();
         $dataKerja = DataKerja::where('ticket_order', $id)->first();

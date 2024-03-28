@@ -105,8 +105,6 @@
                         <label for="kosongAcc" class="custom-control-label">Tidak Ada Gambar ACC</label>
                     </div>
                 </div>
-
-                <input type="hidden" name="ticket_order" id="ticket_order" value="{{ $order->ticket_order }}">
             </div>
             <div class="modal-footer">
                 <input id="submitProduk" type="submit" class="btn btn-primary btnTambah" value="Tambah">

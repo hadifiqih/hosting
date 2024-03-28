@@ -15,20 +15,20 @@
     }
 </style>
 <div class="container">
+    <ul class="nav nav-tabs mb-2" id="custom-content-below-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="custom-content-below-proses-tab" data-toggle="pill" href="#custom-content-below-proses" role="tab" aria-controls="custom-content-below-proses" aria-selected="true">Proses Desain</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="custom-content-below-selesai-tab" data-toggle="pill" href="#custom-content-below-selesai" role="tab" aria-controls="custom-content-below-selesai" aria-selected="false">Selesai Desain</a>
+        </li>
+    </ul>
     <div class="card">
         <div class="card-header">
             <h5 class="card-title">Antrian Desain</h5>
-            <a href="{{ route('design.tambahDesain') }}" class="btn btn-sm btn-primary float-right">Tambah Desain</a>
+            @if(auth()->user()->isSales()) <a href="{{ route('design.tambahDesain') }}" class="btn btn-sm btn-primary float-right">Tambah Desain</a> @endif
         </div>
         <div class="card-body">
-            <ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="custom-content-below-proses-tab" data-toggle="pill" href="#custom-content-below-proses" role="tab" aria-controls="custom-content-below-proses" aria-selected="true">Proses Desain</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="custom-content-below-selesai-tab" data-toggle="pill" href="#custom-content-below-selesai" role="tab" aria-controls="custom-content-below-selesai" aria-selected="false">Selesai Desain</a>
-                </li>
-            </ul>
             <div class="tab-content" id="custom-content-below-tabContent">
                 <div class="tab-pane fade show active" id="custom-content-below-proses" role="tabpanel" aria-labelledby="custom-content-below-proses-tab">
                     <div class="table-responsive">
@@ -43,6 +43,7 @@
                                     <th>Keterangan</th>
                                     <th>Status</th>
                                     <th>Prioritas</th>
+                                    <th>Desainer</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -66,6 +67,7 @@
                                     <th>Keterangan</th>
                                     <th>Status</th>
                                     <th>Prioritas</th>
+                                    <th>Desainer</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -139,6 +141,7 @@
                 { data: 'note', name: 'note' },
                 { data: 'status', name: 'status' },
                 { data: 'prioritas', name: 'prioritas' },
+                { data: 'desainer', name: 'desainer'},
                 { data: 'action', name: 'action' }
             ]
         });
@@ -156,6 +159,7 @@
                 { data: 'note', name: 'note' },
                 { data: 'status', name: 'status' },
                 { data: 'prioritas', name: 'prioritas' },
+                { data: 'desainer', name: 'desainer'},
                 { data: 'action', name: 'action' }
             ]
         });

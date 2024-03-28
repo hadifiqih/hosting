@@ -2,8 +2,8 @@
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
       <!-- Add icons to the links using the .nav-icon class
            with font-awesome or any other icon font library -->
-      <li class="nav-item {{ request()->routeIs('design.index') || request()->routeIs('order.edit') || request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') || request()->routeIs('report.sales') ? 'menu-open' : '' }}">
-        <a href="{{ url('/dashboard') }}" class="nav-link {{ request()->routeIs('design.index') || request()->routeIs('order.edit') || request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') || request()->routeIs('report.sales') ? 'active' : '' }}">
+      <li class="nav-item {{ request()->routeIs('design.indexDesain') || request()->routeIs('order.edit') || request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') || request()->routeIs('report.sales') ? 'menu-open' : '' }}">
+        <a href="{{ url('/dashboard') }}" class="nav-link {{ request()->routeIs('design.indexDesain') || request()->routeIs('order.edit') || request()->routeIs('antrian.index') || request()->routeIs('antrian.edit') || request()->routeIs('antrian.show') || request()->routeIs('report.sales') ? 'active' : '' }}">
           <i class="nav-icon fas fa-tachometer-alt"></i>
             <p>
                 Antrian
@@ -12,7 +12,13 @@
         </a>
         <ul class="nav nav-treeview">
             <li class="nav-item">
-                <a href="{{ route('design.indexDesain') }}" class="nav-link {{ request()->routeIs('design.index') || request()->routeIs('order.edit') ? 'active' : '' }}">
+                <a href="{{ route('buatAntrianWorkshop') }}" class="nav-link {{ request()->routeIs('buatAntrianWorkshop') || request()->routeIs('order.edit') ? 'active' : '' }}">
+                <i class="fas fa-plus-circle pl-1"></i>
+                <p class="pl-2">Input Order</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('design.indexDesain') }}" class="nav-link {{ request()->routeIs('design.indexDesain') || request()->routeIs('order.edit') ? 'active' : '' }}">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Submit Project</p>
                 </a>
