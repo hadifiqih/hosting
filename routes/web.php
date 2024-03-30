@@ -169,7 +169,7 @@ Route::controller(IklanController::class)->group(function(){
     Route::get('/iklan/{id}/edit', 'edit')->name('iklan.edit');
     Route::put('/iklan/{id}', 'update')->name('iklan.update');
     Route::delete('/iklan/{id}', 'destroy')->name('iklan.destroy');
-    
+
 });
 
 Route::controller(ReportController::class)->group(function(){
@@ -401,7 +401,7 @@ Route::controller(BarangController::class)->group(function(){
     Route::put('/barang/update/{id}', 'updateCreate')->name('barang.updateCreate');
     //edit barang
     Route::get('/barang/edit/{id}', 'editCreate')->name('barang.editCreate');
-    
+
     Route::get('/barang/getTotalBarang/{id}', 'getTotalBarang')->name('getTotalBarang');
     Route::get('/barang/getBarangById/{id}', 'getBarangById')->name('getBarangById');
     Route::post('/barang/simpan-barang-dari-desain', 'simpanBarangDariDesain')->name('simpanBarangDariDesain');
@@ -411,6 +411,7 @@ Route::controller(BarangController::class)->group(function(){
     Route::put('barang/unggah-cetak/{id}', 'unggahCetak')->name('unggahCetak');
     //ganti desainer
     Route::post('/barang/ubah-desainer', 'ubahDesainer')->name('ubahDesainer');//untuk mengubah desainer
+    Route::post('/barang/store-produk', 'store')->name('store');
 });
 
 Route::get('/error', function () {

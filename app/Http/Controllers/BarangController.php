@@ -56,9 +56,8 @@ class BarangController extends Controller
         }
 
         //cek apakah user memiliki relasi dengan tabel sales
-        
         $barang = new Barang();
-        $barang->ticket_order = $request->ticket_order;
+        $barang->customer_id = $request->customer_id;
         $barang->kategori_id = $request->kategoriProduk;
         $barang->job_id = $request->namaProduk;
         $barang->user_id = auth()->user()->id;
@@ -66,8 +65,17 @@ class BarangController extends Controller
         $barang->qty = $request->qty;
         $barang->note = $request->keterangan;
         $barang->accdesain = $fileName;
-        $barang->iklan_id = $request->periode_iklan ? $request->periode_iklan : null;
         $barang->save();
+
+        //saveiklan
+        if($request->tahunIklan != null || $request->tahunIklan != ''){
+            $iklan = new BarangIklan();
+            $iklan->tahun_iklan = $request->tahunIklan;
+            $iklan->bulan_iklan = $request->bulanIklan;
+            $iklan->sales_id = $barang->user->sales->id;
+            $iklan->job_id = $barang->job_id;
+            $iklan->barang_id = $barang->id;
+        }
 
         return response()->json([
             'success' => true,
@@ -117,7 +125,7 @@ class BarangController extends Controller
 
     public function showCreate(string $id)
     {
-        $items = Barang::where('ticket_order', $id)->with('job')->get();
+        $items = Barang::where('customer_id', $id)->where('ticket_order', null)->with('job')->get();
 
         return DataTables::of($items)
         ->addIndexColumn()
@@ -161,7 +169,7 @@ class BarangController extends Controller
 
     public function getTotalBarang(string $id)
     {
-        $totalBarang = Barang::where('ticket_order', $id)->get();
+        $totalBarang = Barang::where('customer_id', $id)->where('ticket_order', null)->get();
 
         $total = 0;
         foreach($totalBarang as $item){
@@ -206,7 +214,7 @@ class BarangController extends Controller
             $pathGambar = 'acc_desain/'.$fileName;
             Storage::disk('public')->put($pathGambar, file_get_contents($file));
         }
-        
+
         //cek apakah user memiliki relasi dengan tabel sales
         $barang = Barang::find($request->id);
         if($barang != null){
@@ -253,7 +261,7 @@ class BarangController extends Controller
     public function destroy(string $id)
     {
         $barang = Barang::findOrFail($id);
-        
+
         //hapus file acc_desain
         if($barang->accdesain != null){
             Storage::disk('public')->delete($barang->accdesain);
@@ -270,7 +278,7 @@ class BarangController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Barang berhasil dihapus !',
-        ]);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+        ]);
     }
 
     public function getBarangById(string $id)
@@ -304,7 +312,7 @@ class BarangController extends Controller
         $barang->note = $request->note;
         $barang->refdesain_id = $refdesain->id;
         $barang->save();
-        
+
         Storage::disk('public')->put($pathGambar, file_get_contents($fileRefDesain));
 
         return response()->json([
@@ -422,7 +430,7 @@ class BarangController extends Controller
             DB::beginTransaction();
 
             $barang = Barang::findOrFail($request->barangId);
-            
+
             // Kurangi design load desainer lama
             $oldDesainer = User::findOrFail($barang->desainer_id);
             $oldDesainer->decrement('design_load');

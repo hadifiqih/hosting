@@ -17,13 +17,12 @@
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">Data Pelanggan</h2>
+                    <button type="button" class="btn btn-sm btn-primary float-right" data-toggle="modal" data-target="#modalTambahPelanggan">
+                        <i class="fas fa-user"></i> Tambah Pelanggan
+                    </button>
                 </div>
                 <div class="card-body">
                     {{-- Tambah Pelanggan Baru --}}
-                    <button type="button" class="btn btn-sm btn-primary mb-3" data-toggle="modal" data-target="#modalTambahPelanggan">
-                        <i class="fas fa-user"></i> Tambah Pelanggan
-                    </button>
-
                     <div class="form-group">
                         <label for="nama">Nama Pelanggan <span class="text-danger">*</span></label>
                         <select class="form-control select2" id="customer_id" name="customer_id" style="width: 100%">
@@ -34,14 +33,16 @@
             </div>
         </div>
     </div>
+
+    {{-- Button Tambah Produk --}}
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">Informasi Order</h2>
+                    <button type="button" class="btn btn-sm btn-primary float-right" onclick="tambahProduk()"><i class="fas fa-plus"></i> Tambah Produk</button>
                 </div>
                 <div class="card-body">
-                    <button type="button" class="btn btn-sm btn-outline-primary mb-3" onclick="tambahProduk()"><i class="fas fa-plus"></i> Tambah Produk</button>
                         <table id="tableProduk" class="table table-responsive table-bordered" style="width: 100%">
                             <thead>
                                 <th>#</th>
@@ -232,6 +233,340 @@
         bsCustomFileInput.init();
     });
 
-    
+    // Tambah Produk
+    function tambahProduk() {
+        if($('#customer_id').val() == null || $('#customer_id').val() == ""){
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Pilih pelanggan terlebih dahulu!',
+            });
+        }else{
+            $('#modalPilihProduk').modal('show');
+        }
+    }
+
+    function updateTotalBarang(){
+        $.ajax({
+            url: "/barang/getTotalBarang/" + $('#customer_id').val(),
+            method: "GET",
+            success: function(data){
+                $('#subtotal').html(data.totalBarang);
+                $('#totalAll').html(data.totalBarang);
+                $('#totalAllInput').val(data.totalBarang);
+                $('#sisaPembayaran').html(data.totalBarang);
+                $('#sisaPembayaranInput').val(data.totalBarang);
+            },
+            error: function(xhr, status, error){
+                var err = eval("(" + xhr.responseText + ")");
+                alert(err.Message);
+            }
+        });
+    }
+
+    function deleteBarang(id){
+        Swal.fire({
+            title: 'Apakah anda yakin?',
+            text: "Produk akan dihapus dari antrian ini!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            confirmButtonText: 'Ya, Hapus!'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/barang/" + id,
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        _method: "DELETE",
+                        id: id
+                    },
+                    success: function(data){
+                        $('#tableProduk').DataTable().ajax.reload();
+
+                        // function updateTotalBarang
+                        updateTotalBarang();
+
+                        //tampilkan toast sweet alert
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Produk berhasil dihapus',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    },
+                    error: function(xhr, status, error){
+                        var err = eval("(" + xhr.responseText + ")");
+                        alert(err.Message);
+                    }
+                });
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        // Masking Rupiah
+        $('.maskRupiah').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
+
+        // function updateTotalBarang
+        updateTotalBarang();
+
+        //fungsi untuk menyembunyikan file acc desain saat kosoongAcc dicentang
+        $('#kosongAcc').on('change', function(){
+            if($(this).is(':checked')){
+                //remove required
+                $('#fileAccDesain').removeAttr('required');
+                $('#fileAccDesain').attr('disabled', true);
+            }else{
+                //add required
+                $('#fileAccDesain').attr('required', true);
+                $('#fileAccDesain').attr('disabled', false);
+            }
+        });
+
+        // Select2 Pelanggan
+        $('#customer_id').select2({
+            placeholder: 'Pilih Pelanggan',
+            ajax: {
+                url: '{{ route('pelanggan.search') }}',
+                dataType: 'json',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                text: item.nama,
+                                id: item.id
+                            }
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+
+        //nama produk select2
+        $('#modalPilihProduk #kategoriProduk').on('change', function(){
+
+        $('#modalPilihProduk #namaProduk').val(null).trigger('change');
+        $('#modalPilihProduk #namaProduk').empty();
+        $('#modalPilihProduk #namaProduk').append(`<option value="" selected disabled>Pilih Produk</option>`);
+
+        $('#modalPilihProduk #namaProduk').select2({
+            placeholder: 'Pilih Produk',
+            ajax: {
+                url: "{{ route('job.searchByCategory') }}",
+                data: function (params) {
+                    return {
+                        kategoriProduk: $('#kategoriProduk').val(),
+                        q: params.term // tambahkan jika ingin mencari berdasarkan keyword
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.job_name
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+        });
+
+        $('#not_iklan').on('change', function(){
+            if($(this).is(':checked')){
+                $('#namaProdukIklan').val(null).trigger('change');
+                $('#tahunIklan').val('');
+                $('#bulanIklan').val('');
+                $('#tahunIklan').prop('disabled', true);
+                $('#bulanIklan').prop('disabled', true);
+                $('#namaProdukIklan').prop('disabled', true);
+                $('#bulanIklan').hide();
+                $('.divNamaProduk').hide();
+            }else{
+                $('#namaProdukIklan').val(null).trigger('change');
+                $('#tahunIklan').val('');
+                $('#bulanIklan').val('');
+                $('#tahunIklan').prop('disabled', false);
+                $('#bulanIklan').prop('disabled', false);
+                $('#namaProdukIklan').prop('disabled', false);
+                $('#bulanIklan').show();
+                $('.divNamaProduk').show();
+            }
+        });
+
+        $('#not_iklanEdit').on('change', function(){
+            if($(this).is(':checked')){
+                $('#namaProdukIklanEdit').val(null).trigger('change');
+                $('#tahunIklanEdit').val('');
+                $('#bulanIklanEdit').val('');
+                $('#tahunIklanEdit').prop('disabled', true);
+                $('#bulanIklanEdit').prop('disabled', true);
+                $('#namaProdukIklanEdit').prop('disabled', true);
+                $('#bulanIklanEdit').hide();
+                $('.divNamaProdukEdit').hide();
+            }else{
+                $('#namaProdukIklanEdit').val(null).trigger('change');
+                $('#tahunIklanEdit').val('');
+                $('#bulanIklanEdit').val('');
+                $('#tahunIklanEdit').prop('disabled', false);
+                $('#bulanIklanEdit').prop('disabled', false);
+                $('#namaProdukIklanEdit').prop('disabled', false);
+                $('#bulanIklanEdit').show();
+                $('.divNamaProdukEdit').show();
+            }
+        });
+
+        $('#not_iklan').on('change', function(){
+            if($(this).is(':checked')){
+                $('#periode_iklan').val(null).trigger('change');
+
+                $('#periode_iklan').prop('disabled', true);
+            }else{
+                $('#periode_iklan').prop('disabled', false);
+            }
+        });
+
+        $('#tahunIklanEdit').on('change', function(){
+            $('#bulanIklanEdit').show();
+        });
+
+        $('#tahunIklan').on('change', function(){
+            $('#bulanIklan').show();
+        });
+
+        $('#bulanIklan').on('change', function(){
+            $('#modalPilihProduk .divNamaProduk').show();
+        });
+
+        $('#bulanIklanEdit').on('change', function(){
+            $('#modalEditProduk .divNamaProdukEdit').show();
+        });
+
+        $('#namaProdukIklanEdit').select2({
+            placeholder: 'Pilih Produk',
+            allowClear: true,
+            ajax: {
+                url: "{{ route('getAllJobs') }}",
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.job_name
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+
+        $('#namaProdukIklan').select2({
+            placeholder: 'Pilih Produk',
+            allowClear: true,
+            ajax: {
+                url: "{{ route('getAllJobs') }}",
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.job_name
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+
+        $('#formTambahProduk').on('submit', function(e){
+            e.preventDefault();
+
+            var kosongAcc = ($('#kosongAcc').is(':checked')) ? 1 : 0;
+
+            // Inisialisasi File acc_desain
+            var acc_desain = ($('#fileAccDesain')[0].files.length > 0) ? $('#fileAccDesain')[0].files[0] : "";
+
+            var dataInput = new FormData();
+            dataInput.append('acc_desain', acc_desain);
+            dataInput.append('_token', "{{ csrf_token() }}");
+            dataInput.append('customer_id', $('#customer_id').val());
+            dataInput.append('ticket_order', $('#ticket_order').val());
+            dataInput.append('namaProduk', $('#namaProduk').val());
+            dataInput.append('kategoriProduk', $('#kategoriProduk').val());
+            dataInput.append('qty', $('#qty').val());
+            dataInput.append('harga', $('#harga').val());
+            dataInput.append('keterangan', $('#keterangan').val());
+            dataInput.append('tahunIklan', $('#tahunIklan').val());
+            dataInput.append('bulanIklan', $('#bulanIklan').val());
+            dataInput.append('namaProdukIklan', $('#namaProdukIklan').val());
+
+            $.ajax({
+                url: "{{ route('barang.store') }}",
+                method: "POST",
+                //data is form dataInput, acc_desain, _token
+                data: dataInput,
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function(data){
+                    $('#modalPilihProduk').modal('hide');
+                    $('#tableProduk').DataTable().ajax.reload();
+                    $('#formTambahProduk')[0].reset();
+
+                    // function updateTotalBarang
+                    updateTotalBarang();
+
+                    //tampilkan toast sweet alert
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Produk berhasil ditambahkan',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                },
+                error: function(xhr, status, error){
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                }
+            });
+        });
+
+        //Tabel Produk
+        //DataTables Produk
+        $('#tableProduk').DataTable({
+            responsive: true,
+            autoWidth: false,
+            processing: true,
+            serverSide: true,
+            paging: false,
+            searching: false,
+            info: false,
+            ajax: {
+                url: "/barang/show/" + $('#customer_id').val(),
+            },
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                {data: 'kategori', name: 'kategori'},
+                {data: 'namaProduk', name: 'namaProduk'},
+                {data: 'qty', name: 'qty'},
+                {data: 'harga', name: 'harga'},
+                {data: 'hargaTotal', name: 'hargaTotal'},
+                {data: 'keterangan', name: 'keterangan'},
+                {data: 'accdesain', name: 'accdesain'},
+                {data: 'action', name: 'action'},
+            ],
+        });
+});
 </script>
 @endsection

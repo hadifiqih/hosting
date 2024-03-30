@@ -78,7 +78,7 @@
                         </select>
                     </div>
 
-                    <div class="form-group divNamaProduk" style="display: none">
+                    <div class="form-group mb-1 divNamaProduk" style="display: none">
                         <select style="display: none; width: 100%;" class="form-control notIklan select2 divNamaProduk" id="namaProdukIklan" name="namaProdukIklan">
                             {{-- Nama Produk --}}
                         </select>
@@ -99,12 +99,11 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input custom-control-input-danger" type="checkbox" id="kosongAcc" name="kosongAcc">
-                        <label for="kosongAcc" class="custom-control-label">Tidak Ada Gambar ACC</label>
-                    </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="kosongAcc" name="kosongAcc">
+                    <label for="kosongAcc">Tidak Ada Gambar ACC</label>
                 </div>
+
             </div>
             <div class="modal-footer">
                 <input id="submitProduk" type="submit" class="btn btn-primary btnTambah" value="Tambah">

@@ -31,7 +31,7 @@ class JobController extends Controller
         }else{
             $data = Job::where('job_name', 'LIKE', "%".$hasilKetik."%")->get();
         }
-        
+
         return response()->json($data);
     }
 }
