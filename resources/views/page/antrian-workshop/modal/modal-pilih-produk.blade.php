@@ -89,6 +89,8 @@
                     <label class="form-check-label">Tidak dari Iklan</label>
                 </div>
 
+                <hr>
+
                 <div class="form-group mt-2 mb-1">
                     <label for="fileAccDesain">File ACC Desain</label>
                     <div class="input-group">
@@ -104,6 +106,17 @@
                     <label for="kosongAcc">Tidak Ada Gambar ACC</label>
                 </div>
 
+                <hr>
+
+                <div class="form-group">
+                    <label for="namaFileDesain">Pilih Desain</label>
+                    <select class="form-control select2" id="namaFileDesain" name="namaFileDesain" style="width: 100%">
+                        <option value="" selected disabled>Pilih </option>
+                        @foreach($desain as $d)
+                            <option value="{{ $d->id }}">{{ $d->judul }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
             <div class="modal-footer">
                 <input id="submitProduk" type="submit" class="btn btn-primary btnTambah" value="Tambah">

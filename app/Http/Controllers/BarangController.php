@@ -65,6 +65,7 @@ class BarangController extends Controller
         $barang->qty = $request->qty;
         $barang->note = $request->keterangan;
         $barang->accdesain = $fileName;
+        $barang->design_queue_id = $request->namaFileDesain;
         $barang->save();
 
         //saveiklan
@@ -75,6 +76,7 @@ class BarangController extends Controller
             $iklan->sales_id = $barang->user->sales->id;
             $iklan->job_id = $barang->job_id;
             $iklan->barang_id = $barang->id;
+            $iklan->save();
         }
 
         return response()->json([
@@ -125,7 +127,7 @@ class BarangController extends Controller
 
     public function showCreate(string $id)
     {
-        $items = Barang::where('customer_id', $id)->where('ticket_order', null)->with('job')->get();
+        $items = Barang::where('customer_id', $id)->where('ticket_order', null)->get();
 
         return DataTables::of($items)
         ->addIndexColumn()
@@ -156,11 +158,11 @@ class BarangController extends Controller
                 return '<a href="'. asset($row->accdesain).'" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>';
             }
         })
+        ->addColumn('namaFile', function($row){
+            return $row->designQueue->judul ?? 'Belum ada file';
+        })
         ->addColumn('action', function($row){
-            $btn = '<div class="btn-group">';
-            $btn .= '<a href="javascript:void(0)" class="btn btn-warning btn-sm" onclick="editBarang('.$row->id.')"><i class="fas fa-edit"></i></a>';
-            $btn .= '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBarang('.$row->id.')"><i class="fas fa-trash"></i></a>';
-            $btn .= '</div>';
+            $btn = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="deleteBarang('.$row->id.')"><i class="fas fa-trash"></i></a>';
             return $btn;
         })
         ->rawColumns(['action', 'hargaTotal', 'accdesain'])

@@ -411,7 +411,7 @@ Route::controller(BarangController::class)->group(function(){
     Route::put('barang/unggah-cetak/{id}', 'unggahCetak')->name('unggahCetak');
     //ganti desainer
     Route::post('/barang/ubah-desainer', 'ubahDesainer')->name('ubahDesainer');//untuk mengubah desainer
-    Route::post('/barang/store-produk', 'store')->name('store');
+    Route::post('/barang/store-produk', 'store')->name('barang.store');
 });
 
 Route::get('/error', function () {

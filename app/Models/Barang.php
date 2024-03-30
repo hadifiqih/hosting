@@ -10,6 +10,7 @@ use App\Models\Kategori;
 use App\Models\DataKerja;
 use App\Models\RefDesain;
 use App\Models\DataAntrian;
+use App\Models\DesignQueue;
 use App\Models\Documentation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -63,6 +64,11 @@ class Barang extends Model
     public function iklan()
     {
         return $this->belongsTo(Iklan::class);
+    }
+
+    public function designQueue()
+    {
+        return $this->belongsTo(DesignQueue::class, 'design_queue_id', 'id');
     }
 
     public function getAccDesainAttribute($value)

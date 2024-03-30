@@ -144,11 +144,11 @@
         <div class="row">
             <div class="col pr-4 mt-3">
                 <h5><strong>Total Penjualan : </strong><span class="float-right font-weight-bold text-danger">Rp{{ number_format($total, 0, ',', '.') }}</span></h5>
-                <h6>Ongkos Kirim<span class="float-right text-danger">Rp{{ !isset($pengiriman->ongkir ) ? '-' : number_format($antrian->pengiriman->ongkir, 0, ',', '.') }}</span></h6>
+                <h6>Ongkos Kirim<span class="float-right text-danger">Rp{{ !isset($pengiriman->ongkir ) ? '-' : number_format($pengiriman->ongkir, 0, ',', '.') }}</span></h6>
                 <h6>Biaya Pasang<span class="float-right text-danger">Rp{{ number_format($antrian->pembayaran->biaya_pasang, 0, ',', '.') }}</span></h6>
                 <h6>Biaya Packing<span class="float-right text-danger">Rp{{ number_format($antrian->pembayaran->biaya_packing, 0, ',', '.') }}</span></h6>
                 @php
-                    $ongkir = !isset($pengiriman->ongkir) ? 0 : $antrian->pengiriman->ongkir;
+                    $ongkir = !isset($pengiriman->ongkir) ? 0 : $pengiriman->ongkir;
                     $biayaPasang = $antrian->pembayaran->biaya_pasang;
                     $biayaPacking = $antrian->pembayaran->biaya_packing;
                     $totalKeseluruhan = $total + $ongkir + $biayaPasang + $biayaPacking;

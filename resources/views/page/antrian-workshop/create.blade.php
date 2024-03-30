@@ -53,6 +53,7 @@
                                 <th>Harga Total</th>
                                 <th>Keterangan Spesifikasi</th>
                                 <th>Acc Desain</th>
+                                <th>Judul File Desain</th>
                                 <th>Aksi</th>
                             </thead>
                             <tbody>
@@ -61,7 +62,7 @@
                             <tfoot>
                                 <tr>
                                     <th colspan="5" class="text-center">Total</th>
-                                    <th colspan="4" class="text-danger maskRupiah"><span id="subtotal"></span></th>
+                                    <th colspan="5" class="text-danger maskRupiah"><span id="subtotal"></span></th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -88,41 +89,43 @@
                                 </div>
                             </div>
 
-                            <div class="form-group divOngkir">
-                                <label for="ongkir">Biaya Ongkir</label>
-                                <input type="text" class="form-control maskRupiah" id="ongkir" placeholder="Contoh : Rp 100.000" name="ongkir" value="{{ old('ongkir') }}">
-                            </div>
-
-                            <div class="form-group divAlamatKirim">
-                                <label for="ongkir">Alamat Pengiriman</label>
-                                <input type="text" class="form-control" id="alamatKirim" placeholder="Jl. Alamat Lengkap" name="alamatKirim" value="{{ old('alamatKirim') }}">
-                                <div class="custom-control custom-checkbox mt-1">
-                                    <input class="custom-control-input custom-control-input-danger" type="checkbox" id="alamatSama" name="alamatSama" value="{{ old('alamatSama') }}">
-                                    <label for="alamatSama" class="custom-control-label">Alamat seperti pada Data Pelanggan</label>
+                            <div class="pengiriman" style="display: none;">
+                                <div class="form-group divOngkir">
+                                    <label for="ongkir">Biaya Ongkir</label>
+                                    <input type="text" class="form-control maskRupiah" id="ongkir" placeholder="Contoh : Rp 100.000" name="ongkir" value="{{ old('ongkir') }}">
                                 </div>
-                                <p class="text-muted font-italic text-sm mb-0 mt-1">*Harap isi dengan alamat lengkap, agar tidak terjadi kesalahan pengiriman.</p>
-                                <p class="text-muted font-italic text-sm mt-0">*Contoh alamat lengkap: Jalan Mangga Kecil No.13, RT 09 RW 03, Kelurahan Besi Tua, Kecamatan Sukaraja, Kab. Binjai, Sumatera Utara, 53421.</p>
-                            </div>
 
-                            <div class="form-group divEkspedisi">
-                                <label for="ekspedisi">Ekspedisi</label>
-                                <select name="ekspedisi" id="ekspedisi" class="form-control">
-                                    <option value="" selected disabled>Pilih Ekspedisi</option>
-                                    @foreach($ekspedisi as $eks)
-                                    <option value="{{ $eks->kode_ekspedisi }}">{{ $eks->nama_ekspedisi }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                                <div class="form-group divAlamatKirim">
+                                    <label for="ongkir">Alamat Pengiriman</label>
+                                    <input type="text" class="form-control" id="alamatKirim" placeholder="Jl. Alamat Lengkap" name="alamatKirim" value="{{ old('alamatKirim') }}">
+                                    <div class="custom-control custom-checkbox mt-1">
+                                        <input class="custom-control-input custom-control-input-danger" type="checkbox" id="alamatSama" name="alamatSama" value="{{ old('alamatSama') }}">
+                                        <label for="alamatSama" class="custom-control-label">Alamat seperti pada Data Pelanggan</label>
+                                    </div>
+                                    <p class="text-muted font-italic text-sm mb-0 mt-1">*Harap isi dengan alamat lengkap, agar tidak terjadi kesalahan pengiriman.</p>
+                                    <p class="text-muted font-italic text-sm mt-0">*Contoh alamat lengkap: Jalan Mangga Kecil No.13, RT 09 RW 03, Kelurahan Besi Tua, Kecamatan Sukaraja, Kab. Binjai, Sumatera Utara, 53421.</p>
+                                </div>
 
-                            <div class="form-group divEksLain">
-                                <label for="keterangan">Nama Ekspedisi</label>
-                                <input type="text" class="form-control" id="namaEkspedisi" placeholder="Nama Ekspedisi" name="namaEkspedisi" value="{{ old('namaEkspedisi') }}">
-                            </div>
+                                <div class="form-group divEkspedisi">
+                                    <label for="ekspedisi">Ekspedisi</label>
+                                    <select name="ekspedisi" id="ekspedisi" class="form-control">
+                                        <option value="" selected disabled>Pilih Ekspedisi</option>
+                                        @foreach($ekspedisi as $eks)
+                                        <option value="{{ $eks->kode_ekspedisi }}">{{ $eks->nama_ekspedisi }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                            <div class="form-group divResi">
-                                <label for="">No. Resi</label>
-                                <input type="text" class="form-control" id="noResi" placeholder="No. Resi" name="noResi" value="{{ old('noResi') }}">
-                                <p class="text-muted font-italic text-sm mb-0 mt-1">*Opsional, khusus order dari Marketplace. Hiraukan selain dari marketplace.</p>
+                                <div class="form-group divEksLain">
+                                    <label for="keterangan">Nama Ekspedisi</label>
+                                    <input type="text" class="form-control" id="namaEkspedisi" placeholder="Nama Ekspedisi" name="namaEkspedisi" value="{{ old('namaEkspedisi') }}">
+                                </div>
+
+                                <div class="form-group divResi">
+                                    <label for="">No. Resi</label>
+                                    <input type="text" class="form-control" id="noResi" placeholder="No. Resi" name="noResi" value="{{ old('noResi') }}">
+                                    <p class="text-muted font-italic text-sm mb-0 mt-1">*Opsional, khusus order dari Marketplace. Hiraukan selain dari marketplace.</p>
+                                </div>
                             </div>
 
                             <div class="row">
@@ -308,8 +311,35 @@
     }
 
     $(document).ready(function() {
+        var pelanggan = $('#customer_id').val();
+
         // Masking Rupiah
         $('.maskRupiah').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
+
+        $('#tableProduk').DataTable({
+            responsive: true,
+            autoWidth: false,
+            processing: true,
+            serverSide: true,
+            paging: false,
+            searching: false,
+            info: false,
+            ajax: {
+                url: "/barang/show/" + pelanggan,
+            },
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                {data: 'kategori', name: 'kategori'},
+                {data: 'namaProduk', name: 'namaProduk'},
+                {data: 'qty', name: 'qty'},
+                {data: 'harga', name: 'harga'},
+                {data: 'hargaTotal', name: 'hargaTotal'},
+                {data: 'keterangan', name: 'keterangan'},
+                {data: 'accdesain', name: 'accdesain'},
+                {data: 'namaFile', name: 'namaFile'},
+                {data: 'action', name: 'action'},
+            ],
+        });
 
         // function updateTotalBarang
         updateTotalBarang();
@@ -345,6 +375,32 @@
                     };
                 },
                 cache: true
+            }
+        });
+
+        $('#customer_id').on('change', function(){
+            var pelanggan = $(this).val();
+
+            //DataTables Produk
+            $('#tableProduk').DataTable().ajax.url("/barang/show/" + pelanggan).load();
+
+            updateTotalBarang();
+        });
+
+        //function untuk membuat alamat pengiriman sama dengan alamat pada data pelanggan customer
+        $('#alamatSama').on('change', function(){
+            if($(this).is(':checked')){
+                //get id customer
+                var id = $('#customer_id').val();
+                $.ajax({
+                    url: "/pelanggan/" + id,
+                    method: "GET",
+                    success: function(data){
+                        $('#alamatKirim').val(data.alamat);
+                    }
+                });
+            }else{
+                $('#alamatKirim').val('');
             }
         });
 
@@ -402,28 +458,6 @@
             }
         });
 
-        $('#not_iklanEdit').on('change', function(){
-            if($(this).is(':checked')){
-                $('#namaProdukIklanEdit').val(null).trigger('change');
-                $('#tahunIklanEdit').val('');
-                $('#bulanIklanEdit').val('');
-                $('#tahunIklanEdit').prop('disabled', true);
-                $('#bulanIklanEdit').prop('disabled', true);
-                $('#namaProdukIklanEdit').prop('disabled', true);
-                $('#bulanIklanEdit').hide();
-                $('.divNamaProdukEdit').hide();
-            }else{
-                $('#namaProdukIklanEdit').val(null).trigger('change');
-                $('#tahunIklanEdit').val('');
-                $('#bulanIklanEdit').val('');
-                $('#tahunIklanEdit').prop('disabled', false);
-                $('#bulanIklanEdit').prop('disabled', false);
-                $('#namaProdukIklanEdit').prop('disabled', false);
-                $('#bulanIklanEdit').show();
-                $('.divNamaProdukEdit').show();
-            }
-        });
-
         $('#not_iklan').on('change', function(){
             if($(this).is(':checked')){
                 $('#periode_iklan').val(null).trigger('change');
@@ -434,39 +468,12 @@
             }
         });
 
-        $('#tahunIklanEdit').on('change', function(){
-            $('#bulanIklanEdit').show();
-        });
-
         $('#tahunIklan').on('change', function(){
             $('#bulanIklan').show();
         });
 
         $('#bulanIklan').on('change', function(){
             $('#modalPilihProduk .divNamaProduk').show();
-        });
-
-        $('#bulanIklanEdit').on('change', function(){
-            $('#modalEditProduk .divNamaProdukEdit').show();
-        });
-
-        $('#namaProdukIklanEdit').select2({
-            placeholder: 'Pilih Produk',
-            allowClear: true,
-            ajax: {
-                url: "{{ route('getAllJobs') }}",
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                id: item.id,
-                                text: item.job_name
-                            };
-                        })
-                    };
-                },
-                cache: true
-            }
         });
 
         $('#namaProdukIklan').select2({
@@ -509,6 +516,7 @@
             dataInput.append('tahunIklan', $('#tahunIklan').val());
             dataInput.append('bulanIklan', $('#bulanIklan').val());
             dataInput.append('namaProdukIklan', $('#namaProdukIklan').val());
+            dataInput.append('namaFileDesain', $('#namaFileDesain').val());
 
             $.ajax({
                 url: "{{ route('barang.store') }}",
@@ -542,30 +550,257 @@
             });
         });
 
-        //Tabel Produk
-        //DataTables Produk
-        $('#tableProduk').DataTable({
-            responsive: true,
-            autoWidth: false,
-            processing: true,
-            serverSide: true,
-            paging: false,
-            searching: false,
-            info: false,
-            ajax: {
-                url: "/barang/show/" + $('#customer_id').val(),
-            },
-            columns: [
-                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                {data: 'kategori', name: 'kategori'},
-                {data: 'namaProduk', name: 'namaProduk'},
-                {data: 'qty', name: 'qty'},
-                {data: 'harga', name: 'harga'},
-                {data: 'hargaTotal', name: 'hargaTotal'},
-                {data: 'keterangan', name: 'keterangan'},
-                {data: 'accdesain', name: 'accdesain'},
-                {data: 'action', name: 'action'},
-            ],
+        // saat ada perubahan pada inputan biaya packing, biaya ongkir, biaya pasang, diskon maka totalAll akan berubah
+        $('#packing, #ongkir, #pasang, #diskon').on('keyup', function(){
+            var packing = $('#packing').val();
+            packing = packing.replace(/[^0-9]/g, '');
+            packing = parseInt(packing);
+
+            var ongkir = $('#ongkir').val();
+            ongkir = ongkir.replace(/[^0-9]/g, '');
+            ongkir = parseInt(ongkir);
+
+            var pasang = $('#pasang').val();
+            pasang = pasang.replace(/[^0-9]/g, '');
+            pasang = parseInt(pasang);
+
+            var diskon = $('#diskon').val();
+            diskon = diskon.replace(/[^0-9]/g, '');
+            diskon = parseInt(diskon);
+
+            var totalAll = $('#subtotal').text();
+            totalAll = totalAll.replace(/[^0-9]/g, '');
+            totalAll = parseInt(totalAll);
+
+            if(isNaN(packing)){
+                packing = 0;
+            }
+
+            if(isNaN(ongkir)){
+                ongkir = 0;
+            }
+
+            if(isNaN(pasang)){
+                pasang = 0;
+            }
+
+            if(isNaN(diskon)){
+                diskon = 0;
+            }
+
+            if(isNaN(totalAll)){
+                totalAll = 0;
+            }
+
+            var totalAll = totalAll + packing + ongkir + pasang - diskon;
+            totalAll = totalAll.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            $('#totalAll').html('Rp ' + totalAll);
+            $('#totalAllInput').val(totalAll);
+            if(totalAll == 0){
+                $('#jumlahPembayaran').val(totalAll);
+                $('#jumlahPembayaran').attr('readonly', true);
+                $('#sisaPembayaran').html('Rp 0');
+                $('#statusPembayaran').val('');
+            }else{
+                $('#jumlahPembayaran').val('');
+                $('#jumlahPembayaran').attr('readonly', false);
+                $('#sisaPembayaran').html(totalAll + ' (Belum Lunas)');
+                $('#statusPembayaran').val('');
+            }
+        });
+
+        $('#statusPembayaran').on('click', function(){
+            var statusPembayaran = $('#statusPembayaran').val();
+            if(statusPembayaran == 2){
+                $('#jumlahPembayaran').val($('#totalAllInput').val());
+                $('#jumlahPembayaran').attr('readonly', true);
+                $('#sisaPembayaran').html('Rp 0');
+            }else{
+                $('#jumlahPembayaran').val('');
+                $('#jumlahPembayaran').attr('readonly', false);
+                $('#sisaPembayaran').html($('#totalAllInput').val() + ' (Belum Lunas)');
+            }
+        });
+
+        // sisaPembayaran akan berubah saat ada perubahan pada inputan jumlahPembayaran - totalAll
+        $('#jumlahPembayaran').on('keyup', function(){
+            var jumlahPembayaran = $('#jumlahPembayaran').val();
+            jumlahPembayaran = jumlahPembayaran.replace(/[^0-9]/g, '');
+            jumlahPembayaran = parseInt(jumlahPembayaran);
+
+            var totalAll = $('#totalAll').text();
+            totalAll = totalAll.replace(/[^0-9]/g, '');
+            totalAll = parseInt(totalAll);
+
+            if(isNaN(jumlahPembayaran)){
+                jumlahPembayaran = 0;
+            }
+
+            if(isNaN(totalAll)){
+                totalAll = 0;
+            }
+
+            var sisaPembayaran = totalAll - jumlahPembayaran;
+            if(sisaPembayaran < 0){
+                sisaPembayaran = "Melebihi Total Pembayaran";
+            }
+            sisaPembayaran = sisaPembayaran.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            if(sisaPembayaran == 0){
+                $('#sisaPembayaran').html('Rp 0');
+            }else{
+                $('#sisaPembayaran').html('Rp ' + sisaPembayaran + ' (Belum Lunas)');
+            }
+        });
+
+        // ketika isOngkir dicentang maka divAlamatKirim, divOngkir, divEkspedisi akan muncul
+        $('#isOngkir').on('change', function(){
+            if($(this).is(':checked')){
+                //reset value
+                $('#alamatKirim').val('');
+                $('#ongkir').val('');
+                $('#ekspedisi').val('');
+                $('#namaEkspedisi').val('');
+                $('#noResi').val('');
+
+                $('.pengiriman').show();
+                //add required
+                $('#alamatKirim').attr('required', true);
+                $('#ongkir').attr('required', true);
+                $('#ekspedisi').attr('required', true);
+            }else{
+                if($('#ongkir').val() != ''){
+                    // function updateTotalBarang
+                    var totalBarang = $('span#subtotal').text();
+                    totalBarang = totalBarang.replace(/[^0-9]/g, '');
+                    totalBarang = parseInt(totalBarang);
+
+                    var bPacking = $('#packing').val();
+                    bPacking = bPacking.replace(/[^0-9]/g, '');
+                    bPacking = parseInt(bPacking);
+
+                    var bPasang = $('#pasang').val();
+                    bPasang = bPasang.replace(/[^0-9]/g, '');
+                    bPasang = parseInt(bPasang);
+
+                    var diskon = $('#diskon').val();
+                    diskon = diskon.replace(/[^0-9]/g, '');
+                    diskon = parseInt(diskon);
+
+                    if(isNaN(bPacking)){
+                        bPacking = 0;
+                    }
+                    if(isNaN(bPasang)){
+                        bPasang = 0;
+                    }
+                    if(isNaN(diskon)){
+                        diskon = 0;
+                    }
+
+                    var totalTanpaOngkir = totalBarang + bPacking + bPasang - diskon;
+                    totalTanpaOngkir = totalTanpaOngkir.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+                    console.log(totalTanpaOngkir);
+                    $('#totalAll').html('Rp ' + totalTanpaOngkir);
+                    $('#totalAllInput').val(totalTanpaOngkir);
+                    $('#sisaPembayaran').html('Rp ' + $('#totalAllInput').val());
+                }
+
+                $('.divAlamatKirim').hide();
+                $('.divOngkir').hide();
+                $('.divEkspedisi').hide();
+                $('.divEksLain').hide();
+                $('.divResi').hide();
+
+                $('#alamatKirim').val('');
+                $('#ongkir').val('');
+                $('#ekspedisi').val('');
+                $('#namaEkspedisi').val('');
+                $('#noResi').val('');
+
+                //remove required
+                $('#alamatKirim').removeAttr('required');
+                $('#ongkir').removeAttr('required');
+                $('#ekspedisi').removeAttr('required');
+
+                //Jika biaya ongkir tidak digunakan maka totalAllInput dan sisaPembayaranInput akan bernilai sama dengan totalAll
+            }
+        });
+
+        //jika ekspedisi dipilih selain Lainnya maka divEksLain akan hide
+        $('#ekspedisi').on('change', function(){
+            if($(this).val() != 'LAIN'){
+                $('.divEksLain').hide();
+                //remove required
+                $('#namaEkspedisi').removeAttr('required');
+            }else{
+                $('.divEksLain').show();
+                //add required
+                $('#namaEkspedisi').attr('required', true);
+            }
+        });
+
+        // function simpanPelanggan
+        $('#pelanggan-form').on('submit', function(e){
+            e.preventDefault();
+
+            $.ajax({
+                url: "{{ route('pelanggan.store') }}",
+                method: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    salesID: $('#salesID').val(),
+                    nama: $('#modalNama').val(),
+                    telepon: $('#modalTelepon').val(),
+                    alamat: $('#modalAlamat').val(),
+                    instansi: $('#modalInstansi').val(),
+                    infoPelanggan: $('#infoPelanggan').val(),
+                    provinsi: $('#provinsi').val(),
+                    kota: $('#kota').val(),
+                },
+                success: function(data){
+                    $('#modalTambahPelanggan').modal('hide');
+                    $('#namaPelanggan').append(`<option value="${data.id}" selected>${data.nama}</option>`);
+                    $('#namaPelanggan').val(data.id).trigger('change');
+                    $('#namaPelanggan').select2({
+                        placeholder: 'Pilih Pelanggan',
+                        ajax: {
+                            url: "/pelanggan-all/{{ auth()->user()->sales->id }}",
+                            dataType: 'json',
+                            delay: 250,
+                            processResults: function (data) {
+                                return {
+                                    results:  $.map(data, function (item) {
+                                        if(item.instansi == null){
+                                            return {
+                                                text: item.nama + ' - ' + item.telepon,
+                                                id: item.id,
+                                            }
+                                        }else{
+                                            return {
+                                                text: item.nama + ' - ' + item.telepon,
+                                                id: item.id,
+                                            }
+                                        }
+                                    })
+                                };
+                            },
+                            cache: true
+                        }
+                    });
+
+                    //tampilkan toast sweet alert
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Pelanggan berhasil ditambahkan',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                },
+                error: function(xhr, status, error){
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                }
+            });
         });
 });
 </script>

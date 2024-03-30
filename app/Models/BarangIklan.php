@@ -14,6 +14,14 @@ class BarangIklan extends Model
 
     protected $table = 'barang_iklan';
 
+    protected $fillable = [
+        'tahun_iklan',
+        'bulan_iklan',
+        'sales_id',
+        'job_id',
+        'barang_id',
+    ];
+
     public function iklan()
     {
         return $this->belongsTo(Iklan::class);

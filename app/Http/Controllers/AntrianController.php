@@ -23,6 +23,7 @@ use App\Models\Ekspedisi;
 use App\Models\Pembayaran;
 use App\Models\Pengiriman;
 use App\Models\DataAntrian;
+use App\Models\DesignQueue;
 use App\Models\Dokumproses;
 use Illuminate\Http\Request;
 use App\Helpers\CustomHelper;
@@ -253,7 +254,9 @@ class AntrianController extends Controller
     public function buatAntrianWorkshop()
     {
         $ekspedisi = Ekspedisi::all();
-        return view('page.antrian-workshop.create', compact('ekspedisi'));
+        $desain = DesignQueue::where('sales_id', auth()->user()->sales->id)->where('status', 2)->where('data_antrian_id', 0)->get();
+
+        return view('page.antrian-workshop.create', compact('ekspedisi', 'desain'));
     }
 
     public function printeSpk($id){
@@ -422,18 +425,25 @@ class AntrianController extends Controller
 
     public function simpanAntrian(Request $request)
     {
+        $lastId = DataAntrian::latest()->first();
+        if($lastId == null){
+            $lastId = 1;
+        }else{
+            $lastId = $lastId->id + 1;
+        }
+        $ticketOrder = Carbon::now()->format('Ymd') . $lastId;
+
         //simpan antrian
         $antrian = new DataAntrian();
-        $antrian->ticket_order = $request->input('ticket_order');
-        $antrian->sales_id = $request->input('sales_id');
+        $antrian->ticket_order = $ticketOrder;
+        $antrian->sales_id = auth()->user()->sales->id;
         $antrian->customer_id = $request->input('customer_id');
-        $antrian->order_id = $request->input('order_id');
         $antrian->status = 1;
         $antrian->save();
 
         //simpan pembayaran
         $payment = new Pembayaran();
-        $payment->ticket_order = $request->input('ticket_order');
+        $payment->ticket_order = $ticketOrder;
         $payment->metode_pembayaran = $request->input('metodePembayaran');
         $payment->biaya_packing = $request->input('biayaPacking') != null ? CustomHelper::removeCurrencyFormat($request->input('biayaPacking')) : 0;
         $payment->biaya_pasang = $request->input('biayaPasang') != null ? CustomHelper::removeCurrencyFormat($request->input('biayaPasang')) : 0;
@@ -447,7 +457,7 @@ class AntrianController extends Controller
         //jika ada ekspedisi yang dipilih, maka simpan data pengiriman
         if($request->input('ekspedisi') != null && $request->input('ongkir') != null){
             $pengiriman = new Pengiriman();
-            $pengiriman->ticket_order = $request->input('ticket_order');
+            $pengiriman->ticket_order = $ticketOrder;
             $pengiriman->ongkir = CustomHelper::removeCurrencyFormat($request->input('ongkir'));
             $pengiriman->no_resi = $request->input('noResi');
             $pengiriman->ekspedisi = $request->input('ekspedisi');
@@ -471,18 +481,13 @@ class AntrianController extends Controller
         }
 
         $bukti = new BuktiPembayaran();
-        $bukti->ticket_order = $request->input('ticket_order');
+        $bukti->ticket_order = $ticketOrder;
         $bukti->gambar = $namaBaru;
         $bukti->save();
 
-        $order = Order::where('ticket_order', $request->input('ticket_order'))->first();
-        $order->toWorkshop = 1;
-        $order->save();
-
         //simpan data kerja
         $dataKerja = new DataKerja();
-        $dataKerja->ticket_order = $request->input('ticket_order');
-        $dataKerja->desainer_id = $order->employee_id;
+        $dataKerja->ticket_order = $ticketOrder;
         $dataKerja->save();
 
         //jika antrian berhasil disimpan, customer frekuensi order ditambah 1
@@ -772,6 +777,8 @@ class AntrianController extends Controller
         $pengiriman = Pengiriman::where('ticket_order', $id)->first();
 
         $ekspedisi = Ekspedisi::all();
+
+        $designQueue = DesignQueue::where('data_antrian_id', $antrian->id)->first();
 
         $omset = $pembayaran->total_harga;
 

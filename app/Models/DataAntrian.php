@@ -94,6 +94,6 @@ class DataAntrian extends Model
 
     public function pengiriman()
     {
-        return $this->belongsTo(Pengiriman::class, 'ticket_order', 'ticket_order');
+        return $this->hasMany(Pengiriman::class, 'ticket_order', 'ticket_order');
     }
 }

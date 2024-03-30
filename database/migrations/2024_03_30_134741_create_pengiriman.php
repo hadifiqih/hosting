@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('pengiriman', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('data_antrian_id');
-            $table->unsignedDecimal('ongkir', $precision = 0);
+            $table->unsignedBigInteger('ticket_order');
+            $table->unsignedDecimal('ongkir');
             $table->string('no_resi');
             $table->string('ekspedisi');
             $table->string('alamat_pengiriman');
