@@ -26,7 +26,7 @@ class DesignController extends Controller
         $designs = DesignQueue::all();
         return view('page.antrian-desain.daftar-antrian', compact('designs'));
     }
-    
+
     public function indexDatatables()
     {
         if(auth()->user()->isSales()){
@@ -36,7 +36,7 @@ class DesignController extends Controller
         }else{
             $designs = DesignQueue::where('status', 1)->orderBy('created_at', 'desc')->get();
         }
-        
+
         return Datatables::of($designs)
             ->addIndexColumn()
             ->addColumn('desainer', function($design){
@@ -111,7 +111,7 @@ class DesignController extends Controller
         }else{
             $designs = DesignQueue::where('status', 2)->orderBy('created_at', 'desc')->get();
         }
-        
+
         return Datatables::of($designs)
             ->addIndexColumn()
             ->addColumn('desainer', function($design){
@@ -181,6 +181,13 @@ class DesignController extends Controller
     {
         $design = DesignQueue::find($id);
         return view('page.antrian-desain.upload-file-cetak', compact('design'));
+    }
+
+    public function downloadFile($id)
+    {
+        $design = DesignQueue::find($id);
+        $path = 'storage/file-cetak/' . $design->file_cetak;
+        return response()->download($path);
     }
 
     public function simpanFile(Request $request, $id)
@@ -424,13 +431,5 @@ class DesignController extends Controller
         return redirect()->route('estimator.index')->with('success', 'File berhasil diupload');
 
     }
-
-    public function downloadFileProduksi($id)
-    {
-        $design = Design::find($id);
-        $path = 'file-jadi/' . $design->filename;
-        return Storage::disk('public')->download($path);
-    }
-
     //
 }

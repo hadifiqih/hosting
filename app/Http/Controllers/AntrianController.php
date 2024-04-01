@@ -176,7 +176,7 @@ class AntrianController extends Controller
                     $btn .= '<a href="' . route('antrian.edit', $antrian->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Penugasan</a>';
                     $btn .= '<a href="'.route('antrian.show', $antrian->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</a>';
                     $btn .= '<a href="javascript:void(0)" onclick="deleteAntrian('.$antrian->ticket_order.')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</a>';
-                    
+
                 }
                 elseif(auth()->user()->role == 'stempel' || auth()->user()->role == 'advertising') {
                     $btn .= '<a href="' . route('documentation.uploadProduksi', $antrian->ticket_order) . '" class="btn btn-warning btn-sm"><i class="fas fa-camera"></i> Unggah Dokumentasi</a>';
@@ -237,9 +237,6 @@ class AntrianController extends Controller
             ->addColumn('customer', function ($antrian) {
                 return $antrian->customer->nama;
             })
-            ->addColumn('keyword', function ($antrian) {
-                return $antrian->order->title;
-            })
             ->addColumn('action', function ($antrian) {
                 $btn = '<div class="btn-group">';
                 $btn .= '<a href="'.route('antrian.show', $antrian->ticket_order).'" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>';
@@ -248,7 +245,7 @@ class AntrianController extends Controller
             })
             ->rawColumns(['action','ticket_order'])
             ->make(true);
-        
+
     }
 
     public function buatAntrianWorkshop()
@@ -441,18 +438,6 @@ class AntrianController extends Controller
         $antrian->status = 1;
         $antrian->save();
 
-        //simpan pembayaran
-        $payment = new Pembayaran();
-        $payment->ticket_order = $ticketOrder;
-        $payment->metode_pembayaran = $request->input('metodePembayaran');
-        $payment->biaya_packing = $request->input('biayaPacking') != null ? CustomHelper::removeCurrencyFormat($request->input('biayaPacking')) : 0;
-        $payment->biaya_pasang = $request->input('biayaPasang') != null ? CustomHelper::removeCurrencyFormat($request->input('biayaPasang')) : 0;
-        $payment->diskon = $request->input('diskon') != null ? CustomHelper::removeCurrencyFormat($request->input('diskon')) : 0;
-        $payment->total_harga = CustomHelper::removeCurrencyFormat($request->input('totalAllInput'));
-        $payment->dibayarkan = CustomHelper::removeCurrencyFormat($request->input('jumlahPembayaran'));
-        $payment->status_pembayaran = $request->input('statusPembayaran');
-        $payment->save();
-
         //simpan pengiriman
         //jika ada ekspedisi yang dipilih, maka simpan data pengiriman
         if($request->input('ekspedisi') != null && $request->input('ongkir') != null){
@@ -480,6 +465,24 @@ class AntrianController extends Controller
             Storage::disk('public')->put($path, file_get_contents($buktiPembayaran));
         }
 
+        //simpan pembayaran
+        $payment = new Pembayaran();
+        $payment->ticket_order = $ticketOrder;
+        $payment->metode_pembayaran = $request->input('metodePembayaran');
+        $payment->biaya_packing = $request->input('biayaPacking') != null ? CustomHelper::removeCurrencyFormat($request->input('biayaPacking')) : 0;
+        $payment->biaya_pasang = $request->input('biayaPasang') != null ? CustomHelper::removeCurrencyFormat($request->input('biayaPasang')) : 0;
+        $payment->diskon = $request->input('diskon') != null ? CustomHelper::removeCurrencyFormat($request->input('diskon')) : 0;
+        $payment->total_harga = CustomHelper::removeCurrencyFormat($request->input('totalAllInput'));
+        $payment->dibayarkan = CustomHelper::removeCurrencyFormat($request->input('jumlahPembayaran'));
+        $payment->status_pembayaran = $request->input('statusPembayaran');
+        if($payment->total_harga == $payment->dibayarkan){
+            $payment->nominal_pelunasan = $payment->dibayarkan;
+            $payment->file_pelunasan = $namaBaru;
+            $payment->tanggal_pelunasan = Carbon::now();
+            $payment->status_pembayaran = 2;
+        }
+        $payment->save();
+
         $bukti = new BuktiPembayaran();
         $bukti->ticket_order = $ticketOrder;
         $bukti->gambar = $namaBaru;
@@ -489,6 +492,14 @@ class AntrianController extends Controller
         $dataKerja = new DataKerja();
         $dataKerja->ticket_order = $ticketOrder;
         $dataKerja->save();
+
+        //Barang
+        $barang = Barang::where('customer_id', $request->input('customer_id'))->where('ticket_order', null)->get();
+        foreach($barang as $b){
+            $b->ticket_order = $ticketOrder;
+            $b->designQueue->data_antrian_id = $antrian->id;
+            $b->save();
+        }
 
         //jika antrian berhasil disimpan, customer frekuensi order ditambah 1
         $customer = Customer::where('id', $request->input('customer_id'))->first();
@@ -778,7 +789,7 @@ class AntrianController extends Controller
 
         $ekspedisi = Ekspedisi::all();
 
-        $designQueue = DesignQueue::where('data_antrian_id', $antrian->id)->first();
+        $desainan = DesignQueue::where('data_antrian_id', $antrian->id)->get();
 
         $omset = $pembayaran->total_harga;
 
@@ -787,7 +798,7 @@ class AntrianController extends Controller
         $duaSetengahPersen = 2.5;
         $tigaPersen = 3;
         $limaPersen = 5;
-        
+
         $total = 0;
 
         foreach($items as $item){
@@ -818,7 +829,7 @@ class AntrianController extends Controller
 
         $sisaPembayaran = $total - $pembayaran->dibayarkan;
 
-        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'pembayaran' , 'bahan', 'totalBahan', 'biayaSales', 'biayaDesain', 'biayaPenanggungJawab', 'biayaPekerjaan', 'biayaBPJS', 'biayaTransportasi', 'biayaOverhead', 'biayaAlatListrik', 'totalBiaya', 'profit', 'pengiriman', 'ekspedisi', 'sisaPembayaran'));
+        return view('page.antrian-workshop.show', compact('antrian', 'total', 'items', 'pembayaran' , 'bahan', 'totalBahan', 'biayaSales', 'biayaDesain', 'biayaPenanggungJawab', 'biayaPekerjaan', 'biayaBPJS', 'biayaTransportasi', 'biayaOverhead', 'biayaAlatListrik', 'totalBiaya', 'profit', 'pengiriman', 'ekspedisi', 'sisaPembayaran', 'desainan'));
     }
 
     public function updateDeadline(Request $request)

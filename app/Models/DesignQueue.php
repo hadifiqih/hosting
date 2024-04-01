@@ -28,6 +28,11 @@ class DesignQueue extends Model
         'status'
     ];
 
+    public function dataAntrian()
+    {
+        return $this->belongsTo(DataAntrian::class, 'data_antrian_id', 'id');
+    }
+
     public function sales()
     {
         return $this->belongsTo(Sales::class, 'sales_id');

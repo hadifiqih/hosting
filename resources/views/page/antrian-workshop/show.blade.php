@@ -130,7 +130,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
+
                 </tbody>
                 <tfoot>
                     <tr>
@@ -139,7 +139,7 @@
                     </tr>
                 </tfoot>
             </table>
-            </div>            
+            </div>
         </div>
         <div class="row">
             <div class="col pr-4 mt-3">
@@ -204,7 +204,7 @@
                 </div>
                 <div class="col-md">
                     <h5><strong>Ekspedisi Pengiriman</strong></h5>
-                    <p>{{ !isset($pengiriman->ekspedisi->nama_ekspedisi) ? '-' : $pengiriman->ekspedisi->nama_ekspedisi }}</p>
+                    <p>{{ !isset($pengiriman->ekspedisi) ? '-' : $pengiriman->ekspedisi}}</p>
                 </div>
                 <div class="col-md">
                     <h5><strong>Biaya Pengiriman</strong></h5>
@@ -214,7 +214,7 @@
                     <h5><strong>Resi (Airway Bill)</strong></h5>
                     <p>{{ !isset($pengiriman->no_resi) || $pengiriman->no_resi == null ? '-' : $pengiriman->no_resi }}</p>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -245,67 +245,30 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-md">
-                    <div class="row">
-                        <div class="col">
-                            <div class="row">
-                                <div class="col-2 mt-2">
-                                    @php
-                                        $fileCetak = $antrian->barang->file_cetak;
-                                        $fileCetak = explode('.', $fileCetak);
-                                        $fileCetak = end($fileCetak);
-                                        if($fileCetak == null){
-                                            $fileCetak = '-';
-                                        }
-                                    @endphp
-                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper($fileCetak) }}</div>
-                                </div>
-                                <div class="col-4 my-auto">
-                                    <a id="btnDownloadFileCetak" href="{{ route('design.download', $antrian->id) }}" class="font-weight-bold my-0">{{ $fileCetak == '-' ? 'File Cetak Kosong' : 'File Cetak' }}</a>
-                                    <p class="text-muted">{{ date_format($antrian->barang->created_at, 'd F Y - H:i') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        @if(isset($antrian->buktiBayar->gambar))
-                        <div class="col">
-                            <div class="row">
-                                <div class="col-2 mt-2">
-                                    @php
-                                        $buktiBayar = $antrian->buktiBayar->gambar;
-                                        $buktiBayar = explode('.', $buktiBayar);
-                                        $buktiBayar = end($buktiBayar);
-                                    @endphp
-                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper($buktiBayar) }}</div>
-                                </div>
-                                <div class="col-4 my-auto">
-                                    <a class="font-weight-bold my-0" onclick="modalBuktiPembayaran()">Bukti Pembayaran</a>
-                                    <p class="text-muted">{{ date_format($antrian->pembayaran->updated_at, 'd F Y - H:i') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                        @if(isset($antrian->filePendukung->nama_file))
-                        <div class="col">
-                            <div class="row">
-                                <div class="col-2 mt-2">
-                                    @php
-                                        $namaFile = $antrian->filePendukung->nama_file;
-                                        $namaFile = explode('.', $namaFile);
-                                        $namaFile = end($namaFile);
-                                    @endphp
-                                    <div class="bg-dark text-center rounded-lg py-2 text-sm">{{ strtoupper($namaFile) }}</div>
-                                </div>
-                                <div class="col-4 my-auto">
-                                    <a href="{{ route('design.downloadFilePendukung', $antrian->id) }}" class="font-weight-bold my-0">File Pendukung</a>
-                                    <p class="text-muted">{{ date_format($antrian->filePendukung->updated_at, 'd F Y - H:i') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
+            <table class="table table-borderless">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Jenis File</th>
+                        <th>Produk</th>
+                        <th>Nama File</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($desainan as $file)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>File Cetak</td>
+                        <td>{{ $file->job->job_name }}</td>
+                        <td>{{ $file->file_cetak ?? 'File Belum Diupload' }}</td>
+                        <td>
+                            <a href="{{ route('design.downloadFile', $file->id) }}" class="btn btn-primary btn-sm @if($file->file_cetak == null) disabled @endif"><i class="fas fa-download"></i> Unduh</a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -422,7 +385,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
                     </tbody>
                     <tfoot>
                         <tr>
@@ -554,7 +517,7 @@
                                 icon: 'success',
                                 title: 'Biaya Produksi berhasil disimpan !'
                             });
-                            
+
                             //ajax reload table
                             $('#tabelBahan').DataTable().ajax.reload();
                             //refresh ajax dari route bahan.total
@@ -633,7 +596,7 @@
                                 icon: 'success',
                                 title: 'Bahan berhasil dihapus'
                             });
-            
+
                             //ajax reload table
                             $('#tabelBahan').DataTable().ajax.reload();
                             //refresh ajax dari route bahan.total
@@ -747,7 +710,7 @@
                             icon: 'success',
                             title: 'Bahan berhasil ditambahkan'
                         });
-        
+
                         //ajax reload table
                         $('#tabelBahan').DataTable().ajax.reload();
                         //refresh ajax dari route bahan.total

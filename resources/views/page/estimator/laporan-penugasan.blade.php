@@ -11,6 +11,29 @@
 @section('content')
 <link href="https://cdn.datatables.net/rowgroup/1.5.0/css/rowGroup.dataTables.css" rel="stylesheet">
 <div class="container">
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="periode">Periode Bulan</label>
+                <select id="periode" class="form-control select2" name="periode" id="periode">
+                    <option value="">Semua</option>
+                    <option value="01">Januari</option>
+                    <option value="02">Februari</option>
+                    <option value="03">Maret</option>
+                    <option value="04">April</option>
+                    <option value="05">Mei</option>
+                    <option value="06">Juni</option>
+                    <option value="07">Juli</option>
+                    <option value="08">Agustus</option>
+                    <option value="09">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+            <button onclick="filter()" class="btn btn-sm btn-primary mt-2">Filter</button>
+        </div>
+    </div>
+
+    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="card card-primary card-outline">
@@ -39,7 +62,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
+
                             </tbody>
                         </table>
                     </div>
@@ -54,6 +77,19 @@
 <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
 <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/rowGroup.dataTables.js"></script>
 <script>
+    function filter(){
+        var periode = $('#periode').val();
+        $.ajax({
+            url: "{{ route('estimator.laporanPenugasanJson') }}",
+            type: "GET",
+            data: {
+                periode: periode
+            },
+            success: function(data){
+                $('#table').DataTable().ajax.url("{{ route('estimator.laporanPenugasanJson') }}?periode="+periode).load();
+            }
+        });
+    }
     //DATA TABLE
     $(document).ready(function() {
         $('#table').DataTable({

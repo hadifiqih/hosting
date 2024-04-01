@@ -101,7 +101,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        
+
                                     </tbody>
                                 </table>
                                 <!-- /.card -->
@@ -127,12 +127,11 @@
                                             <th scope="col">Ticket Order</th>
                                             <th scope="col">Sales</th>
                                             <th scope="col">Nama Customer</th>
-                                            <th scope="col">Keyword Project</th>
                                             <th scope="col">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                
+
                                     </tbody>
                                 </table>
                                 <!-- /.card -->
@@ -200,7 +199,7 @@
             var kategori = $('#kategori').val();
 
             $('.maskRupiah').maskMoney({prefix:'Rp ', thousands:'.', decimal:',', precision:0});
-            
+
             var tableDikerjakan = $("#dataAntrian").DataTable({
                 responsive: true,
                 autoWidth: false,
@@ -237,7 +236,6 @@
                     {data: 'ticket_order', name: 'ticket_order'},
                     {data: 'sales', name: 'sales'},
                     {data: 'customer', name: 'customer'},
-                    {data: 'keyword', name: 'keyword'},
                     {data: 'action', name: 'action'},
                 ],
             });

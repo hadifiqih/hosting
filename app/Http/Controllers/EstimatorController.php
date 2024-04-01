@@ -26,10 +26,16 @@ class EstimatorController extends Controller
         return Excel::download(new AntrianExport, 'laporan-workshop.xlsx');
     }
 
-    public function laporanPenugasanJson()
+    public function laporanPenugasanJson(Request $request)
     {
-        $awal = date('Y-m-01');
-        $akhir = date('Y-m-d');
+        $periode = date('Y') . '-' . $request->get('periode');
+        if($request->get('periode')){
+            $awal = date('Y-m-01', strtotime($periode));
+            $akhir = date('Y-m-t', strtotime($periode));
+        }else{
+            $awal = date('Y-m-01');
+            $akhir = date('Y-m-d');
+        }
 
         $antrians = Barang::whereHas('antrian', function($query) use ($awal, $akhir){
             $query->whereBetween('created_at', [$awal, $akhir]);
@@ -59,10 +65,10 @@ class EstimatorController extends Controller
                 return $antrian->dataKerja->tgl_selesai;
             })
             ->addColumn('desainer', function ($antrian) {
-                if($antrian->desainer_id == null){
+                if($antrian->design_queue_id == null){
                     return '<span class="text-danger">DESAINER KOSONG</span>';
                 }else{
-                    return $antrian->desainer->name;
+                    return $antrian->designQueue->designer->name;
                 }
             })
             ->addColumn('operator', function ($antrian) {
@@ -122,7 +128,7 @@ class EstimatorController extends Controller
                     return '<span class="font-weight-bold text-success">SELESAI</span>';
                 }
             })
-            ->rawColumns(['ticket_order','operator', 'finishing', 'qc'])
+            ->rawColumns(['ticket_order','operator', 'finishing', 'qc', 'desainer', 'status'])
             ->make();
     }
 }

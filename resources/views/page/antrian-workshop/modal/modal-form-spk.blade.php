@@ -45,22 +45,18 @@
       <div class="modal-body">
         <div id="printedSPK" class="container">
           <h4 class="text-center mt-3"><strong>Surat Perintah Kerja (e-SPK)</strong></h4>
-  
+
           <div class="row table-responsive">
             <table class="table table-bordered table-striped mt-3">
               <tr class="bg-dark">
                 <td class="text-center text-white" colspan="4">No. SPK : SPK-{{ $antrian->ticket_order }}</td>
               </tr>
-  
-              <tr>
-                <td class="text-center" colspan="4">{{ $order->title }}</td>
-              </tr>
-  
+
               <tr>
                 <td>Tanggal</td>
                 <td>: {{ $antrian->created_at }}</td>
                 <td>Lokasi Pengerjaan</td>
-                <td>: 
+                <td>:
                   @php
                       $location = $antrian->cabang_id;
                       //explode string
@@ -78,14 +74,14 @@
                   @endphp
                 </td>
               </tr>
-              
+
               <tr>
                 <td>Mulai</td>
                 <td>: {{ $dataKerja->tgl_mulai }}</td>
                 <td>Selesai</td>
                 <td>: {{ $dataKerja->tgl_selesai }}</td>
               </tr>
-  
+
               <tr class="bg-dark">
                 <td class="text-center text-white" colspan="4">Pelanggan</td>
               </tr>
@@ -96,18 +92,18 @@
                 <td>Alamat</td>
                 <td>: {{ $customer->alamat }}</td>
               </tr>
-  
+
               <tr>
                 <td>Instansi</td>
                 <td>: {{ $customer->instansi }}</td>
                 <td>Telepon</td>
                 <td>: {{ $customer->telepon }}</td>
               </tr>
-  
-              <tr class="bg-dark text-white">
-                <td class="text-center" colspan="4">Gambar ACC Desain</td>
+
+              <tr class="bg-dark">
+                <td class="text-center text-white" colspan="4">Gambar ACC Desain</td>
               </tr>
-  
+
               <tr>
                 <td class="text-center" colspan="4">
                   @foreach ($barang as $item)
@@ -115,38 +111,38 @@
                   @endforeach
                 </td>
               </tr>
-  
+
               <tr class="bg-dark text-white">
                 <td class="text-center" colspan="4">Daftar Pekerjaan</td>
               </tr>
-  
+
               <tr>
                 <td class="text-center">Nama Pekerjaan</td>
                 <td class="text-center">Jumlah</td>
                 <td class="text-center">Keterangan</td>
                 <td class="text-center">Desainer</td>
               </tr>
-  
+
               @foreach ($barang as $item)
               <tr>
                 <td>{{ $item->job->job_name }}</td>
                 <td class="text-center">{{ $item->qty }}</td>
                 <td class="spesifikasi">{{ $item->note }}</td>
-                <td>{{ isset($item->desainer->name) ? $item->desainer->name : '-' }}</td>
+                <td>{{ isset($item->designQueue->designer->name) ? $item->designQueue->designer->name : '-' }}</td>
               </tr>
               @endforeach
 
               <tr class="bg-dark text-white">
                 <td colspan="4" class="text-center text-white">Penugasan</td>
               </tr>
-  
+
               <tr>
                 <td>Operator</td>
                 <td colspan="2">Finishing</td>
                 <td>Quality Control</td>
-                
+
               </tr>
-  
+
               <tr>
                 <td>
                   @php
@@ -216,12 +212,12 @@
                   @endphp
                 </td>
               </tr>
-  
+
               <tr>
                 <td class="text-center">Catatan</td>
                 <td colspan="3">: {{ $antrian->admin_note }}</td>
               </tr>
-  
+
             </table>
           </div>
       </div>

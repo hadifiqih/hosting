@@ -21,6 +21,11 @@ class Barang extends Model
 
     protected $table = 'barang';
 
+    public function designQueue()
+    {
+        return $this->belongsTo(DesignQueue::class, 'design_queue_id', 'id');
+    }
+
     public function desainer()
     {
         return $this->belongsTo(User::class, 'desainer_id', 'id');
@@ -64,11 +69,6 @@ class Barang extends Model
     public function iklan()
     {
         return $this->belongsTo(Iklan::class);
-    }
-
-    public function designQueue()
-    {
-        return $this->belongsTo(DesignQueue::class, 'design_queue_id', 'id');
     }
 
     public function getAccDesainAttribute($value)

@@ -202,7 +202,7 @@ Route::controller(ReportController::class)->group(function(){
 
 Route::controller(DesignController::class)->group(function(){
     Route::post('/design/simpan-file-produksi', 'simpanFileProduksi')->name('simpanFileProduksi');
-    Route::get('/design/download-file-produksi/{id}', 'downloadFileProduksi')->name('downloadFileProduksi');
+    Route::get('/design/download-file/{id}', 'downloadFile')->name('design.downloadFile');
 
     Route::get('/design/tambah-desain', 'tambahDesain')->name('design.tambahDesain');
     Route::get('/design/edit-desain/{id}', 'editDesain')->name('design.editDesain');
@@ -401,6 +401,7 @@ Route::controller(BarangController::class)->group(function(){
     Route::put('/barang/update/{id}', 'updateCreate')->name('barang.updateCreate');
     //edit barang
     Route::get('/barang/edit/{id}', 'editCreate')->name('barang.editCreate');
+    Route::get('/barang/show/{id}', 'show')->name('barang.show');
 
     Route::get('/barang/getTotalBarang/{id}', 'getTotalBarang')->name('getTotalBarang');
     Route::get('/barang/getBarangById/{id}', 'getBarangById')->name('getBarangById');
