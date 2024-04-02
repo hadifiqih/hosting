@@ -147,13 +147,13 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('/register', 'store')->name('auth.store');
     Route::get('/logout', 'logout')->name('auth.logout');
     Route::get('/beams-generateToken', 'generateToken')->name('beams.auth');
-});
+})->middleware('guest');
 
 Route::controller(EstimatorController::class)->group(function(){
     Route::get('/estimator/laporan-penugasan', 'laporanPenugasan')->middleware(['auth'])->name('estimator.laporanPenugasan');
     Route::get('/estimator/laporan-penugasan-json', 'laporanPenugasanJson')->middleware(['auth'])->name('estimator.laporanPenugasanJson');
     Route::get('/estimator/laporan-workshop-excel', 'laporanWorkshopExcel')->middleware(['auth'])->name('estimator.laporanWorkshopExcel');
-});
+})->middleware(['auth', 'checkrole:estimator']);
 
 Route::controller(IklanController::class)->group(function(){
     Route::get('/iklan/json', 'iklanJson')->name('iklan.indexJson');
@@ -169,8 +169,7 @@ Route::controller(IklanController::class)->group(function(){
     Route::get('/iklan/{id}/edit', 'edit')->name('iklan.edit');
     Route::put('/iklan/{id}', 'update')->name('iklan.update');
     Route::delete('/iklan/{id}', 'destroy')->name('iklan.destroy');
-
-});
+})->middleware('auth');
 
 Route::controller(ReportController::class)->group(function(){
     Route::get('/report-workshop', 'pilihTanggal')->name('laporan.workshop');
@@ -198,7 +197,7 @@ Route::controller(ReportController::class)->group(function(){
     Route::get('/cetak-form-espk/{id}', 'cetakFormEspk')->name('cetak-form-espk');
     Route::get('/report/tampilBP/{id}', 'tampilBP')->name('report.tampilBP');
     // Route Laporan Iklan
-});
+})->middleware('auth');
 
 Route::controller(DesignController::class)->group(function(){
     Route::post('/design/simpan-file-produksi', 'simpanFileProduksi')->name('simpanFileProduksi');
@@ -221,14 +220,14 @@ Route::controller(DesignController::class)->group(function(){
     Route::get('/json-antrian-selesai', 'indexSelesaiDatatables')->name('design.indexSelesaiDatatables');
     Route::get('/json-antrian-penugasan-desain', 'indexPenugasanDatatables')->name('design.indexPenugasanDatatables');
     Route::get('/json-antrian-penugasan-selesai', 'indexPenugasanSelesaiDatatables')->name('design.indexPenugasanSelesaiDatatables');
-});
+})->middleware('auth');
 
 Route::controller(EmployeeController::class)->group(function(){
     Route::get('/employee', 'index')->middleware('auth')->name('employee.index');
     Route::get('/profile/{id}', 'show')->middleware('auth')->name('employee.show');
     Route::put('/profile/{id}', 'update')->middleware(['auth'])->name('employee.update');
     Route::post('/profile/upload-foto', 'uploadFoto')->middleware(['auth'])->name('employee.uploadFoto');
-});
+})->middleware('auth');
 
 Route::controller(OrderController::class)->group(function(){
     Route::get('/list-revisi', 'listRevisi')->name('list.revisi');
@@ -294,7 +293,7 @@ Route::controller(PosController::class)->group(function(){
     //tambah keranjang
     Route::post('/pos/tambah-keranjang', 'tambahKeranjang')->name('pos.tambahKeranjang');
     Route::get('/pos/keranjang-item/{id_cart}', 'tampilkanKeranjang')->name('pos.tampilkanKeranjang');
-});
+})->middleware('auth');
 
 Route::controller(AntrianController::class)->group(function(){
     Route::get('/antrian/indexAntrian', 'indexData')->middleware('auth')->name('antrian.indexData');
@@ -325,13 +324,13 @@ Route::controller(AntrianController::class)->group(function(){
 
     Route::put('/biaya-produksi/selesai/{id}', 'biayaProduksiSelesai')->middleware('auth')->name('biaya.produksi.update');
     Route::get('/antrian/e-spk/{id}', 'printeSpk')->middleware('auth')->name('antrian.form-espk');
-});
+})->middleware('auth');
 
 Route::controller(PaymentController::class)->group(function(){
     Route::get('/payment/{id}', 'show')->name('payment.show');
     Route::post('/payment/pelunasan', 'updatePelunasan')->name('updatePelunasan');
     Route::put('/payment/unggah-pelunasan', 'unggahPelunasan')->name('unggahPelunasan');
-});
+})->middleware('auth');
 
 Route::resource('product', ProductController::class);
 
@@ -350,13 +349,13 @@ Route::controller(CustomerController::class)->group(function(){
     Route::post('/customer/store', 'store')->name('pelanggan.store');
     Route::get('/pelanggan/status/{id}', 'statusPelanggan')->name('pelanggan.status');
     Route::get('/get-info-pelanggan', 'getInfoPelanggan')->name('getInfoPelanggan');
-});
+})->middleware('auth');
 
 Route::controller(JobController::class)->group(function(){
     Route::get('/job/search', 'search')->name('job.search');
     Route::get('/job/searchByNama', 'searchByNama')->name('job.searchByNama');
     Route::get('/job/searchByCategory', 'searchByCategory')->name('job.searchByCategory');
-});
+})->middleware('auth');
 
 Route::controller(DocumentationController::class)->group(function(){
     //documentation index
@@ -369,7 +368,7 @@ Route::controller(DocumentationController::class)->group(function(){
     Route::get('/documentation/gallery', 'galleryDokumentasi')->name('documentation.gallery');
     Route::post('/documentation/upload-gambar', 'uploadGambar')->name('documentation.upload');
     Route::get('/documentation/upload-gambar-produksi/{id}', 'uploadGambarProduksi')->name('documentation.uploadProduksi');
-});
+})->middleware('auth');
 
 Route::controller(UserController::class)->group(function(){
     Route::get('/user/superadmin', 'index')->middleware(['auth', 'checkrole:superadmin'])->name('user.index');
@@ -378,7 +377,7 @@ Route::controller(UserController::class)->group(function(){
     Route::put('/user/update/{id}', 'update')->middleware(['auth', 'checkrole:superadmin'])->name('user.update');
     Route::delete('/user/{id}', 'destroy')->middleware(['auth', 'checkrole:superadmin'])->name('user.destroy');
     Route::get('/user/edit-desainer', 'editDesainer')->name('edit.desainer');//untuk menampilkan table daftar desainer
-});
+})->middleware('auth');
 
 //Route Resource BarangController
 Route::resource('barang', BarangController::class);
